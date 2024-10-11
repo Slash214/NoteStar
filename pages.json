@@ -1,17 +1,83 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
+	"pages": [{
+			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/overview/overview",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/sales/sales",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/more/more",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/products/products",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/purchase/purchase",
+			"style": {
+				"navigationBarTitleText": ""
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTitleText": "好闲惠",
+		"navigationBarBackgroundColor": "#F1F5F8",
+		"backgroundColor": "#F1F5F8",
+		"navigationStyle": "custom"
+	},
+	"tabBar": {
+		"color": "#323232",
+		"selectedColor": "#58c5d9",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/overview/overview",
+				"text": "经营概况",
+				"iconPath": "static/tabbar/overview.png",
+				"selectedIconPath": "static/tabbar/overview_selected.png"
+			},
+			{
+				"pagePath": "pages/sales/sales",
+				"text": "销售",
+				"iconPath": "static/tabbar/sales.png",
+				"selectedIconPath": "static/tabbar/sales_selected.png"
+			},
+			{
+				"pagePath": "pages/purchase/purchase",
+				"text": "进货",
+				"iconPath": "static/tabbar/purchase.png",
+				"selectedIconPath": "static/tabbar/purchase_selected.png"
+			},
+			{
+				"pagePath": "pages/products/products",
+				"text": "商品",
+				"iconPath": "static/tabbar/products.png",
+				"selectedIconPath": "static/tabbar/products_selected.png"
+			},
+			{
+				"pagePath": "pages/more/more",
+				"text": "更多",
+				"iconPath": "static/tabbar/more.png",
+				"selectedIconPath": "static/tabbar/more_selected.png"
+			}
+		]
 	},
 	"uniIdRouter": {}
 }

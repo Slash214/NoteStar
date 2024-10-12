@@ -1,0 +1,35 @@
+page {
+	background-color: #F1F5F8;
+	font-size: 30rpx;
+	box-sizing: border-box;
+}
+
+view {
+	box-sizing: border-box;
+}
+
+text {
+	display: inline-block;
+}
+
+
+.flex {
+	display: flex;
+}
+
+.flex-column {
+	display: flex;
+	flex-direction: column;
+}
+
+.flex-between {
+	justify-content: space-between;
+}
+
+.flex-center {
+	justify-content: center;
+}
+
+.flex-items-center {
+	align-items: center;
+}

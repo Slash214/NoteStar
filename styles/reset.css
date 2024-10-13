@@ -33,3 +33,8 @@ text {
 .flex-items-center {
 	align-items: center;
 }
+
+
+.container {
+	padding: 20rpx 30rpx 0;
+}

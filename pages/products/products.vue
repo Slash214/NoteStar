@@ -1,6 +1,9 @@
 <template>
 	<view>
-		
+		<AppletHeader title="商品" right-icon=" " left-icon="account"></AppletHeader>
+		<view class="">
+			商品
+		</view>
 	</view>
 </template>
 
@@ -8,8 +11,14 @@
 	export default {
 		data() {
 			return {
-				
+
 			};
+		},
+		onLoad() {
+
+		},
+		methods: {
+
 		}
 	}
 </script>

@@ -1,6 +1,9 @@
 <template>
 	<view>
-		水水水
+		<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
+	    <view class="">
+	    	内容
+	    </view>
 	</view>
 </template>
 
@@ -10,6 +13,12 @@
 			return {
 				
 			};
+		},
+		onLoad() {
+			
+		},
+		methods: {
+			
 		}
 	}
 </script>

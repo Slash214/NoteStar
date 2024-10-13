@@ -61,14 +61,27 @@
 
 			<u-button v-if="currIndex === 1" color="rgba(90, 198, 218, 0.6)" text="登录" @tap="userpwdLogin"></u-button>
 			<u-button v-else color="rgba(90, 198, 218, 0.6)" text="登录" @tap="userTelLogin"></u-button>
+		    <view class="flex flex-center flex-items-center pwd">
+				<u-icon :name="remberMe ? 'checkmark-circle-fill' : 'checkmark-circle'"
+				color="#5AC6DA" size="18"
+				@click="remberMe = !remberMe"
+				></u-icon>
+				<text>记住密码</text>
+		    </view>
 		</view>
 
 		<view class="login-footer">
-			<view class="">
-				我已经阅读并同意
-				<text>用户协议</text>
-				和
-				<text>隐私政策</text>
+			<view class="flex flex-items-center">
+				<u-icon :name="isArgree ? 'checkmark-circle-fill' : 'checkmark-circle'"
+				color="#5AC6DA" size="18"
+				@click="isArgree = !isArgree"
+				></u-icon>
+				<view class="text">
+					我已经阅读并同意
+					<text>用户协议</text>
+					和
+					<text>隐私政策</text>
+				</view>
 			</view>
 			<u--text margin="5px 0 5px 0" color="#fff" align="center" text="好闲惠掌柜宝"></u--text>
 			<u--text color="#fff" align="center" text="门店加盟：400-690-8890"></u--text>
@@ -78,6 +91,9 @@
 
 <script>
 import { login } from '@/apis'
+import w_md5 from "@/js_sdk/zww-md5/w_md5.js"
+
+
 export default {
 	data() {
 		return {
@@ -86,7 +102,17 @@ export default {
 			currIndex: 1,
 			mobile: '',
 			code: '',
-			tips: '获取验证码'
+			tips: '获取验证码',
+			isArgree: false,
+			remberMe: false
+		}
+	},
+	onLoad() {
+		const user = uni.getStorageSync('userInfo') || null
+		if (user) {
+			uni.switchTab({
+				url: '/pages/overview/overview'
+			})
 		}
 	},
 	methods: {
@@ -105,10 +131,24 @@ export default {
 			// 接口验证
 			const { data } = await login({
 				loginName: this.username,
-				password: this.password,
+				password: w_md5.hex_md5_32(this.password),
 			})
 			
+			const { token, user } = data || {}
+			uni.setStorageSync('userInfo', user)
+			uni.setStorageSync('token', token)
 			console.log(data)
+			uni.showToast({
+				title: '登录成功',
+				icon: 'none'
+			})
+			
+			setTimeout(() => {
+				uni.switchTab({
+					url: '/pages/overview/overview'
+				})
+			}, 400)
+			
 		},
 		toggleCurrentIndex(index) {
 			this.currIndex = index
@@ -159,7 +199,7 @@ export default {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	background: linear-gradient(to bottom right, #77d7c3, #3a92da);
+	background: linear-gradient(to bottom right, #68cab7, #3577cd);
 	&-header {
 		margin-top: 300rpx;
 		font-size: 56rpx;
@@ -190,6 +230,7 @@ export default {
 				background-color: #f7f7f7;
 				color: #5ac6da;
 			}
+			
 		}
 		.from {
 			margin: -1px 0 20px 0;
@@ -198,9 +239,26 @@ export default {
 			border-radius: 0 0 30rpx 30rpx;
 		}
 	}
+	
+	.pwd {
+		color: #fff;
+		margin: 20px auto;
+		text {
+			padding: 0 6rpx;
+		}
+	}
+	
 	&-footer {
 		margin-bottom: 60rpx;
 		line-height: 1.5;
+		
+		.text {
+			color: #ccc;
+		}
+		text {
+			color: #5AC6DA;
+			margin: 0 10rpx;
+		}
 	}
 }
 </style>

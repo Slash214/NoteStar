@@ -1,6 +1,9 @@
 <template>
 	<view>
-		水水水
+        <AppletHeader title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
+		<view class="">
+			内容
+		</view>
 	</view>
 </template>
 
@@ -8,8 +11,16 @@
 	export default {
 		data() {
 			return {
-				
+
 			};
+		},
+		onLoad() {
+			
+		},
+		methods: {
+			leftClick() {
+				console.log('点击我的')
+			}
 		}
 	}
 </script>

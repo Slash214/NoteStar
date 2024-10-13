@@ -1,6 +1,7 @@
 import { BASE_URL } from '@/common/contanst.js'
 const request = (options) => {
 	return new Promise((resolve, reject) => {
+		const token = uni.getStorageSync('token') || ''
 		const {
 			data,
 			method = 'GET',
@@ -13,6 +14,7 @@ const request = (options) => {
 			'Content-Type': 'application/json',
 			...header,
 		};
+		headers['X-Access-Token'] = token
 
 		// 处理请求方法，统一转换为大写
 		const requestMethod = method.toUpperCase();
@@ -29,11 +31,15 @@ const request = (options) => {
 			header: headers,
 			success: function(res) {
 				if (res.statusCode === 200) {
-					if (res.data.code === 2000) {
+					if (res.data.code === 0) {
 						resolve(res.data);
 					} else {
 						// 可以根据需要在这里处理业务错误
 						reject(res.data);
+						uni.showToast({
+							title: res.data?.message || '服务错误',
+							icon: 'none'
+						})
 					}
 				} else {
 					// 处理 HTTP 状态码错误

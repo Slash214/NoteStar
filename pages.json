@@ -41,7 +41,10 @@
 		"navigationBarTitleText": "好闲惠",
 		"navigationBarBackgroundColor": "#F1F5F8",
 		"backgroundColor": "#F1F5F8",
-		"navigationStyle": "custom"
+		"navigationStyle": "custom",
+		"navigationBarRightButton": {
+			"hide": true
+		}
 	},
 	"tabBar": {
 		"color": "#323232",

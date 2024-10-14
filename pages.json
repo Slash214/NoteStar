@@ -2,49 +2,72 @@
 	"pages": [{
 			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "登录"
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/overview/overview",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/sales/sales",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/more/more",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/products/products",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/purchase/purchase",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		}
+	],
+	"subPackages": [
+		{
+		"root": "pages/packageB",
+		"pages": [{
+			"path": "screening-page/screening-page",
+			"style": {
+				"navigationBarTitleText": "筛选"
+			}
+		}]
+	   },
+	   {
+		   "root": "pages/packageE",
+		   "pages": [
+		   	   {
+				  "path": "cash-flow/cash-flow",
+				  "style": {}
+			   }
+		   ]
+	   }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "好闲惠",
 		"navigationBarBackgroundColor": "#F1F5F8",
 		"backgroundColor": "#F1F5F8",
-		"navigationStyle": "custom",
-		"navigationBarRightButton": {
-			"hide": true
-		}
+		"navigationStyle": "custom"
 	},
 	"tabBar": {
 		"color": "#323232",

@@ -38,6 +38,10 @@
 			leftIconBold: {
 				type: Boolean,
 				default: true
+			},
+			isLeftClick: {
+				type: Boolean,
+				default: false
 			}
 		},
 		data() {
@@ -53,6 +57,11 @@
 		methods: {
 			handleClickLeft() {
 				console.log('点击左边的')
+				if (this.isLeftClick) {
+					console.log('传递事件')
+				} else {
+					uni.navigateBack()
+				}
 			}
 		}
 	}

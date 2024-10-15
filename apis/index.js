@@ -44,6 +44,14 @@ export const getDepotByUserId = (data) => {
 	})
 }
 
+// getAccountByDepotId
+export const getAccountByDepotId = (data) => {
+	return request({
+		url: '/account/getAccountByDepotId',
+		method: 'GET',
+		data
+	})
+}
 
 
 // packageC 商品

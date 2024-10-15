@@ -1,22 +1,12 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
 		<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
-		<u-sticky offset-top="70">
-			<view class="search flex">
-				<u-search @search="handleClickSearch" :showAction="false" searchIcon="scan"  @custom="handleClickSearch"
-				bgColor="#fff" placeholder="单号/客户/商品/备注" v-model="keyword">
-				</u-search>
-				<view style="margin-left: 15px;" @click="screening">
-					筛选
-				</view>
-			</view>
-		</u-sticky>
+		<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
+		
 		<view class="container">
-			<view class="title flex flex-items-center">
-				共{{ total }}笔 | 合计：
-				<u--text mode="price" color="#9d9ea0" :text="totalPrice"></u--text>
-			</view>
-
+			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
+			<view class="mb20"></view>
+			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
 				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
 				<view class="dataItem flex flex-between">
@@ -28,37 +18,42 @@
 				</view>
 			</view>
 		</view>
+	
+	     <view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
+	     	<image src="/static/sales/kaidan.png" mode="aspectFit"></image>
+	     </view>
 	</z-paging>
 </template>
 
 <script>
 import { getDepotHeadList } from '@/apis'
 import { formatDateToChinese } from '@/utils'
+import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
+import TagCountText from '@/components/TagCountText/TagCountText.vue'
 export default {
+	components: {
+		TagCountText,
+		NavSearchBar
+	},
 	data() {
 		return {
-			page: 1,
-			pageSize: 20,
+			loading: true,
 			dataList: [],
 			total: '',
 			totalPrice: '',
 			formatDateToChinese,
-			keyword: ''
+			keyword: '',
 		}
 	},
-	onLoad() {},
+	onLoad() {
+		
+	},
 	methods: {
-		screening() {
-		   uni.navigateTo({
-		   	url: '/pages/packageB/screening-page/screening-page'
-		   })
-		},
-		scanCode() {
-			console.log('扫码')
-		},
-		handleClickSearch(v) {
-			console.log('开始搜索', v)
-			this.keyword = v
+		gotoSetForm() {
+			console.log('销售开单的')
+			uni.navigateTo({
+				url: '/pages/packageB/set-form/set-form?type=1'
+			})
 		},
 		async queryList(pageNo, pageSize) {
 			let obj = {}
@@ -80,6 +75,7 @@ export default {
 				console.log('data', data)
 				let array = rows.map((item) => ({ ...item, time: formatDateToChinese(item.operTime) }))
 				this.$refs.paging.complete(array)
+				this.loading = false
 			} catch (e) {
 				console.log('请求失败', e)
 				this.$refs.paging.complete(false)
@@ -100,10 +96,19 @@ export default {
 	margin-bottom: 20px;
 }
 
-.search {
-	padding: 25rpx;
-	background-color: #F1F5F8;
-	width: 100%;
+.fix-icon {
+	position: fixed;
+	z-index: 9;
+	background-color: #00C9DD;
+	bottom: 50rpx;
+	right: 30rpx;
+	width: 180rpx;
+	height: 90rpx;
+	border-radius: 50rpx;
+	box-shadow: 5px 5px 20px rgba(0,201,221, 0.5);
+	image {
+		width: 120rpx;
+	}
 }
 .list {
 	margin-bottom: 25rpx;

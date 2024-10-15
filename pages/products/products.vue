@@ -1,28 +1,16 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
 		<AppletHeader title="商品" left-icon="account" right-icon=" "></AppletHeader>
-		<u-sticky offset-top="70">
-			<view class="search flex">
-				<u-search @search="handleClickSearch" 
-				searchIcon="scan" @custom="handleClickSearch" 
-				bgColor="#fff" 
-				placeholder="名称/条形码/简称" v-model="keyword">
-				</u-search>
-			</view>
-		</u-sticky>
-		<view class="container">
-			<view class="title flex flex-items-center">
-				共{{ total }}笔 | 合计：
-				<u--text mode="price" color="#9d9ea0" :text="totalPrice"></u--text>
-			</view>
 
+		<nav-search-bar :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
+		<view class="container">
+			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
+			<view class="mb20"></view>
+			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
 				<view class="card flex">
 					<view class="card-box">
-						<u--image mode="aspectFit" 
-						:showLoading="true" :src="item.imgName" 
-						width="60" height="60" 
-						></u--image>
+						<u--image mode="aspectFit" :showLoading="true" :src="item.imgName" width="60" height="60"></u--image>
 					</view>
 					<view class="card-content">
 						<u--text block bold :text="item.name" size="16" margin="0 0 10px 0" color="#000"></u--text>
@@ -39,7 +27,7 @@
 								<text>库存：</text>
 								<u--text :text="item.stock" color="#737373"></u--text>
 							</view>
-							
+
 							<u-icon @click="handleClickOpt(item)" bold name="more-dot-fill"></u-icon>
 						</view>
 					</view>
@@ -51,13 +39,21 @@
 
 <script>
 import { getMaterialList } from '@/apis'
+import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
+import TagCountText from '@/components/TagCountText/TagCountText.vue'
+
 export default {
+	components: {
+		NavSearchBar,
+		TagCountText
+	},
 	data() {
 		return {
 			dataList: [],
 			keywords: '',
 			total: '',
-			totalPrice: ''
+			totalPrice: '',
+			loading: true,
 		}
 	},
 	onLoad() {},
@@ -80,6 +76,7 @@ export default {
 				this.totalPrice = totalStockCount
 				this.total = total
 				this.$refs.paging.complete(array)
+				this.loading = false
 			} catch (e) {
 				console.log('请求失败', e)
 				this.$refs.paging.complete(false)
@@ -115,7 +112,7 @@ export default {
 		width: 120rpx;
 		height: 120rpx;
 		border-radius: 10rpx;
-		background-color: #CDD7DC;
+		background-color: #cdd7dc;
 		overflow: hidden;
 	}
 	&-content {

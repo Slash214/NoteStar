@@ -50,6 +50,13 @@
 			"style": {
 				"navigationBarTitleText": "筛选"
 			}
+		},
+		{
+			"path" : "set-form/set-form",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
 		}]
 	   },
 	   {

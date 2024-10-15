@@ -5,12 +5,9 @@
 			<u-icon @click="handleClickLeft" :bold="leftIconBold" :name="leftIcon" size="20"></u-icon>
 		</view>
 		<!-- 中间内容 -->
-		<view class="slot-content" slot="center">
+		<view class="slot-content" slot="center" :style="{ marginRight: width + 'px'}">
 			<text class="title">{{title}}</text>
-		</view>
-
-		<view class="slot-left" slot="right">
-			<u-icon :bold="rightIconBold" :name="rightIcon" size="20"></u-icon>
+			<view class="slot-left" slot="right"></view>
 		</view>
 	</u-navbar>
 </template>
@@ -50,9 +47,9 @@
 			};
 		},
 		created() {
-			// const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
-			// console.log('信息', menuButtonInfo)
-			// this.width = menuButtonInfo.width
+			const menuButtonInfo = uni.getMenuButtonBoundingClientRect();
+			console.log('信息', menuButtonInfo)
+			this.width = menuButtonInfo.width
 		},
 		methods: {
 			handleClickLeft() {

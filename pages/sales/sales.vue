@@ -1,8 +1,10 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
-		<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
-		
+	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
+		<template slot="top">
+			<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
+			<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
+		</template>
+
 		<view class="container">
 			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
 			<view class="mb20"></view>
@@ -18,10 +20,10 @@
 				</view>
 			</view>
 		</view>
-	
-	     <view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
-	     	<image src="/static/sales/kaidan.png" mode="aspectFit"></image>
-	     </view>
+
+		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
+			<image src="/static/sales/kaidan.png" mode="aspectFit"></image>
+		</view>
 	</z-paging>
 </template>
 
@@ -43,12 +45,10 @@ export default {
 			total: '',
 			totalPrice: '',
 			formatDateToChinese,
-			keyword: '',
+			keyword: ''
 		}
 	},
-	onLoad() {
-		
-	},
+	onLoad() {},
 	methods: {
 		gotoSetForm() {
 			console.log('销售开单的')
@@ -100,13 +100,13 @@ export default {
 .fix-icon {
 	position: fixed;
 	z-index: 9;
-	background-color: #00C9DD;
+	background-color: #00c9dd;
 	bottom: 50rpx;
 	right: 30rpx;
 	width: 180rpx;
 	height: 90rpx;
 	border-radius: 50rpx;
-	box-shadow: 5px 5px 20px rgba(0,201,221, 0.5);
+	box-shadow: 5px 5px 20px rgba(0, 201, 221, 0.5);
 	image {
 		width: 120rpx;
 	}

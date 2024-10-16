@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "big.js": "^6.2.2"
+    "big.js": "^6.2.2",
+    "lodash": "^4.17.21"
   }
 }

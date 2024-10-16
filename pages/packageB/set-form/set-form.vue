@@ -31,7 +31,24 @@
 				</view>
 			</view>
 
-			<view class="white box mt20">进货商品浏览</view>
+			<view class="white box mt20 product">
+				<view class="product-title">
+					<u-line hairline="false" direction="col"></u-line>
+					<text>销售商品</text>
+				</view>
+
+				<view class="product-content">内容</view>
+
+				<view class="mt20 product-end">
+					<view class="flex flex-items-center">
+						<text>合计 已选{{ length }}，</text>
+						<u--text mode="price" :text="totalPrice"></u--text>
+					</view>
+					<view class="flex flex-items-center">
+						毛利润：￥1123
+					</view>
+				</view>
+			</view>
 
 			<view class="white box mt20">
 				<view class="box-item" v-for="item in priceList" :key="item.id">
@@ -88,7 +105,19 @@ export default {
 				{ id: 2, title: '优惠金额', value: '0', end: '' },
 				{ id: 3, title: '折后金额', value: '0', end: '' },
 				{ id: 4, title: '运费', value: '0', end: '' }
-			]
+			],
+			length: 0,
+			totalPrice: '',
+			nowPrice: ''
+		}
+	},
+	onShow() {
+		const list = uni.getStorageSync('selectList')
+		if (list) {
+			console.log('选择了商品', list)
+			const info =  uni.getStorageSync('goodsInfo')
+			this.totalPrice = info.totalPrice
+			this.length = info.productKindCount
 		}
 	},
 	onLoad(options) {
@@ -124,6 +153,23 @@ export default {
 .white {
 	background-color: #fff;
 	border-radius: 20rpx;
+}
+
+
+.product {
+	padding: 40rpx !important;
+	&-title {
+		
+	}
+	&-content {
+		
+	}
+	&-end {
+		display: flex;
+		justify-content: flex-end;
+		flex-direction: column;
+		align-items: flex-end;
+	}
 }
 
 .box {

@@ -22,15 +22,7 @@
 						</view>
 					</view>
 					<view class="list-item-number">
-						<u-number-box :longPress="false" :min="0" integer @change="handleClick(item, $event)" v-model="item.nums">
-							<view slot="minus" class="minus">
-								<u-icon name="minus" size="12"></u-icon>
-							</view>
-							<text slot="input" style="width: 50px; text-align: center" class="input">{{ item.nums }}</text>
-							<view slot="plus" class="plus">
-								<u-icon name="plus" color="#FFFFFF" size="12"></u-icon>
-							</view>
-						</u-number-box>
+						<u-number-box :longPress="false" :min="0" integer @change="handleClick(item, $event)" v-model="item.nums"></u-number-box>
 					</view>
 				</view>
 			</view>
@@ -43,7 +35,7 @@
 						<u-badge absolute :offset="[0, -5]" max="99" :value="productCount.toFixed()"></u-badge>
 					</view>
 					<view class="">
-						<u--text color="#FA6400" :text="totalPrice" mode="price"></u--text>
+						<u--text color="#FA6400" :text="totalPrice.toFixed(2)" mode="price"></u--text>
 						<view class="mt5">种类{{ productKindCount }}，数量{{ productCount.toFixed() }}</view>
 					</view>
 				</view>
@@ -59,6 +51,7 @@ import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import FixedBottom from '@/components/FixedBottom/FixedBottom.vue'
 import { getMaterialList } from '@/apis/index.js'
 import Big from 'big.js'
+import cloneDeep from 'lodash/cloneDeep'
 
 export default {
 	components: {
@@ -87,8 +80,15 @@ export default {
 	},
 	methods: {
 		handleSelectionSuccess() {
-		    
-			
+			console.log(this.selectList)
+			let goodsInfo = {
+				productKindCount: this.productKindCount,
+				total: this.productCount.toFixed(),
+				totalPrice: this.totalPrice.toFixed()
+			}
+			uni.setStorageSync('goodsInfo', goodsInfo)
+			uni.setStorageSync('selectList', this.selectList)
+			uni.navigateBack()
 		},
 		async queryList(pageNo, pageSize) {
 			try {
@@ -102,11 +102,11 @@ export default {
 				})
 				let { rows, totalStockCount, total } = data || {}
 				let array = rows.map((item) => ({
-					nums: 0,
+					nums: new Big(0),
 					id: item.id,
 					name: item.name,
 					imgName: item.imgName,
-					purchaseDecimal: item.purchaseDecimal,
+					purchaseDecimal: new Big(item.purchaseDecimal),
 					stock: item.stock,
 					mbarCode: item.mbarCode,
 					meId: item.meId
@@ -123,14 +123,14 @@ export default {
 			// 获取新值并转换为 Big 类型
 			let newValue = e.value
 			let bigValue = new Big(newValue)
-			item.nums = bigValue
 
+			item.nums = bigValue
 			let index = this.selectList.findIndex((i) => i.id === item.id)
 
 			if (bigValue.gt(0)) {
 				if (index === -1) {
-					let obj = JSON.parse(JSON.stringify(item))
-					this.selectList.push({ ...obj })
+					let clonedItem = cloneDeep(item)
+					this.selectList.push({ ...clonedItem })
 				} else {
 					this.selectList[index].nums = bigValue
 				}

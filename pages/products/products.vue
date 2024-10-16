@@ -1,8 +1,10 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<AppletHeader title="商品" left-icon="account" right-icon=" "></AppletHeader>
+	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
+		<template slot="top">
+			<AppletHeader title="商品" left-icon="account" right-icon=" "></AppletHeader>
+			<nav-search-bar :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
+		</template>
 
-		<nav-search-bar :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 		<view class="container">
 			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
 			<view class="mb20"></view>
@@ -53,7 +55,7 @@ export default {
 			keywords: '',
 			total: '',
 			totalPrice: '',
-			loading: true,
+			loading: true
 		}
 	},
 	onLoad() {},

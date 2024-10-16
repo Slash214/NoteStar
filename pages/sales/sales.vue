@@ -30,6 +30,7 @@ import { getDepotHeadList } from '@/apis'
 import { formatDateToChinese } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
+
 export default {
 	components: {
 		TagCountText,

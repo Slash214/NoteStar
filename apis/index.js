@@ -81,3 +81,12 @@ export const getCapitalFlow = (data) => {
 		data
 	})
 }
+
+
+export const getInOutinfoList = (data) => {
+	return request({
+		url: '/inOutItem/infoList',
+		method: 'GET',
+		data
+	})
+}

@@ -78,6 +78,13 @@
 			"pages": [{
 				"path": "cash-flow/cash-flow",
 				"style": {}
+			},
+			{
+				"path" : "daily-summary/daily-summary",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
 			}]
 		}
 	],

@@ -37,7 +37,7 @@ export default {
 					children: [
 						{
 							title: '日常收支',
-							path: '',
+							path: '/pages/packageE/daily-summary/daily-summary',
 							imgUrl: '/static/more/richangshouzhi.png'
 						},
 						{

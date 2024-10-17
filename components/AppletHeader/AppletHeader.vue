@@ -53,9 +53,8 @@
 		},
 		methods: {
 			handleClickLeft() {
-				console.log('点击左边的')
 				if (this.isLeftClick) {
-					console.log('传递事件')
+					this.$emit('click')
 				} else {
 					uni.navigateBack()
 				}

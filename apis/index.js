@@ -18,6 +18,14 @@ export const getBusinessOverview = (data) => {
 	})
 }
 
+// packageA 页面
+export const getEmployeePerformance = (data) => {
+	return request({
+		url: '/depotHead/getEmployeePerformance',
+		method: 'GET',
+		data
+	})
+}
 
 // packageB 销售接口
 export const getDepotHeadList = (data) => {

@@ -1,13 +1,23 @@
 <template>
 	<u-sticky :offset-top="stickyOffset">
 		<view class="search">
-			<u-search @search="handleClickSearch" :showAction="false" searchIcon="scan" @custom="handleClickSearch" bgColor="#fff" :placeholder="desc" v-model="keyword"></u-search>
+			<u-search
+				@change="debouncedGetKeyword"
+				@search="handleClickSearch"
+				:showAction="false"
+				searchIcon="scan"
+				@custom="handleClickSearch"
+				bgColor="#fff"
+				:placeholder="desc"
+				v-model="keyword"
+			></u-search>
 			<view v-if="showRight" class="ml15" @click="screening">筛选</view>
 		</view>
 	</u-sticky>
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 export default {
 	name: 'NavSearchBar',
 	props: {
@@ -30,8 +40,14 @@ export default {
 	},
 	created() {
 		this.calculateStickyOffset()
+		// 在 created 钩子中定义防抖函数，确保 this 已经初始化
+		this.debouncedGetKeyword = debounce(this.getValueChange, 500) // 500 毫秒的防抖时间，可以根据需要调整
 	},
 	methods: {
+		getValueChange(val) {
+			console.log(val)
+			this.$emit('search', val)
+		},
 		handleClickSearch(val) {
 			console.log('传递17点20分')
 		},

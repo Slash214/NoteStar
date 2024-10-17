@@ -2,11 +2,11 @@
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
 			<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
-			<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
+			<nav-search-bar @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
 		</template>
 
 		<view class="container">
-			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
+			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice || 0"></tag-count-text>
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
@@ -48,8 +48,16 @@ export default {
 			keyword: ''
 		}
 	},
-	onLoad() {},
+	onLoad() {
+		uni.removeStorageSync('selectList')
+		uni.removeStorageSync('currPage')
+	},
 	methods: {
+		getKeyWords(v) {
+			console.log('获取的', v)
+			this.keyword = v
+			this.$refs.paging.reload()
+		},
 		gotoSetForm() {
 			console.log('销售开单的')
 			uni.navigateTo({
@@ -66,7 +74,7 @@ export default {
 					search: {
 						type: '出库',
 						subType: '零售',
-						fuzzyQueryParam: '',
+						fuzzyQueryParam: this.keyword,
 						...obj
 					}
 				})

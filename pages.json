@@ -42,39 +42,44 @@
 			}
 		},
 		{
-			"path" : "pages/packageC/add-stock/add-stock",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/packageC/add-stock/add-stock",
+			"style": {
+				"navigationBarTitleText": ""
 			}
 		}
 	],
-	"subPackages": [
-		{
-		"root": "pages/packageB",
-		"pages": [{
-			"path": "screening-page/screening-page",
-			"style": {
-				"navigationBarTitleText": "筛选"
-			}
+	"subPackages": [{
+			"root": "pages/packageA",
+			"pages": [{
+				"path": "employee-per/employee-per",
+				"style": {
+
+				}
+			}]
 		},
 		{
-			"path" : "set-form/set-form",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
-			}
-		}]
-	   },
-	   {
-		   "root": "pages/packageE",
-		   "pages": [
-		   	   {
-				  "path": "cash-flow/cash-flow",
-				  "style": {}
-			   }
-		   ]
-	   }
+			"root": "pages/packageB",
+			"pages": [{
+					"path": "screening-page/screening-page",
+					"style": {
+						"navigationBarTitleText": "筛选"
+					}
+				},
+				{
+					"path": "set-form/set-form",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/packageE",
+			"pages": [{
+				"path": "cash-flow/cash-flow",
+				"style": {}
+			}]
+		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

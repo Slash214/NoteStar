@@ -1,8 +1,8 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
+	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
 			<AppletHeader title="商品" left-icon="account" right-icon=" "></AppletHeader>
-			<nav-search-bar :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
+			<nav-search-bar @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 		</template>
 
 		<view class="container">
@@ -36,6 +36,21 @@
 				</view>
 			</view>
 		</view>
+		
+		<view class="" slot="loading">
+			<u-loading :show="true"></u-loading>
+		</view>
+
+		<u-action-sheet
+			@close="show = false"
+			cancelText="取消"
+			safeAreaInsetBottom
+			:actions="list"
+			:closeOnClickOverlay="true"
+			:closeOnClickAction="true"
+			@select="selectClick"
+			:show="show"
+		></u-action-sheet>
 	</z-paging>
 </template>
 
@@ -43,6 +58,7 @@
 import { getMaterialList } from '@/apis'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
+
 
 export default {
 	components: {
@@ -55,13 +71,26 @@ export default {
 			keywords: '',
 			total: '',
 			totalPrice: '',
-			loading: true
+			loading: true,
+			show: false,
+			list: [
+				{ name: '编辑', id: 1 },
+				{ name: '删除', id: 2 }
+			]
 		}
 	},
 	onLoad() {},
 	methods: {
+		getKeyWord(v) {
+			this.keywords = v
+			this.$refs.paging.reload()
+		},
+		selectClick(index) {
+			console.log('选择', index)
+		},
 		handleClickOpt(item) {
 			console.log('点击了操作', item)
+			this.show = true
 		},
 		async queryList(page, pageNo) {
 			let obj = {}

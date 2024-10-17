@@ -5,17 +5,21 @@
 			<view class="white box">
 				<view class="box-item">
 					<view class="box-item-start">*门店</view>
-					<view class="box-item-mid">店铺名称</view>
-					<view class="box-item-end">
+					<view class="box-item-mid">{{ curSelectStore.name }}</view>
+					<view class="box-item-end" @click="selectStore">
 						<u-icon name="arrow-down-fill" color="#c0c4cc" size="13"></u-icon>
 					</view>
 				</view>
 			</view>
+			<!-- 门店列表 -->
+			<u-picker :show="storeShow" @confirm="getSelectStore" :columns="columns" keyName="name"></u-picker>
+			<!-- 业务员列表 -->
+			<u-picker :show="salesonShow" @cancel="toggleShow" @confirm="getSelectSales" :columns="saleColumns" keyName="name"></u-picker>
 			<view class="white box mt20">
 				<view class="box-item" v-for="item in serviceList" :key="item.id">
 					<view class="box-item-start">{{ item.title }}</view>
 					<view class="box-item-mid">{{ item.value }}</view>
-					<view class="box-item-end">
+					<view class="box-item-end" @click="serviceClick(item)">
 						<u-icon :name="item.icon" color="#c0c4cc" size="13"></u-icon>
 					</view>
 				</view>
@@ -37,16 +41,31 @@
 					<text>销售商品</text>
 				</view>
 
-				<view class="product-content">内容</view>
+				<view class="product-content">
+					<u-swipe-action>
+						<u-swipe-action-item :options="options" v-for="(item, index) of cacheSelectList" :key="item.id" :index="index" :name="item.name" @click="handleClickAction">
+							<view class="swipe-action flex u-border-bottom">
+								<u--image radius="10" :showLoading="true" :src="item.imgName" width="60px" height="60px"></u--image>
+								<view class="ml10 swipe-action-content">
+									<u--text :text="item.name"></u--text>
+									<u--text :text="item.mbarCode"></u--text>
+									<view class="">
+										<u--text mode="price" :text="item.purchaseDecimal"></u--text>
+										x
+										<text>{{ item.nums }}</text>
+									</view>
+								</view>
+							</view>
+						</u-swipe-action-item>
+					</u-swipe-action>
+				</view>
 
 				<view class="mt20 product-end">
 					<view class="flex flex-items-center">
 						<text>合计 已选{{ length }}，</text>
-						<u--text mode="price" :text="totalPrice"></u--text>
+						<u--text bold mode="price" :text="totalPrice"></u--text>
 					</view>
-					<view class="flex flex-items-center">
-						毛利润：￥1123
-					</view>
+					<view class="flex mt10 flex-items-center">毛利润：￥{{ form.grossProfit }}</view>
 				</view>
 			</view>
 
@@ -60,9 +79,9 @@
 				</view>
 			</view>
 
-			<view class="white box mt20">
-				<text>备注</text>
-				<u--textarea v-model="value1" placeholder="请输入内容"></u--textarea>
+			<view class="white box mt20 remark">
+				<view class="mb10">备注</view>
+				<u--textarea border="none" v-model="remark" placeholder="在这里输入备注"></u--textarea>
 			</view>
 		</view>
 
@@ -71,11 +90,11 @@
 				<view class="">
 					<view class="flex flex-items-center">
 						<text>应付：</text>
-						<u--text mode="price" text="784848" color="#FA6400"></u--text>
+						<u--text mode="price" :text="totalPrice" color="#FA6400"></u--text>
 					</view>
 					<view class="flex flex-items-center mt5">
 						<text>本次实付：</text>
-						<u--text mode="price" text="0" color="#ccc"></u--text>
+						<u--text mode="price" :text="totalPrice" color="#ccc"></u--text>
 					</view>
 				</view>
 
@@ -88,6 +107,8 @@
 <script>
 import FixedBottom from '@/components/FixedBottom/FixedBottom.vue'
 import { getDepotByUserId, getUserByDepotId, getAccountByDepotId } from '@/apis'
+import Big from 'big.js'
+
 export default {
 	components: {
 		FixedBottom
@@ -95,29 +116,65 @@ export default {
 	data() {
 		return {
 			type: 1,
+			storeShow: false,
+			salesonShow: false,
+			options: [
+				{
+					text: '删除',
+					style: {
+						backgroundColor: '#f56c6c'
+					}
+				}
+			],
+			remark: '',
 			serviceList: [
-				{ id: 1, title: '*供应商', value: '', icon: 'arrow-down-fill' },
+				{ id: 1, title: '*客户', value: '零售客户', icon: '' },
 				{ id: 2, title: '时间', value: '', icon: 'arrow-down-fill' },
 				{ id: 3, title: '*业务员', value: '', icon: 'arrow-down-fill' }
 			],
 			priceList: [
-				{ id: 1, title: '整单折扣', value: '0', end: '%' },
-				{ id: 2, title: '优惠金额', value: '0', end: '' },
-				{ id: 3, title: '折后金额', value: '0', end: '' },
-				{ id: 4, title: '运费', value: '0', end: '' }
+				{ id: 1, title: '整单折扣', value: 100, end: '%' },
+				{ id: 2, title: '优惠金额', value: 0, end: '' },
+				{ id: 3, title: '折后金额', value: 0, end: '' },
+				{ id: 4, title: '运费', value: 0, end: '' }
 			],
 			length: 0,
 			totalPrice: '',
-			nowPrice: ''
+			nowPrice: '',
+			curSelectStore: {},
+			curSelectSales: {},
+			shopList: [],
+			columns: [],
+			saleColumns: [],
+			salesRepList: [],
+
+			loadIndex: 0,
+			batchSize: 20,
+
+			form: {
+				discount: 100, // 整单折扣
+				discountMoney: 0, // 优惠金额
+				discountLastMoney: 0, // 折后金额
+				otherMoney: 0, // 运费,
+				grossProfit: 0 // 毛利润
+			},
+
+			cacheSelectList: []
 		}
 	},
 	onShow() {
 		const list = uni.getStorageSync('selectList')
 		if (list) {
 			console.log('选择了商品', list)
-			const info =  uni.getStorageSync('goodsInfo')
+			const info = uni.getStorageSync('goodsInfo')
 			this.totalPrice = info.totalPrice
 			this.length = info.productKindCount
+			// this.cacheSelectList = list
+
+			// 开始分批次加载数据
+			this.loadBatchData(list)
+			// 计算毛利润
+			this.genGrossPrice(list)
 		}
 	},
 	onLoad(options) {
@@ -126,11 +183,74 @@ export default {
 		this.getData()
 	},
 	methods: {
+		loadBatchData(list) {
+			const start = this.loadIndex * this.batchSize
+			const end = start + this.batchSize
+			const batchData = list.slice(start, end)
+			// 合并数据
+			this.cacheSelectList = this.cacheSelectList.concat(batchData)
+			this.length = this.cacheSelectList.length
+			// 判断是否还有更多数据需要加载
+			if (end < list.length) {
+				this.loadIndex++
+				// 每隔一秒加载下一批数据
+				setTimeout(() => {
+					this.loadBatchData(list)
+				}, 1000)
+			}
+		},
+		genGrossPrice(list) {
+			let totalProfit = list.reduce((accumulator, currentItem) => {
+				const commodityDecimal = new Big(currentItem.commodityDecimal)
+				const costPrice = new Big(currentItem.costPrice)
+				const operNumber = new Big(currentItem.nums)
+				const itemProfit = commodityDecimal.minus(costPrice).times(operNumber)
+				return accumulator.plus(itemProfit)
+			}, new Big(0))
+			this.form.grossProfit = totalProfit.toFixed(2)
+
+			console.log('mao', this.form.grossProfit)
+		},
+		handleClickAction(e) {
+			console.log('删除', e)
+		},
+		selectStore() {
+			this.storeShow = !this.storeShow
+		},
+		getSelectStore(e) {
+			this.curSelectStore = e.value[0]
+			console.log('搜索', this.curSelectStore)
+			this.selectStore()
+		},
+		serviceClick(item) {
+			console.log('点击事情', item)
+			if (item.id === 3) {
+				this.toggleShow()
+			}
+		},
+		getSelectSales(v) {
+			console.log('选择的', v)
+			this.toggleShow()
+			this.curSelectSales = v.value[0]
+			this.serviceList[2].value = this.curSelectSales.name
+		},
+		toggleShow() {
+			this.salesonShow = !this.salesonShow
+		},
 		async getData() {
 			const user = uni.getStorageSync('userInfo')
 			const [r1, r2, r3] = await Promise.all([getDepotByUserId({ userId: user.id }), getUserByDepotId({ depotId: 1 }), getAccountByDepotId({ depotId: 1 })])
-
 			console.log('请求的数据', r1, r2, r3)
+
+			this.shopList = r1.data
+			this.columns = [this.shopList.map((item) => ({ id: item.id, name: item.name, location: item.location }))]
+			this.curSelectStore = this.shopList[0]
+
+			this.salesRepList = r2.data.map((item) => ({ ...item, name: item.userName }))
+			this.serviceList[2].value = this.salesRepList[0]?.name
+			this.saleColumns = [this.salesRepList]
+
+			// 时间
 		},
 		selectProduct() {
 			console.log('选择商品')
@@ -155,14 +275,17 @@ export default {
 	border-radius: 20rpx;
 }
 
-
 .product {
 	padding: 40rpx !important;
 	&-title {
-		
 	}
 	&-content {
-		
+		.swipe-action {
+			padding: 40rpx 0;
+			&-content {
+				flex: 1;
+			}
+		}
 	}
 	&-end {
 		display: flex;
@@ -208,6 +331,10 @@ export default {
 		color: #fff;
 		font-weight: 700;
 	}
+}
+
+.remark {
+	padding: 40rpx;
 }
 
 .store {

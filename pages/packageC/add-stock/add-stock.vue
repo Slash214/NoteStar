@@ -1,5 +1,5 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top safe-area-inset-bottom>
+	<z-paging ref="paging" v-model="dataList" @query="queryList" :default-page-size="20" :auto="!isCache" auto-show-back-to-top safe-area-inset-bottom>
 		<template slot="top">
 			<AppletHeader title="进货" left-icon="account" right-icon="add"></AppletHeader>
 			<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
@@ -64,7 +64,44 @@ export default {
 			keyword: '',
 			depotId: 1,
 			loading: true,
-			selectList: []
+			selectList: [],
+			isCache: false,
+			cachePage: 1,
+		}
+	},
+	async onLoad() {
+		const storedList = uni.getStorageSync('selectList')
+		if (storedList) {
+			this.isCache = true
+			const page = uni.getStorageSync('currPage')
+			this.currPage = +page
+			this.selectList = storedList.map((item) => {
+				return {
+					...item,
+					purchaseDecimal: new Big(item.purchaseDecimal),
+					nums: new Big(item.nums) // 将字符串转换回 Big 对象
+				}
+			})
+			const selectMap = new Map()
+			this.selectList.forEach((el) => {
+				selectMap.set(el.id, el)
+			})
+			const result = await this.$refs.paging.refreshToPage(this.currPage)
+			this.dataList = result.totalList.map((item) => {
+				if (selectMap.has(item.id)) {
+					// 获取选中的 item
+					const selectedItem = selectMap.get(item.id)
+					// 更新需要同步的属性
+					return {
+						...item,
+						nums: selectedItem.nums
+						// 如果有其他属性需要同步，可以在这里添加
+					}
+				}
+				return item
+			})
+		} else {
+			this.selectList = []
 		}
 	},
 	computed: {
@@ -79,6 +116,20 @@ export default {
 		}
 	},
 	methods: {
+		formatData(data) {
+			return data.map((item) => ({
+				nums: new Big(0),
+				id: item.id,
+				name: item.name,
+				imgName: item.imgName,
+				purchaseDecimal: new Big(item.purchaseDecimal),
+				stock: item.stock,
+				mbarCode: item.mbarCode,
+				meId: item.meId,
+				commodityDecimal: item.commodityDecimal,
+				costPrice: item.costPrice
+			}))
+		},
 		handleSelectionSuccess() {
 			console.log(this.selectList)
 			let goodsInfo = {
@@ -87,31 +138,36 @@ export default {
 				totalPrice: this.totalPrice.toFixed()
 			}
 			uni.setStorageSync('goodsInfo', goodsInfo)
-			uni.setStorageSync('selectList', this.selectList)
+			// 缓存选择列表 处理big类型
+			this.saveSelectList()
+			uni.setStorageSync('currPage', this.cachePage)
 			uni.navigateBack()
 		},
+		saveSelectList() {
+			// 深拷贝 selectList，以免修改原始数据
+			const listToStore = this.selectList.map((item) => {
+				return {
+					...item,
+					purchaseDecimal: item.purchaseDecimal.toString(),
+					nums: item.nums.toString() // 将 Big 对象转换为字符串
+				}
+			})
+			uni.setStorageSync('selectList', listToStore)
+		},
 		async queryList(pageNo, pageSize) {
+			this.cachePage = pageNo
 			try {
+				// this.cachePage ? pageNo + this.cachePage - 1 : pageNo
 				const { data } = await getMaterialList({
 					currentPage: pageNo,
-					pageSize: pageSize,
+					pageSize,
 					search: {
 						materialParam: this.keyword,
 						depotId: this.depotId
 					}
 				})
 				let { rows, totalStockCount, total } = data || {}
-				let array = rows.map((item) => ({
-					nums: new Big(0),
-					id: item.id,
-					name: item.name,
-					imgName: item.imgName,
-					purchaseDecimal: new Big(item.purchaseDecimal),
-					stock: item.stock,
-					mbarCode: item.mbarCode,
-					meId: item.meId
-				}))
-				console.log('array', array)
+				let array = this.formatData(rows)
 				this.$refs.paging.complete(array)
 				this.loading = false
 			} catch (e) {
@@ -140,38 +196,6 @@ export default {
 				}
 			}
 		}
-		// handleClick(item, e) {
-		// 	// 更新item.nums为新值
-		// 	let newValue = e.value
-
-		// 	if (newValue > Number.MAX_SAFE_INTEGER) {
-		// 		uni.showToast({
-		// 			title: '输入的数量过大，已超过最大限制。',
-		// 			icon: 'none'
-		// 		})
-		// 		newValue = Number.MAX_SAFE_INTEGER
-		// 	}
-
-		// 	item.nums = newValue
-
-		// 	// 查找selectList中是否已有该商品
-		// 	let index = this.selectList.findIndex((i) => i.id === item.id)
-
-		// 	if (newValue > 0) {
-		// 		if (index === -1) {
-		// 			// 如果selectList中没有该商品，添加新的商品项
-		// 			this.selectList.push({ ...item })
-		// 		} else {
-		// 			// 如果已有该商品，更新数量
-		// 			this.selectList[index].nums = newValue
-		// 		}
-		// 	} else {
-		// 		if (index !== -1) {
-		// 			// 如果数量为0，从selectList中移除该商品
-		// 			this.selectList.splice(index, 1)
-		// 		}
-		// 	}
-		// }
 	}
 }
 </script>

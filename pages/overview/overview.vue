@@ -1,6 +1,6 @@
 <template>
-	<view>
-		<AppletHeader title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
+	<view :class="isFix ? 'fixed' : ''">
+		<AppletHeader :isLeftClick="true" @click="handleClick" title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
 		<view class="">
 			<custom-dropdown></custom-dropdown>
 			<view class="nav">
@@ -33,17 +33,59 @@
 				<view class="white mb20 commodity">
 					<view class="flex">
 						<u--text bold text="商品热销" size="17" color="#000"></u--text>
-						<u--text suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
+						<u--text @click="gotoBestSellers" suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
+					</view>
+
+					<view class="hot">
+						<view class="hot-item mb20 flex flex-items-center flex-between" v-for="(item, index) of hotList" :key="index">
+							<text class="index">{{ index + 1 }}</text>
+							<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px"></u--image>
+							<u--text margin="0 5px 0 10px" :text="item.materialName"></u--text>
+							<text class="sum">{{ item.sum }}</text>
+						</view>
 					</view>
 				</view>
 				<view class="white">
 					<view class="flex">
-						<u--text bold text="商品热销" size="17" color="#000"></u--text>
-						<u--text suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
+						<u--text bold text="员工业绩" size="17" color="#000"></u--text>
+						<u--text @click="gotoEmployeePer" suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
+					</view>
+
+					<view class="employee">
+						<view class="flex employee-item" v-for="(item, index) in pelpop" :key="index">
+							<text class="employee-item-index">{{ index + 1 }}</text>
+							<view class="employee-item-content">
+								<view class="flex">
+									<u--text :text="item.salesManStr"></u--text>
+									<u--text align="right" :text="item.salesRevenue" mode="price"></u--text>
+								</view>
+								<view class="mt10 flex flex-items-center">
+									<u-line-progress style="flex: 1" :percentage="item.progress" activeColor="#E5B840"></u-line-progress>
+									<text class="progress-text ml5">{{ item.progress }}%</text>
+								</view>
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
 		</view>
+
+		<u-popup :show="modalVisible" bgColor="#F1F5F8" mode="left" width="90%" @close="close" @open="open">
+			<view class="modal">
+				<view class="flex flex-items-center">
+					<u-avatar size="46" :text="userInfo.username.charAt(0) || ''"></u-avatar>
+					<u--text size="18" :text="userInfo.username" margin=" 0 0 0 20px"></u--text>
+				</view>
+
+				<view class="modal-content">
+					<view v-for="(item, index) in popupList" 
+					:class="index === 2 ? 'item' : 'item u-border-bottom'" :key="item.id">
+						<u--text size="14" bold :text="item.text"></u--text>
+						<text class="icon-text">{{ item.right }}</text>
+					</view>
+				</view>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
@@ -57,21 +99,54 @@ export default {
 	},
 	data() {
 		return {
+			isFix: false,
+			modalVisible: false,
 			formatMoney,
 			show: true,
 			lastTime: '',
+			popupList: [
+				{ id: 1, text: '店铺管理', right: '门店 | 员工 >' },
+				{ id: 1, text: '消息中心', right: '>' },
+				{ id: 1, text: '退出登录', right: '' },
+			],
 			reportData: [
 				{ id: 1, title: '销售额(￥)', num: '', value: '' },
 				{ id: 2, title: '笔数', num: '', value: '' },
 				{ id: 3, title: '毛利(￥)', num: '', value: '' },
 				{ id: 4, title: '资金收入(￥)', num: '', value: '' }
-			]
+			],
+			hotList: [],
+			pelpop: [],
+			userInfo: {
+				username: '王'
+			}
 		}
 	},
 	onLoad() {
+		this.userInfo = uni.getStorageSync('userInfo')
 		this.getData()
 	},
 	methods: {
+		open() {
+			this.isFix = true
+		},
+		close() {
+			this.isFix = false
+			this.modalVisible = false
+		},
+		handleClick() {
+			console.log('点击右边')
+			this.modalVisible = true
+		},
+		gotoBestSellers() {
+			console.log('去商品热销')
+		},
+		gotoEmployeePer() {
+			console.log('员工业绩')
+			uni.navigateTo({
+				url: '/pages/packageA/employee-per/employee-per'
+			})
+		},
 		hiddenContent(val) {
 			if (this.show) return val
 			else return '****'
@@ -85,7 +160,7 @@ export default {
 				salesTrendsType2: 1
 			})
 
-			let { keyData } = data || {}
+			let { keyData, hotSellingGoods, employeePerformance } = data || {}
 
 			this.reportData[0].num = keyData.nowCapitalIncome
 			this.reportData[0].value = keyData.preCapitalIncome
@@ -97,6 +172,12 @@ export default {
 			this.reportData[3].value = keyData.preSalesRevenue
 			this.lastTime = keyData.lastCreateTime
 			console.log('data', data)
+
+			this.pelpop = employeePerformance.map((item) => ({
+				...item,
+				progress: Math.floor(item.salesProportion * 100)
+			}))
+			this.hotList = hotSellingGoods
 		},
 		leftClick() {
 			console.log('点击我的')
@@ -140,6 +221,28 @@ export default {
 	}
 }
 
+.modal {
+	padding: 200rpx 30rpx;
+	width: 580rpx;
+	&-content {
+		background-color: #fff;
+		border-radius: 10rpx;
+		margin-top: 40px;
+		.item {
+			color: #606266;
+			padding: 26rpx 32rpx;
+			display: flex;
+			align-items: center;
+			line-height: 2;
+			justify-content: space-between;
+			.icon-text {
+				font-size: 26rpx;
+				color: #ccc;
+			}
+		}
+	}
+}
+
 .main {
 	margin-top: -60px;
 	padding: 25rpx;
@@ -151,6 +254,46 @@ export default {
 		padding: 25rpx;
 	}
 	.echart {
+	}
+
+	.employee {
+		margin-top: 20px;
+		&-item {
+			margin-bottom: 20px;
+			&-index {
+				font-weight: 700;
+				font-size: 18px;
+				margin-right: 20px;
+			}
+			&-content {
+				flex: 1;
+				.progress-text {
+					color: #9d9ea0;
+				}
+			}
+		}
+	}
+
+	.hot {
+		margin-top: 20px;
+		&-item {
+			width: 100%;
+			.index {
+				font-weight: 700;
+				margin-right: 20px;
+				font-size: 18px;
+				text-align: center;
+				display: block;
+				&:first-child {
+					color: #d75546;
+				}
+			}
+			.sum {
+				display: block;
+				margin-left: 10px;
+				color: #575757;
+			}
+		}
 	}
 }
 </style>

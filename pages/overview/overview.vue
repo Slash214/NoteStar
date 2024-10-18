@@ -193,8 +193,7 @@ export default {
 	-webkit-clip-path: ellipse(100% 68% at 50% 30%);
 	clip-path: ellipse(100% 68% at 50% 30%);
 	color: #fff;
-	padding: 40rpx;
-
+	padding: 40rpx 60rpx;
 	.set-title {
 		margin-bottom: 20px;
 		.time {

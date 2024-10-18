@@ -70,6 +70,13 @@
 					"style": {
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path" : "sales-order-detail/sales-order-detail",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},

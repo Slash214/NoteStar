@@ -36,6 +36,15 @@ export const getDepotHeadList = (data) => {
 	})
 }
 
+export const getDetailByNumbe = (data) => {
+	return request({
+		url: '/depotHead/getDetailByNumber',
+		method: 'GET',
+		data
+	})
+}
+
+
 export const getUserByDepotId = (data) => {
 	return request({
 		url: '/user/getUserByDepotId',

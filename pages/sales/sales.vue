@@ -9,7 +9,7 @@
 			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice || 0"></tag-count-text>
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
-			<view class="list" v-for="(item, index) in dataList" :key="item.id">
+			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClick(item)">
 				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
 				<view class="dataItem flex flex-between">
 					<view class="">
@@ -53,6 +53,12 @@ export default {
 		uni.removeStorageSync('currPage')
 	},
 	methods: {
+		handleClick(item) {
+			// console.log('item', item)
+			uni.navigateTo({
+				url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}`
+			})
+		},
 		getKeyWords(v) {
 			console.log('获取的', v)
 			this.keyword = v

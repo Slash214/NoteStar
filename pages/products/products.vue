@@ -1,13 +1,13 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="商品" left-icon="account" right-icon=" "></AppletHeader>
+			<AppletHeader title="商品" left-icon="account" right-icon="plus"></AppletHeader>
 			<nav-search-bar @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 		</template>
 
 		<view class="container">
-			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
-			<view class="mb20"></view>
+			<horizontal-card title="商品数量" :titlePrice="total" subtitle="库存" :subtitle-price="totalPrice"></horizontal-card>
+
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
 				<view class="card flex">
@@ -36,7 +36,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<view class="" slot="loading">
 			<u-loading :show="true"></u-loading>
 		</view>
@@ -58,12 +58,13 @@
 import { getMaterialList } from '@/apis'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
-
+import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 
 export default {
 	components: {
 		NavSearchBar,
-		TagCountText
+		TagCountText,
+		HorizontalCard
 	},
 	data() {
 		return {

@@ -7,7 +7,9 @@
 		<!-- 中间内容 -->
 		<view class="slot-content" slot="center" :style="{ marginRight: width + 'px'}">
 			<text class="title">{{title}}</text>
-			<view class="slot-left" slot="right"></view>
+			<view class="slot-right" v-if="rightIcon">
+				<u-icon size="18" :name="rightIcon"></u-icon>
+			</view>
 		</view>
 	</u-navbar>
 </template>
@@ -67,6 +69,13 @@
 	.slot-content {
 		flex: 1;
 		text-align: center;
+		position: relative;
+		.slot-right {
+			position: absolute;
+			top: 50%;
+			right: 15px;
+		    transform: translateY(-50%);
+		}
 
 		.title {
 			font-size: 36rpx;

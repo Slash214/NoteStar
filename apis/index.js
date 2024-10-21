@@ -99,3 +99,21 @@ export const getInOutinfoList = (data) => {
 		data
 	})
 }
+
+// 
+export const getSalesStatistics = (data) => {
+	return request({
+		url: '/depotItem/salesStatistics',
+		method: 'GET',
+		data
+	})
+}
+
+// material/getStock
+export const getStockList = (data) => {
+	return request({
+		url: '/material/getStock',
+		data,
+		method: 'GET'
+	})
+}

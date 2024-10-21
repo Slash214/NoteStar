@@ -92,6 +92,27 @@
 				{
 					"navigationBarTitleText" : ""
 				}
+			},
+			{
+				"path" : "sales-statistics/sales-statistics",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "account/account",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "inventory/inventory",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
 			}]
 		}
 	],

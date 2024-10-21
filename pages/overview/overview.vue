@@ -60,7 +60,7 @@
 									<u--text align="right" :text="item.salesRevenue" mode="price"></u--text>
 								</view>
 								<view class="mt10 flex flex-items-center">
-									<u-line-progress style="flex: 1" :percentage="item.progress" activeColor="#E5B840"></u-line-progress>
+									<u-line-progress height="8" :showText="false" style="flex: 1" :percentage="item.progress" activeColor="#E5B840"></u-line-progress>
 									<text class="progress-text ml5">{{ item.progress }}%</text>
 								</view>
 							</view>
@@ -212,9 +212,9 @@ export default {
 		&-item {
 			.price {
 				color: #fff;
-				font-size: 40rpx;
+				font-size: 38rpx;
 				font-weight: 600;
-				margin: 10px 0;
+				margin: 10rpx 0;
 			}
 		}
 	}
@@ -243,7 +243,7 @@ export default {
 }
 
 .main {
-	margin-top: -60px;
+	margin-top: -160rpx;
 	padding: 25rpx;
 	position: relative;
 	z-index: 1;

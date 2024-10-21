@@ -26,7 +26,7 @@ export default {
 					children: [
 						{
 							title: '库存查询',
-							path: '',
+							path: '/pages/packageE/inventory/inventory',
 							imgUrl: '/static/more/kucunchaxun.png'
 						}
 					]
@@ -47,7 +47,7 @@ export default {
 						},
 						{
 							title: '账户',
-							path: '',
+							path: '/pages/packageE/account/account',
 							imgUrl: '/static/more/zhanghu.png'
 						}
 					]
@@ -58,7 +58,7 @@ export default {
 					children: [
 						{
 							title: '销售统计',
-							path: '',
+							path: '/pages/packageE/sales-statistics/sales-statistics',
 							imgUrl: '/static/more/xiaoshoutongji.png'
 						}
 					]
@@ -72,7 +72,6 @@ export default {
 	methods: {
 		handleClick(e) {
 			console.log('点击', e)
-
 			if (e.path) {
 				uni.navigateTo({
 					url: e.path

@@ -27,10 +27,11 @@
 					<view class="content">
 						<u--text :text="item.name"></u--text>
 						<u--text :text="item.barCode"></u--text>
-						<view class="flex">
+						<view class="flex mt10">
 							<view class="flex">
 								<u--text mode="price" :text="item.unitPrice"></u--text>
-								<text>x{{item.operNumber}}</text>
+								<text class="ml5 mr5">x</text>
+								<text>{{item.operNumber}}</text>
 							</view>
 							<u--text align="right" mode="price" :text="item.allPrice"></u--text>
 						</view>
@@ -124,6 +125,7 @@ export default {
 
 <style scoped lang="scss">
 .container {
+	padding-bottom: 80px;
 	.white {
 		background-color: #fff;
 		padding: 25rpx;

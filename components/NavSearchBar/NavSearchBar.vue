@@ -52,7 +52,8 @@ export default {
 			console.log('传递17点20分')
 		},
 		screening() {
-			console.log('点击了右边！')
+			// console.log('点击了右边！')
+			this.$emit('rightClick')
 		},
 		calculateStickyOffset() {
 			try {

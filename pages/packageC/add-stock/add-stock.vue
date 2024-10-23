@@ -1,8 +1,8 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList" :default-page-size="20" :auto="!isCache" auto-show-back-to-top safe-area-inset-bottom>
 		<template slot="top">
-			<AppletHeader title="进货" left-icon="account" right-icon="add"></AppletHeader>
-			<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
+			<AppletHeader title="进货" left-icon="account" right-icon="plus"></AppletHeader>
+			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" ></nav-search-bar>
 		</template>
 
 		<view class="main">
@@ -116,6 +116,9 @@ export default {
 		}
 	},
 	methods: {
+		getSearchValue(v) {
+			console.log('value', v)
+		},
 		formatData(data) {
 			return data.map((item) => ({
 				nums: new Big(0),

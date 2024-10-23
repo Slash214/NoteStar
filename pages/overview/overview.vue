@@ -35,7 +35,9 @@
 						<u--text bold text="商品热销" size="17" color="#000"></u--text>
 						<u--text @click="gotoBestSellers" suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
 					</view>
-
+					<view v-if="!hotList.length">
+						<u-empty mode="data" icon="http://cdn.uviewui.com/uview/empty/data.png"></u-empty>
+					</view>
 					<view class="hot">
 						<view class="hot-item mb20 flex flex-items-center flex-between" v-for="(item, index) of hotList" :key="index">
 							<text class="index">{{ index + 1 }}</text>
@@ -50,7 +52,9 @@
 						<u--text bold text="员工业绩" size="17" color="#000"></u--text>
 						<u--text @click="gotoEmployeePer" suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
 					</view>
-
+					<view v-if="!pelpop.length">
+						<u-empty mode="data" icon="http://cdn.uviewui.com/uview/empty/data.png"></u-empty>
+					</view>
 					<view class="employee">
 						<view class="flex employee-item" v-for="(item, index) in pelpop" :key="index">
 							<text class="employee-item-index">{{ index + 1 }}</text>
@@ -78,8 +82,7 @@
 				</view>
 
 				<view class="modal-content">
-					<view v-for="(item, index) in popupList" 
-					:class="index === 2 ? 'item' : 'item u-border-bottom'" :key="item.id">
+					<view v-for="(item, index) in popupList" :class="index === 2 ? 'item' : 'item u-border-bottom'" :key="item.id">
 						<u--text size="14" bold :text="item.text"></u--text>
 						<text class="icon-text">{{ item.right }}</text>
 					</view>
@@ -107,7 +110,7 @@ export default {
 			popupList: [
 				{ id: 1, text: '店铺管理', right: '门店 | 员工 >' },
 				{ id: 1, text: '消息中心', right: '>' },
-				{ id: 1, text: '退出登录', right: '' },
+				{ id: 1, text: '退出登录', right: '' }
 			],
 			reportData: [
 				{ id: 1, title: '销售额(￥)', num: '', value: '' },
@@ -141,6 +144,9 @@ export default {
 		gotoBestSellers() {
 			console.log('去商品热销')
 		},
+		
+		
+		
 		gotoEmployeePer() {
 			console.log('员工业绩')
 			uni.navigateTo({
@@ -162,14 +168,14 @@ export default {
 
 			let { keyData, hotSellingGoods, employeePerformance } = data || {}
 
-			this.reportData[0].num = keyData.nowCapitalIncome
-			this.reportData[0].value = keyData.preCapitalIncome
-			this.reportData[1].num = keyData.nowSalesCount
-			this.reportData[1].value = keyData.preSalesCount
-			this.reportData[2].num = keyData.nowGrossProfit
-			this.reportData[2].value = keyData.preGrossProfit
-			this.reportData[3].num = keyData.nowSalesRevenue
-			this.reportData[3].value = keyData.preSalesRevenue
+			this.reportData[0].num = keyData.nowCapitalIncome || 0
+			this.reportData[0].value = keyData.preCapitalIncome || 0
+			this.reportData[1].num = keyData.nowSalesCount || 0
+			this.reportData[1].value = keyData.preSalesCount || 0
+			this.reportData[2].num = keyData.nowGrossProfit || 0
+			this.reportData[2].value = keyData.preGrossProfit || 0
+			this.reportData[3].num = keyData.nowSalesRevenue || 0
+			this.reportData[3].value = keyData.preSalesRevenue || 0
 			this.lastTime = keyData.lastCreateTime
 			console.log('data', data)
 

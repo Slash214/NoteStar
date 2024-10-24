@@ -1,12 +1,12 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList" :default-page-size="20" :auto="!isCache" auto-show-back-to-top safe-area-inset-bottom>
-		<template slot="top">
-			<AppletHeader title="进货" left-icon="account" right-icon="plus"></AppletHeader>
-			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" ></nav-search-bar>
-		</template>
+		<view slot="top">
+			<AppletHeader title="销售" left-icon="arrow-left" right-icon="plus"></AppletHeader>
+			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
+		</view>
 
 		<view class="main">
-			<view class="mb20"></view>
+			<!-- <view class="mb20"></view> -->
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
 				<view class="list-item">
@@ -67,6 +67,10 @@ export default {
 			selectList: [],
 			isCache: false,
 			cachePage: 1,
+			typeArray: {
+				1: { text: '销售', desc: '名称/条形码/简拼' },
+				2: { text: '进货', desc: '单号/客户/商品/备注' },
+			}
 		}
 	},
 	async onLoad() {
@@ -117,7 +121,10 @@ export default {
 	},
 	methods: {
 		getSearchValue(v) {
+			this.loading = true
 			console.log('value', v)
+			this.keyword = v
+			this.$refs.paging.reload()
 		},
 		formatData(data) {
 			return data.map((item) => ({

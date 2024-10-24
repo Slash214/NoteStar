@@ -80,6 +80,23 @@ export const getMaterialList = (data) => {
 	})
 }
 
+export const deleteMaterial = (data) => {
+	return request({
+		url: '/material/delete',
+		method: 'GET',
+		data
+	})
+}
+
+// 获取商品id
+export const getMaterById = (data) => {
+	return request({
+		url: '/material/findById',
+		method: 'GET',
+		data
+	})
+}
+
 
 
 // packageE 更多

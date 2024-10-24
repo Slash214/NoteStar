@@ -46,6 +46,12 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
+		},
+		{
+			"path": "pages/packageC/product-details/product-details",
+			"style": {
+				"navigationBarTitleText": ""
+			}
 		}
 	],
 	"subPackages": [{
@@ -55,6 +61,13 @@
 				"style": {
 
 				}
+			}]
+		},
+		{
+			"root": "pages/packageD",
+			"pages": [{
+				"path": "create-product/create-product",
+				"style": {}
 			}]
 		},
 		{
@@ -72,10 +85,9 @@
 					}
 				},
 				{
-					"path" : "sales-order-detail/sales-order-detail",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "sales-order-detail/sales-order-detail",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				}
 			]
@@ -83,37 +95,34 @@
 		{
 			"root": "pages/packageE",
 			"pages": [{
-				"path": "cash-flow/cash-flow",
-				"style": {}
-			},
-			{
-				"path" : "daily-summary/daily-summary",
-				"style" : 
+					"path": "cash-flow/cash-flow",
+					"style": {}
+				},
 				{
-					"navigationBarTitleText" : ""
-				}
-			},
-			{
-				"path" : "sales-statistics/sales-statistics",
-				"style" : 
+					"path": "daily-summary/daily-summary",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
 				{
-					"navigationBarTitleText" : ""
-				}
-			},
-			{
-				"path" : "account/account",
-				"style" : 
+					"path": "sales-statistics/sales-statistics",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
 				{
-					"navigationBarTitleText" : ""
-				}
-			},
-			{
-				"path" : "inventory/inventory",
-				"style" : 
+					"path": "account/account",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
 				{
-					"navigationBarTitleText" : ""
+					"path": "inventory/inventory",
+					"style": {
+						"navigationBarTitleText": ""
+					}
 				}
-			}]
+			]
 		}
 	],
 	"globalStyle": {

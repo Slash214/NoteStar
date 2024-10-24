@@ -7,6 +7,14 @@ import AppletHeader from '@/components/AppletHeader/AppletHeader.vue'
 import Vue from 'vue'
 import './uni.promisify.adaptor'
 Vue.use(uView)
+uni.$u.setConfig({
+	props: {
+		form: {
+			size: 14
+		}
+	}
+})
+
 Vue.component('AppletHeader', AppletHeader)
 Vue.config.productionTip = false
 App.mpType = 'app'

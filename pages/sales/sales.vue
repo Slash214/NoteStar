@@ -1,7 +1,7 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="销售" left-icon="account" right-icon=" "></AppletHeader>
+			<AppletHeader title="销售" left-icon="account" right-icon=" " :autoBack="false"></AppletHeader>
 			<nav-search-bar @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
 		</template>
 

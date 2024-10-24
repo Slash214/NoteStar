@@ -1,7 +1,7 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="商品" left-icon="account" right-icon="plus"></AppletHeader>
+			<AppletHeader title="商品" left-icon="account" right-icon="plus" @rightClick="addProduct"></AppletHeader>
 			<nav-search-bar @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 		</template>
 
@@ -9,7 +9,7 @@
 			<horizontal-card title="商品数量" :titlePrice="total" subtitle="库存" :subtitle-price="totalPrice"></horizontal-card>
 
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
-			<view class="list" v-for="(item, index) in dataList" :key="item.id">
+			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClickCard(item)">
 				<view class="card flex">
 					<view class="card-box">
 						<u--image mode="aspectFit" :showLoading="true" :src="item.imgName" width="60" height="60"></u--image>
@@ -30,7 +30,7 @@
 								<u--text :text="item.stock" color="#737373"></u--text>
 							</view>
 
-							<u-icon @click="handleClickOpt(item)" bold name="more-dot-fill"></u-icon>
+							<u-icon @click.stop="handleClickOpt(item)" bold name="more-dot-fill"></u-icon>
 						</view>
 					</view>
 				</view>
@@ -51,11 +51,18 @@
 			@select="selectClick"
 			:show="show"
 		></u-action-sheet>
+		
+		
+		<u-modal showCancelButton @cancel="delVisible = false" @confirm="onConfirm" :show="delVisible" title="删除商品">
+			<view class="slot-content" style="text-align: center;">
+				{{content}}
+			</view>  
+		</u-modal>
 	</z-paging>
 </template>
 
 <script>
-import { getMaterialList } from '@/apis'
+import { getMaterialList, deleteMaterial } from '@/apis'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
 import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
@@ -74,6 +81,10 @@ export default {
 			totalPrice: '',
 			loading: true,
 			show: false,
+			delVisible: false,
+			productName: '',
+			productId: 0,
+			content:'确定要删除商品：',
 			list: [
 				{ name: '编辑', id: 1 },
 				{ name: '删除', id: 2 }
@@ -82,15 +93,45 @@ export default {
 	},
 	onLoad() {},
 	methods: {
+		addProduct() {
+			console.log('添加商品')
+			uni.navigateTo({
+				url: '/pages/packageD/create-product/create-product'
+			})
+		},
+		handleClickCard(item) {
+			console.log('item', item)
+			uni.navigateTo({
+				url: `/pages/packageC/product-details/product-details?id=${item.id}`
+			})
+		},
+		async onConfirm() {
+			console.log('确认删除')
+			const { data } = await deleteMaterial({ id: this.productId, apiName: 'material' })
+			this.delVisible = false
+			console.log(data)
+			uni.showToast({
+				title: '删除成功',
+				icon: 'none'
+			})
+			this.dataList = this.dataList.filter(item => item.id !== this.productId)
+		},
 		getKeyWord(v) {
 			this.keywords = v
 			this.$refs.paging.reload()
 		},
 		selectClick(index) {
+			if (index.id === 2) {
+				this.delVisible = true
+				this.content = `确定要删除商品：${this.productName}`
+                console.log('删除')
+			}
 			console.log('选择', index)
 		},
 		handleClickOpt(item) {
-			console.log('点击了操作', item)
+			console.log('点击了操作', item)  
+			this.productId = item.id
+			this.productName = item.name
 			this.show = true
 		},
 		async queryList(page, pageNo) {

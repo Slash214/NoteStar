@@ -1,6 +1,6 @@
 <template>
 	<view :class="isFix ? 'fixed' : ''">
-		<AppletHeader :isLeftClick="true" @click="handleClick" title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
+		<AppletHeader :autoBack="false" @leftClick="handleClick" title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
 		<view class="">
 			<custom-dropdown></custom-dropdown>
 			<view class="nav">
@@ -138,7 +138,6 @@ export default {
 			this.modalVisible = false
 		},
 		handleClick() {
-			console.log('点击右边')
 			this.modalVisible = true
 		},
 		gotoBestSellers() {

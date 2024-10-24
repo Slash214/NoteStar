@@ -72,7 +72,9 @@
 			<view class="white box mt20">
 				<view class="box-item" v-for="item in priceList" :key="item.id">
 					<view class="box-item-start">{{ item.title }}</view>
-					<view class="box-item-mid">{{ item.value }}</view>
+					<view class="box-item-mid">
+						<u--text :text="item.value" mode="price"></u--text>
+					</view>
 					<view class="box-item-end">
 						{{ item.end }}
 					</view>
@@ -260,6 +262,21 @@ export default {
 		},
 		scanToAdd() {
 			console.log('扫码添加')
+			uni.showToast({
+				title: '开发中',
+				icon: 'none'
+			})
+			
+			uni.scanCode({
+				scanType: ['barCode'],
+				enableFlash: true,
+				success: async res => {
+					console.log(res)
+				},
+				fail: err => {
+					console.error('err', err)
+				}
+			})
 		}
 	}
 }

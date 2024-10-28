@@ -27,6 +27,18 @@ export const getEmployeePerformance = (data) => {
 	})
 }
 
+// 店铺
+export const getDepotList = (data) => {
+	return request({
+		url: '/depot/list',
+		method: 'GET',
+		data
+	})
+}
+
+
+
+
 // packageB 销售接口
 export const getDepotHeadList = (data) => {
 	return request({

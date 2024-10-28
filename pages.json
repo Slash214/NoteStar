@@ -52,6 +52,13 @@
 			"style": {
 				"navigationBarTitleText": ""
 			}
+		},
+		{
+			"path" : "pages/charts/custom-charts/custom-charts",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
 		}
 	],
 	"subPackages": [{
@@ -64,6 +71,34 @@
 			},
 			{
 				"path" : "web-view/web-view",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "notes/notes",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "store-mnagement/store-mnagement",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "store-info-set/store-info-set",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "add-store-info/add-store-info",
 				"style" : 
 				{
 					"navigationBarTitleText" : ""

@@ -29,6 +29,25 @@
 			<view class="main">
 				<view class="white mb20 echart">
 					<u--text bold text="销售趋势" size="17" color="#000"></u--text>
+					<view class="tip">
+						<view class="flex" @click="salesVisible = true">
+							<text class="ml5">{{salesName}}</text>
+							<u-icon name="arrow-down-fill"></u-icon>
+						</view>
+						
+						<view class="tip-text">
+							<text @click="toggleCurrentDay(true)" :class="currSeven ? 'active' : ''">近7天</text>
+							<text @click="toggleCurrentDay(false)" :class="!currSeven ? 'active ml10' : 'ml10'">近30天</text>
+						</view>
+					</view>
+					<qiun-data-charts 
+					      type="area"
+					      :opts="areaOptions"
+						  :ontouch="true"
+						  :onmovetip="true"
+						  :tooltipShow="true"
+					      :chartData="chartData"
+					    />
 				</view>
 				<view class="white mb20 commodity">
 					<view class="flex">
@@ -74,40 +93,38 @@
 			</view>
 		</view>
 
-		<u-popup :show="modalVisible" bgColor="#F1F5F8" mode="left" width="90%" @close="close" @open="open">
-			<view class="modal">
-				<view class="flex flex-items-center">
-					<u-avatar size="46" :text="userInfo.username.charAt(0) || ''"></u-avatar>
-					<u--text size="18" :text="userInfo.username" margin=" 0 0 0 20px"></u--text>
-				</view>
 
-				<view class="modal-content">
-					<view v-for="(item, index) in popupList" :class="index === 2 ? 'item' : 'item u-border-bottom'" :key="item.id">
-						<u--text size="14" bold :text="item.text"></u--text>
-						<text class="icon-text">{{ item.right }}</text>
-					</view>
-				</view>
-			</view>
-		</u-popup>
+		<user-popup :visible="modalVisible" @close="close"></user-popup>
+		<u-picker @cancel="salesVisible = false" @confirm="onSalesConfirm" :show="salesVisible" keyName="label" :columns="columns"></u-picker>
 	</view>
 </template>
 
 <script>
 import CustomDropdown from '@/components/CustomDropdown/CustomDropdown.vue'
+import UserPopup from '@/components/UserPopup/UserPopup.vue'
 import { getBusinessOverview } from '@/apis'
 import { formatMoney, timestampToDate } from '@/utils/index.js'
 export default {
 	components: {
-		CustomDropdown
+		CustomDropdown,
+		UserPopup
 	},
 	data() {
 		return {
+			columns: [[{ label: '销售额', value: 1 },
+				{ label: '销售笔数', value: 2 },
+				{ label: '销售毛利', value: 3 },
+				{ label: '资金收入', value: 4 }]],
+			salesVisible: false,
+			currSeven: true, 
 			isFix: false,
 			modalVisible: false,
 			formatMoney,
 			show: true,
 			lastTime: '',
 			time: '',
+			timeType: 1,
+			salesTrendsType1: 1,
 			// 店铺ID 默认是0 表示全部
 			depotId: 0,
 			popupList: [
@@ -123,21 +140,59 @@ export default {
 			],
 			hotList: [],
 			pelpop: [],
-			userInfo: {
-				username: '王'
-			}
+			// userInfo: {
+			// 	username: '王'
+			// },
+			chartData: {},
+			areaOptions: {
+				dataLabel: false,  //是否显示图表区域内数据点上方的数据文案
+				dataPointShape:false, //是否显示数据点的图形标识
+				legend: { // 图例配置
+					show: false // 不显示
+				},
+				xAxis: {
+					labelCount: 7, // 数据点文字（刻度点）单屏幕限制显示的数量
+				},
+				extra:{ 
+					area:{
+						type:'curve', // 可选值："straight"尖角折线模式,"curve"曲线圆滑模式,"step"时序图模式
+						gradient:true, // 是否开启区域图渐变色
+					},
+				}
+			},
 		}
 	},
 	onLoad() {
 		this.time = timestampToDate(Date.now())
-		this.userInfo = uni.getStorageSync('userInfo')
+		// this.userInfo = uni.getStorageSync('userInfo')
 		this.getData()
 	},
 	onShow() {
 		uni.removeStorageSync('screenData')
 	},
+	onReady() {
+	},
+	computed: {
+		salesName() {
+		    let item = this.columns[0].filter(item => item.value === this.salesTrendsType1)[0];
+			console.log('item', item)
+		    return item ? item.label : ''; // 如果找不到，返回空字符串或其他默认值
+		}
+	},
 	methods: {
+		onSalesConfirm(e) {
+			console.log(e.value[0].value)
+			let id = e.value[0].value
+			this.salesTrendsType1 = id 
+			this.salesVisible = false
+			this.getData()
+		},
+		toggleCurrentDay(val) {
+			this.currSeven = val
+			this.getData()
+		},
 		selectStore(e) {
+			this.isFix = true
 			console.log(e)
 			this.depotId = e.id
 			this.getData()
@@ -148,6 +203,8 @@ export default {
 				this.time = timestampToDate(e.value)
 			} else {
 				this.time = timestampToDate(e.value, 2)
+				this.timeType = 3
+				
 			}
 
 			this.getData()
@@ -178,14 +235,14 @@ export default {
 		},
 		async getData() {
 			const { data } = await getBusinessOverview({
-				timeType: 1,
+				timeType: this.timeType,
 				time: this.time,
 				depotId: this.depotId || '',
-				salesTrendsType1: 1,
-				salesTrendsType2: 1
+				salesTrendsType1: this.salesTrendsType1,
+				salesTrendsType2: this.currSeven ? 1 : 2
 			})
 
-			let { keyData, hotSellingGoods, employeePerformance } = data || {}
+			let { keyData, hotSellingGoods, employeePerformance, salesTrends } = data || {}
 
 			this.reportData[0].num = keyData.nowCapitalIncome || 0
 			this.reportData[0].value = keyData.preCapitalIncome || 0
@@ -203,6 +260,26 @@ export default {
 				progress: Math.floor(item.salesProportion * 100)
 			}))
 			this.hotList = hotSellingGoods
+			
+			// salesTrends
+			//  = []
+			
+			let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1]
+			
+			let categories = eacherData?.map(item => item.x.slice(-2))
+			let series = eacherData?.map(item => item.y)
+			let res = {
+			    categories,
+			    series: [
+			      {
+			        name: "",
+			        data: series
+			      },
+			    ]
+			  };
+			this.chartData = JSON.parse(JSON.stringify(res));
+			
+			
 		},
 		leftClick() {
 			console.log('点击我的')
@@ -245,27 +322,27 @@ export default {
 	}
 }
 
-.modal {
-	padding: 200rpx 30rpx;
-	width: 580rpx;
-	&-content {
-		background-color: #fff;
-		border-radius: 10rpx;
-		margin-top: 40px;
-		.item {
-			color: #606266;
-			padding: 26rpx 32rpx;
-			display: flex;
-			align-items: center;
-			line-height: 2;
-			justify-content: space-between;
-			.icon-text {
-				font-size: 26rpx;
-				color: #ccc;
-			}
-		}
-	}
-}
+// .modal {
+// 	padding: 200rpx 30rpx;
+// 	width: 580rpx;
+// 	&-content {
+// 		background-color: #fff;
+// 		border-radius: 10rpx;
+// 		margin-top: 40px;
+// 		.item {
+// 			color: #606266;
+// 			padding: 26rpx 32rpx;
+// 			display: flex;
+// 			align-items: center;
+// 			line-height: 2;
+// 			justify-content: space-between;
+// 			.icon-text {
+// 				font-size: 26rpx;
+// 				color: #ccc;
+// 			}
+// 		}
+// 	}
+// }
 
 .main {
 	margin-top: -160rpx;
@@ -278,6 +355,18 @@ export default {
 		padding: 25rpx;
 	}
 	.echart {
+		.tip {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin: 20px auto;
+			&-text {
+				color: #93969D;
+			}
+			.active {
+				color: #1D73FF;
+			}
+		}
 	}
 
 	.employee {

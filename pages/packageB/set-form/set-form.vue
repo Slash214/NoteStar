@@ -38,7 +38,7 @@
 			<view class="white box mt20 product">
 				<view class="product-title">
 					<u-line hairline="false" direction="col"></u-line>
-					<text>销售商品</text>
+					<text>{{ type === 1 ? '销售商品' : '进货商品'}}</text>
 				</view>
 
 				<view class="product-content">

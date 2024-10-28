@@ -16,7 +16,7 @@
 						<view class="organName">{{ item.organName }}</view>
 						<view class="number">{{ item.number }}</view>
 					</view>
-					<u--text align="right" color="#000" size="18" block bold mode="price" :text="item.totalPrice"></u--text>
+					<u--text align="right" color="#000" size="18" bold mode="price" :text="item.totalPrice"></u--text>
 				</view>
 			</view>
 		</view>
@@ -165,6 +165,7 @@ export default {
 		background-color: #fff;
 		padding: 25rpx;
 		border-radius: 20rpx;
+		align-items: flex-start;
 		.organName {
 			color: #000;
 			font-weight: 600;

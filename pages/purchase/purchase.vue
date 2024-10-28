@@ -18,6 +18,10 @@
 				</view>
 			</view>
 		</view>
+		
+		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
+			<image src="/static/purchase/purchase.png" mode="aspectFit"></image>
+		</view>
 	</z-paging>
 </template>
 
@@ -52,6 +56,12 @@ export default {
 		},
 		scanCode() {
 			console.log('扫码')
+		},
+		gotoSetForm() {
+			console.log('进货的')
+			uni.navigateTo({
+				url: '/pages/packageB/set-form/set-form?type=2'
+			})
 		},
 		handleClickSearch(v) {
 			console.log('开始搜索', v)
@@ -97,6 +107,21 @@ export default {
 	padding: 0 30rpx;
 	color: #9d9ea0;
 	margin-bottom: 20px;
+}
+
+.fix-icon {
+	position: fixed;
+	z-index: 9;
+	background-color: #FA6400;
+	bottom: 50rpx;
+	right: 30rpx;
+	width: 180rpx;
+	height: 90rpx;
+	border-radius: 50rpx;
+	box-shadow: 5px 5px 20px rgba(250,100,0, 0.5);
+	image {
+		width: 120rpx;
+	}
 }
 .list {
 	margin-bottom: 25rpx;

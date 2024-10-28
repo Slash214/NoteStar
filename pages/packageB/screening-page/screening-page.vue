@@ -94,7 +94,7 @@ export default {
 		this.dataList = [
 			{ id: 1, name: '门店', type: 1, key: '', data: store },
 			{ id: 2, name: '业务员', type: 2, key: '', data: JSON.parse(JSON.stringify(array)) },
-			{ id: 3, name: '制单员', type: 3, key: '', data: JSON.parse(JSON.stringify(array)) }
+			{ id: 3, name: '制单人', type: 3, key: '', data: JSON.parse(JSON.stringify(array)) }
 		]
 
 		// 开始时间和结束时间默认为本月的

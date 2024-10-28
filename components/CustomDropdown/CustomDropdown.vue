@@ -93,12 +93,13 @@ export default {
 			})
 			this.toggleStoreVisible()
 			this.curName = item.name
-			this.$emit('selectStore', JSON.stringify(item))
+			this.$emit('selectStore', item)
 		},
 
 		getSelectTime(val) {
 			console.log('获取选择的时间', val)
 			this.toggleTimeSelect()
+			this.$emit('selectTime', val)
 		},
 
 		getTimeStatus(v) {

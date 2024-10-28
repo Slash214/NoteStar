@@ -2,7 +2,7 @@
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
 			<AppletHeader title="销售" left-icon="account" right-icon=" " :autoBack="false"></AppletHeader>
-			<nav-search-bar @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
+			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
 		</template>
 
 		<view class="container">
@@ -29,7 +29,7 @@
 
 <script>
 import { getDepotHeadList } from '@/apis'
-import { formatDateToChinese } from '@/utils'
+import { formatDateToChinese, timestampToDate } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
 
@@ -45,14 +45,44 @@ export default {
 			total: '',
 			totalPrice: '',
 			formatDateToChinese,
-			keyword: ''
+			keyword: '',
+			reqObj: {
+				depotId: '',
+				salesMan: '',
+				creator: '',
+				beginTime: '',
+				endTime: ''
+			}
 		}
 	},
 	onLoad() {
 		uni.removeStorageSync('selectList')
 		uni.removeStorageSync('currPage')
+		this.reqObj.beginTime = timestampToDate(Date.now())
+	},
+	onShow() {
+		const screenData = uni.getStorageSync('screenData')
+		if (screenData) {
+			let { startTime, endTime, arr } = screenData
+			console.log('筛选结果', screenData)
+			let obj = {}
+			obj.beginTime = `${startTime} 00:00:00`;
+			obj.endTime = `${endTime} 23:59:59`;
+			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id;
+			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id;
+			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id;
+			this.reqObj = obj
+			console.log('请求测试', this.reqObj)
+			this.$refs.paging.reload()
+		}
 	},
 	methods: {
+		rightClick() {
+			console.log('点击右边的')
+			uni.navigateTo({
+				url: '/pages/packageB/screening-page/screening-page'
+			})
+		},
 		handleClick(item) {
 			// console.log('item', item)
 			uni.navigateTo({
@@ -81,7 +111,7 @@ export default {
 						type: '出库',
 						subType: '零售',
 						fuzzyQueryParam: this.keyword,
-						...obj
+						...this.reqObj
 					}
 				})
 				let { rows, totalPrice, total } = data || {}

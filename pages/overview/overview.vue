@@ -2,7 +2,7 @@
 	<view :class="isFix ? 'fixed' : ''">
 		<AppletHeader :autoBack="false" @leftClick="handleClick" title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
 		<view class="">
-			<custom-dropdown></custom-dropdown>
+			<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 			<view class="nav">
 				<view class="set-title">
 					<view class="flex flex-items-center" @click="show = !show">
@@ -95,7 +95,7 @@
 <script>
 import CustomDropdown from '@/components/CustomDropdown/CustomDropdown.vue'
 import { getBusinessOverview } from '@/apis'
-import { formatMoney } from '@/utils/index.js'
+import { formatMoney, timestampToDate } from '@/utils/index.js'
 export default {
 	components: {
 		CustomDropdown
@@ -107,6 +107,9 @@ export default {
 			formatMoney,
 			show: true,
 			lastTime: '',
+			time: '',
+			// 店铺ID 默认是0 表示全部
+			depotId: 0,
 			popupList: [
 				{ id: 1, text: '店铺管理', right: '门店 | 员工 >' },
 				{ id: 1, text: '消息中心', right: '>' },
@@ -126,10 +129,30 @@ export default {
 		}
 	},
 	onLoad() {
+		this.time = timestampToDate(Date.now())
 		this.userInfo = uni.getStorageSync('userInfo')
 		this.getData()
 	},
+	onShow() {
+		uni.removeStorageSync('screenData')
+	},
 	methods: {
+		selectStore(e) {
+			console.log(e)
+			this.depotId = e.id
+			this.getData()
+		},
+		selectTime(e) {
+			console.log(e)
+			if (e.mode === 'date') {
+				this.time = timestampToDate(e.value)
+			} else {
+				this.time = timestampToDate(e.value, 2)
+			}
+
+			this.getData()
+		},
+
 		open() {
 			this.isFix = true
 		},
@@ -143,9 +166,6 @@ export default {
 		gotoBestSellers() {
 			console.log('去商品热销')
 		},
-		
-		
-		
 		gotoEmployeePer() {
 			console.log('员工业绩')
 			uni.navigateTo({
@@ -159,8 +179,8 @@ export default {
 		async getData() {
 			const { data } = await getBusinessOverview({
 				timeType: 1,
-				time: '2024-10-14',
-				depotId: '',
+				time: this.time,
+				depotId: this.depotId || '',
 				salesTrendsType1: 1,
 				salesTrendsType2: 1
 			})

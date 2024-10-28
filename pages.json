@@ -61,6 +61,13 @@
 				"style": {
 
 				}
+			},
+			{
+				"path" : "web-view/web-view",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
 			}]
 		},
 		{
@@ -120,6 +127,13 @@
 					"path": "inventory/inventory",
 					"style": {
 						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path" : "stock-check/stock-check",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
 					}
 				}
 			]

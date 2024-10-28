@@ -98,10 +98,10 @@ export function formatMoney(value) {
 	return `${integerPart}.${decimalPart}`;
 }
 
-export function timestampToDate(timestamp) {
+export function timestampToDate(timestamp, len = 3) {
 	let date = new Date(timestamp); // 将时间戳转换为日期对象
 	let year = date.getFullYear(); // 获取年份
 	let month = (date.getMonth() + 1).toString().padStart(2, '0'); // 获取月份，注意月份是从0开始的
 	let day = date.getDate().toString().padStart(2, '0'); // 获取日期
-	return `${year}-${month}-${day}`; // 返回格式化后的日期字符串
+	return len === 3 ? `${year}-${month}-${day}` : `${year}-${month}`; // 返回格式化后的日期字符串
 }

@@ -26,7 +26,7 @@ export default {
 					children: [
 						{
 							title: '库存查询',
-							path: '/pages/packageE/inventory/inventory',
+							path: '/pages/packageE/stock-check/stock-check',
 							imgUrl: '/static/more/kucunchaxun.png'
 						}
 					]

@@ -103,6 +103,20 @@
 				{
 					"navigationBarTitleText" : ""
 				}
+			},
+			{
+				"path" : "user-setting/user-setting",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
+			},
+			{
+				"path" : "hot-selling/hot-selling",
+				"style" : 
+				{
+					"navigationBarTitleText" : ""
+				}
 			}]
 		},
 		{

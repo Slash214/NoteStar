@@ -27,6 +27,16 @@ export const getEmployeePerformance = (data) => {
 	})
 }
 
+// 热销商品
+export const getHotSellingGoods = (data) => {
+	return request({
+		url: '/depotHead/getHotSellingGoods',
+		method: 'GET',
+		data
+	})
+}
+
+
 // 店铺
 export const getDepotList = (data) => {
 	return request({

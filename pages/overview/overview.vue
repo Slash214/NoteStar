@@ -50,7 +50,7 @@
 					    />
 				</view>
 				<view class="white mb20 commodity">
-					<view class="flex">
+					<view class="flex flex-items-center">
 						<u--text bold text="商品热销" size="17" color="#000"></u--text>
 						<u--text @click="gotoBestSellers" suffixIcon="arrow-right" align="right" text="查看更多" size="13" color="#A0A0A0"></u--text>
 					</view>
@@ -221,7 +221,9 @@ export default {
 			this.modalVisible = true
 		},
 		gotoBestSellers() {
-			console.log('去商品热销')
+			uni.navigateTo({
+				url: '/pages/packageA/hot-selling/hot-selling'
+			})
 		},
 		gotoEmployeePer() {
 			console.log('员工业绩')

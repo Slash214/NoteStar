@@ -1,82 +1,162 @@
 <template>
-	<view>
-		<AppletHeader title="员工业绩统计"></AppletHeader>
-		<view class="table">
-			<view class="table-header">
-				<text>员工</text>
-				<text>销量</text>
-				<text>金额</text>
-				<text>利润</text>
-			</view>
-			<view v-for="(item, index) in tableData" :key="index" class="table-row" :class="{ highlight: index < 3 }">
-				<text>{{ index + 1 }} {{ item.employee }}</text>
-				<text>{{ item.sales }}</text>
-				<text>{{ item.amount }}</text>
-				<text>{{ item.profit }}</text>
-			</view>
-			<view class="footer">没有更多了</view>
+	<z-paging :refresher-enabled="false" ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
+		<template slot="top">
+			<AppletHeader title="员工业绩统计" right-icon=" "></AppletHeader>
+		</template>
+		<view class="select">
+			<view class="" @click="show = true">{{ shopName }}</view>
+			<view class="">今日：{{ endTime }}</view>
 		</view>
-	</view>
+		<view class="table-container">
+			<!-- Table Header -->
+			<view class="table-header">
+				<view class="table-cell merge">员工</view>
+				<view class="table-cell">销量</view>
+				<view class="table-cell">金额</view>
+				<view class="table-cell">利润</view>
+			</view>
+			<!-- Table Rows -->
+			<view class="table-row" v-for="(item, index) in dataList" :key="index">
+				<view class="table-cell index half">{{ index + 1 }}</view>
+				<view class="table-cell">{{ item.salesManStr }}</view>
+				<view class="table-cell">{{ item.salesCount }}</view>
+				<view class="table-cell">{{ item.salesRevenue.toFixed(2) }}</view>
+				<view class="table-cell">{{ item.grossProfit.toFixed(2) }}</view>
+			</view>
+		</view>
+
+		<select-shop :show="show" @cancel="cancel" @confirm="confirm"></select-shop>
+	</z-paging>
 </template>
 
 <script>
+import { timestampToDate } from '@/utils'
 import { getEmployeePerformance } from '@/apis'
+import SelectShop from '@/components/SelectShop/SelectShop.vue'
 export default {
+	components: {
+		SelectShop
+	},
 	data() {
 		return {
-			tableData: [
-				{ employee: '龙泉店-石勇', sales: 1, amount: 17143.0, profit: 9143.0 },
-				{ employee: '新都仓-陈梦婷', sales: 1, amount: 456.0, profit: 217.39 },
-				{ employee: '新都仓-胡晓月', sales: 3, amount: 14047.0, profit: 1304.63 },
-				{ employee: '岳池店-胡婷', sales: 3, amount: 748.0, profit: 508.0 },
-				{ employee: '双流店-二娃', sales: 4, amount: 2248.0, profit: 1178.0 },
-				{ employee: '广安店-胡长军', sales: 5, amount: 624.9, profit: 465.9 }
-			]
+			dataList: [],
+			beginTime: '',
+			endTime: '',
+			sortType: 1,
+			sortRule: 1,
+			depotId: '',
+			show: false,
+			shopName: '全部门店'
 		}
 	},
-	onLoad() {},
+	onLoad() {
+		this.beginTime = timestampToDate(Date.now())
+		this.endTime = this.beginTime
+	},
 	methods: {
-		async getData() {},
-		formatCurrency(value) {
-			return value.toLocaleString('en-US', { style: 'currency', currency: '' })
+		cancel() {
+			console.log('取消了')
+			this.show = false
+		},
+		confirm(e) {
+			console.log(e)
+			this.show = false
+			this.depotId = !e.id ? '' : e.id
+			this.shopName = e.name
+			this.$refs.paging.reload()
+		},
+		async queryList(pageNo, pageSize) {
+			let obj = {}
+			try {
+				const { data } = await getEmployeePerformance({
+					currentPage: pageNo,
+					pageSize,
+					beginTime: this.beginTime,
+					endTime: this.endTime,
+					depotId: this.depotId,
+					sortType: this.sortType,
+					sortRule: this.sortRule
+				})
+				let { employeePerformance } = data || {}
+				console.log('data', employeePerformance)
+				this.$refs.paging.complete(employeePerformance)
+				// this.loading = false
+			} catch (e) {
+				console.log('请求失败', e)
+				this.$refs.paging.complete(false)
+			}
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
-.table {
-	padding: 10px;
-	.table-header,
-	.table-row {
-		display: flex;
-		justify-content: space-between;
-		padding: 10px;
-		text-align: justify;
-		border-bottom: 1px solid #e5e5e5;
-		text {
-			display: inline-block;
-			width: 20%;
-			&:first-child {
-				width: 40%;
-			}
+.select {
+	box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+	border-top-left-radius: 40rpx;
+	border-top-right-radius: 40rpx;
+	background: #fff;
+	height: 100rpx;
+	display: flex;
+	color: #606266;
+	font-size: 28rpx;
+	align-items: center;
+	justify-content: space-around;
+	padding: 20rpx;
+}
+
+.table-container {
+	display: flex;
+	flex-direction: column;
+	// border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.table-header,
+.table-row {
+	display: flex;
+	align-items: center;
+}
+
+.index {
+	font-weight: 700;
+	color: #9d9ea0;
+}
+.table-header {
+	background: #eef3fe;
+	font-weight: 500;
+}
+.table-row {
+	&:nth-child(odd) {
+		background-color: #f7f9fe;
+	}
+	&:nth-child(2) {
+		.index {
+			color: #d75546;
 		}
 	}
-
-	.table-header {
-		font-weight: bold;
-		background-color: #EEF3FE;
-		color: #444648;
+	&:nth-child(3) {
+		.index {
+			color: #f0822d;
+		}
 	}
-
-	.table-row.highlight {
-		color: #f56c6c;
+	&:nth-child(4) {
+		.index {
+			color: #e5b840;
+		}
 	}
+}
 
-	.footer {
-		text-align: center;
-		margin-top: 10px;
-		color: #888888;
-	}
+.table-cell {
+	padding: 10px;
+	flex: 1;
+	text-align: center;
+}
+.merge {
+	flex: 1.5; /* This will make it span across two columns */
+}
+.half {
+	flex: 0.2;
 }
 </style>

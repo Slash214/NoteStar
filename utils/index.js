@@ -105,3 +105,40 @@ export function timestampToDate(timestamp, len = 3) {
 	let day = date.getDate().toString().padStart(2, '0'); // 获取日期
 	return len === 3 ? `${year}-${month}-${day}` : `${year}-${month}`; // 返回格式化后的日期字符串
 }
+
+
+/**
+ * 将时间戳转换为“年/月/日 时:分:秒”格式的字符串
+ * @param {number|string} timestamp - 要转换的时间戳（毫秒或秒）
+ * @returns {string} 格式化后的日期时间字符串
+ */
+export function formatTimestamp(timestamp) {
+  // 将字符串类型的时间戳转换为数字
+  let ts = typeof timestamp === 'string' ? parseInt(timestamp) : timestamp;
+
+  // 判断时间戳是否为秒级，如果是则转换为毫秒
+  if (ts.toString().length === 10) {
+    ts *= 1000;
+  }
+
+  const date = new Date(ts);
+
+  const year = date.getFullYear();
+  const month = padZero(date.getMonth() + 1); // 月份从0开始，需要加1
+  const day = padZero(date.getDate());
+
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
+  const seconds = padZero(date.getSeconds());
+
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+}
+
+/**
+ * 补零函数，用于保证数字为两位数
+ * @param {number} num - 要补零的数字
+ * @returns {string} 两位数的字符串
+ */
+function padZero(num) {
+  return num.toString().padStart(2, '0');
+}

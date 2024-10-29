@@ -40,7 +40,7 @@
 					</view>
 				</view>
 
-				<view class="fixed-button" @click="handleSelectionSuccess">选好了</view>
+				<view :class="type === 1 ? 'fixed-button istype1' : 'fixed-button istype2' " @click="handleSelectionSuccess">选好了</view>
 			</view>
 		</template>
 	</z-paging>
@@ -70,7 +70,8 @@ export default {
 			typeArray: {
 				1: { text: '销售', desc: '名称/条形码/简拼' },
 				2: { text: '进货', desc: '单号/客户/商品/备注' },
-			}
+			},
+			type: 1
 		}
 	},
 	async onLoad() {
@@ -271,10 +272,17 @@ export default {
 		height: 90rpx;
 		text-align: center;
 		line-height: 90rpx;
-		background: linear-gradient(to right, #fa6400, #f79151);
 		border-radius: 20rpx;
 		color: #fff;
 		font-weight: 700;
+	}
+	
+	.istype1 {
+		background: linear-gradient(to right, #5FCADD, #6ADAE8);
+	}
+	
+	.istype2 {
+		background: linear-gradient(to right, #fa6400, #f79151);
 	}
 
 	.cart-box {

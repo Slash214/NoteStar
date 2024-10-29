@@ -156,3 +156,31 @@ export const getStockList = (data) => {
 		method: 'GET'
 	})
 }
+
+
+// 开单接口
+export const addDepotHeadAndDetail = (data) => {
+	return request({
+		url: '/depotHead/addDepotHeadAndDetail',
+		data,
+		method: 'POST'
+	})
+}
+
+// 生成订单号
+export const genbuildNumber = (data) => {
+	return request({
+		url: '/sequence/buildNumber',
+		data,
+		method: 'GET'
+	})
+}
+
+// 更新开单
+export const updateDepotHeadAndDetail = (data) => {
+	return request({
+		url: '/depotHead/updateDepotHeadAndDetail',
+		data,
+		method: 'PUT'
+	})
+}

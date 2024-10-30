@@ -5,7 +5,9 @@ export const PrivacyPolicy = "https://api.haoxianhui.com/static/privacyPolicy.ht
 
 
 // 网络请求链接
-export const BASE_URL = 'https://api.haoxianhui.com/jshERP-boot'
-// export const BASE_URL = 'http://175.24.165.101:9999/jshERP-boot'
+// export const BASE_URL = 'https://api.haoxianhui.com/jshERP-boot'
+export const BASE_URL = 'http://175.24.165.101:9999/jshERP-boot'
 
 export const IMAGE_OSS_URL = 'https://haoxianhui.com'
+
+export const UPLOAD_FILE_URL = `${BASE_URL}/systemConfig/upload`

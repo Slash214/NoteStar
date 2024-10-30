@@ -4,7 +4,7 @@
 		<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
 			<text class="title">{{ title }}</text>
 			<view class="slot-right" v-if="rightIcon" @click="handleClickRight">
-				<u-icon size="18" :name="rightIcon"></u-icon>
+				<u-icon :size="rightIconSize" :name="rightIcon"></u-icon>
 			</view>
 		</view>
 	</u-navbar>
@@ -25,6 +25,10 @@ export default {
 		rightIcon: {
 			type: String,
 			default: 'plus'
+		},
+		rightIconSize: {
+			type: Number,
+			default: 18
 		},
 		rightIconBold: {
 			type: Boolean,

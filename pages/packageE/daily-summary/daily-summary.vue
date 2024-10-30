@@ -1,22 +1,14 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<view slot="top">
-			<AppletHeader title="日常收支"></AppletHeader>
+			<AppletHeader title="日常收支" right-icon=" "></AppletHeader>
 			<nav-search-bar @search="getSearchValue" desc="单号/备注"></nav-search-bar>
 		</view>
 
 		<view class="container">
-			<view class="flex flex-items-center nav-box">
-				<view class="flex flex-items-center">
-					<text>收入合计:</text>
-					<u--text color="#9d9ea0" :text="inAmount" mode="price"></u--text>
-				</view>
-				<view class="line"></view>
-				<view class="flex flex-items-center">
-					<text>支出合计:</text>
-					<u--text color="#9d9ea0" :text="outAmount" mode="price"></u--text>
-				</view>
-			</view>
+			<block v-if="dataList.length">
+				<horizontal-card title="收入合计" :titlePrice="inAmount" subtitle="支出合计" :subtitlePrice="outAmount"></horizontal-card>
+			</block>
 
 			<view class="list" v-for="(item, index) in dataList" :key="item.id">
 				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
@@ -32,16 +24,22 @@
 				</view>
 			</view>
 		</view>
+		
+		<view class="fixed-btn" @click="gotoView">
+			<image src="/static/more/inOut.png" mode="aspectFit"></image>
+		</view>
 	</z-paging>
 </template>
 
 <script>
 import { getInOutinfoList } from '@/apis'
-import { formatDateToChinese } from '@/utils'
+import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
+import { formatDateToChinese, timestampToDate } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 export default {
 	components: {
-		NavSearchBar
+		NavSearchBar,
+		HorizontalCard
 	},
 	data() {
 		return {
@@ -69,8 +67,8 @@ export default {
 			let endTime = new Date()
 			// 获取当前月份的1号时间
 			let startTime = new Date(endTime.getFullYear(), endTime.getMonth(), 1)
-			this.beginTime = this.formatDate(startTime)
-			this.endTime = this.formatDate(endTime)
+			this.beginTime = timestampToDate(startTime)
+			this.endTime = timestampToDate(endTime)
 		}
 	},
 	methods: {
@@ -78,6 +76,11 @@ export default {
 			console.log('搜索', v)
 			this.keywords = v
 			this.$refs.paging.reload()
+		},
+		gotoView() {
+			uni.navigateTo({
+				url: '/pages/packageE/record-collection/record-collection'
+			})
 		},
 		async queryList(page, pageNo) {
 			let obj = {
@@ -112,23 +115,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	.nav-box {
-		width: 100%;
-		height: 75rpx;
-		margin-bottom: 17rpx;
-		background-color: #fafbfd;
-		border-radius: 10rpx;
-		padding: 0 30rpx;
-		color: #9d9ea0;
-
-		.line {
-			width: 1rpx;
-			height: 30rpx;
-			background-color: #ccc;
-			margin: 0 15rpx;
-		}
-	}
-
 	.list {
 		margin-bottom: 17rpx;
 		.dataTitle {
@@ -152,5 +138,25 @@ export default {
 			}
 		}
 	}
+}
+
+.fixed-btn {
+	position: fixed;
+	z-index: 1000;
+	background-color: #FFAF38;
+	bottom: 170rpx;
+	right: 30rpx;
+	width: 200rpx;
+	height: 90rpx;
+	border-radius: 50rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 5px 5px 20px rgba(255, 175, 56, 0.5);
+}
+
+
+.fixed-btn image {
+	width: 140rpx;
 }
 </style>

@@ -102,6 +102,33 @@ export const getMaterialList = (data) => {
 	})
 }
 
+// 条形码
+export const getMaxBarCode = (data) => {
+	return request({
+		url: '/material/getMaxBarCode ',
+		method: 'GET',
+		data
+	})
+}
+
+// 增加商品
+export const addMaterial = (data) => {
+	return request({
+		url: '/material/add',
+		method: 'POST',
+		data
+	})
+}
+
+// 更新商品
+export const updateMaterial = (data) => {
+	return request({
+		url: '/material/update',
+		method: 'PUT',
+		data
+	})
+}
+
 export const deleteMaterial = (data) => {
 	return request({
 		url: '/material/delete',

@@ -9,7 +9,7 @@ export
  * @param {Date | string | number} inputDate - 输入的日期，可以是 Date 对象、日期字符串或时间戳
  * @returns {string} 格式化后的日期字符串
  */
-function formatDateToChinese(inputDate) {
+function formatDateToChinese(inputDate, week = true) {
 	let date;
 
 	if (typeof inputDate === 'string') {
@@ -53,9 +53,13 @@ function formatDateToChinese(inputDate) {
 	// 格式化月份和日期，确保两位数显示（例如：04月，09日）
 	const formattedMonth = month < 10 ? `0${month}` : `${month}`;
 	const formattedDay = day < 10 ? `0${day}` : `${day}`;
+    // 组合最终字符串
+	if (week) {
+		return `${year}.${formattedMonth}.${formattedDay} ${weekday}`;
+	} else {
+		return `${year}.${formattedMonth}.${formattedDay}`;
+	}
 
-	// 组合最终字符串
-	return `${year}.${formattedMonth}.${formattedDay} ${weekday}`;
 }
 
 /**
@@ -112,7 +116,7 @@ export function timestampToDate(timestamp, len = 3) {
  * @param {number|string} timestamp - 要转换的时间戳（毫秒或秒）
  * @returns {string} 格式化后的日期时间字符串
  */
-export function formatTimestamp(timestamp) {
+export function formatTimestamp(timestamp, slash = true) {
   // 将字符串类型的时间戳转换为数字
   let ts = typeof timestamp === 'string' ? parseInt(timestamp) : timestamp;
 
@@ -130,8 +134,10 @@ export function formatTimestamp(timestamp) {
   const hours = padZero(date.getHours());
   const minutes = padZero(date.getMinutes());
   const seconds = padZero(date.getSeconds());
+  
+  let str = slash ? '/' : '-'
 
-  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}${str}${month}${str}${day} ${hours}:${minutes}:${seconds}`;
 }
 
 /**

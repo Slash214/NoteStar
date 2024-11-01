@@ -12,6 +12,10 @@ export default {
 		show: {
 			type: Boolean,
 			default: false
+		},
+		all: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -37,7 +41,9 @@ export default {
 			id: item.id,
 			name: item.name
 		}))
-		list.unshift({ name: '全部门店', id: 0,})
+		if (this.all) {
+			list.unshift({ name: '全部门店', id: 0,})
+		}
 		console.log('list', list)
 		this.columns = [list]
 	},

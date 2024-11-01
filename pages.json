@@ -192,6 +192,20 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "daily-details/daily-details",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
+				},
+				{
+					"path" : "add-account/add-account",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		}

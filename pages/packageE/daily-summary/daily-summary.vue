@@ -10,7 +10,7 @@
 				<horizontal-card title="收入合计" :titlePrice="inAmount" subtitle="支出合计" :subtitlePrice="outAmount"></horizontal-card>
 			</block>
 
-			<view class="list" v-for="(item, index) in dataList" :key="item.id">
+			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClickItem(item)">
 				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
 				<view class="dataItem flex flex-between">
 					<view class="">
@@ -69,9 +69,17 @@ export default {
 			let startTime = new Date(endTime.getFullYear(), endTime.getMonth(), 1)
 			this.beginTime = timestampToDate(startTime)
 			this.endTime = timestampToDate(endTime)
+			this.$refs.paging.reload()
 		}
 	},
 	methods: {
+		handleClickItem(item) {
+			console.log(item)
+			let number = item.number
+			uni.navigateTo({
+				url: `/pages/packageE/daily-details/daily-details?number=${number}`
+			})
+		},
 		getSearchValue(v) {
 			console.log('搜索', v)
 			this.keywords = v

@@ -211,3 +211,30 @@ export const updateDepotHeadAndDetail = (data) => {
 		method: 'PUT'
 	})
 }
+
+
+// inOutItem/add
+export const addinOutItem = (data) => {
+	return request({
+		url: '/inOutItem/add',
+		data,
+		method: 'POST'
+	})
+}
+
+
+export const getDetailByNumber = (data) => {
+	return request({
+		url: '/inOutItem/getDetailByNumber',
+		data,
+		method: 'GET'
+	})
+}
+
+export const deleteInOutItem = (data) => {
+	return request({
+		url: '/inOutItem/delete',
+		data,
+		method: 'GET'
+	})
+}

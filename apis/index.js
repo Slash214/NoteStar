@@ -238,3 +238,20 @@ export const deleteInOutItem = (data) => {
 		method: 'GET'
 	})
 }
+
+export const deleteAccountItem = (data) => {
+	return request({
+		url: '/account/delete',
+		data,
+		method: 'GET'
+	})
+}
+
+export const addAccountItem = (data) => {
+	return request({
+		url: '/account/addAccount',
+		data,
+		method: 'POST'
+	})
+}
+

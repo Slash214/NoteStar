@@ -40,24 +40,6 @@
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
-		},
-		{
-			"path": "pages/packageC/add-stock/add-stock",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/packageC/product-details/product-details",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
-		{
-			"path": "pages/charts/custom-charts/custom-charts",
-			"style": {
-				"navigationBarTitleText": ""
-			}
 		}
 	],
 	"subPackages": [{
@@ -106,6 +88,22 @@
 				},
 				{
 					"path": "hot-selling/hot-selling",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/packageC",
+			"pages": [{
+					"path": "add-stock/add-stock",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "product-details/product-details",
 					"style": {
 						"navigationBarTitleText": ""
 					}

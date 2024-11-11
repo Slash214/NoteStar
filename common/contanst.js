@@ -9,3 +9,6 @@ export const PrivacyPolicy = "https://api.haoxianhui.com/static/privacyPolicy.ht
 export const BASE_URL = 'http://175.24.165.101:9999/jshERP-boot'
 export const IMAGE_OSS_URL = 'https://haoxianhui.com'
 export const UPLOAD_FILE_URL = `${BASE_URL}/systemConfig/upload`
+
+
+export const staticImageUrl = 'https://haoxianhui.com/hxh/front'

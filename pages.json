@@ -145,6 +145,13 @@
 					"style": {
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path" : "add-shop-data/add-shop-data",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},
@@ -185,24 +192,21 @@
 					}
 				},
 				{
-					"path" : "record-collection/record-collection",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "record-collection/record-collection",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "daily-details/daily-details",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "daily-details/daily-details",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "add-account/add-account",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "add-account/add-account",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				}
 			]

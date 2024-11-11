@@ -1,7 +1,7 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList" :default-page-size="20" :auto="!isCache" auto-show-back-to-top safe-area-inset-bottom>
 		<view slot="top">
-			<AppletHeader title="销售" left-icon="arrow-left" right-icon="plus"></AppletHeader>
+			<AppletHeader title="销售" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>
 			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
 		</view>
 
@@ -121,6 +121,13 @@ export default {
 		}
 	},
 	methods: {
+		rightClick() {
+			// 1是销售的  2 是进货的
+			let type = 1
+			uni.navigateTo({
+				url: '/pages/packageD/set-product/set-product'
+			})
+		},
 		getSearchValue(v) {
 			this.loading = true
 			console.log('value', v)

@@ -20,7 +20,7 @@
 		</view>
 		
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
-			<image src="/static/purchase/purchase.png" mode="aspectFit"></image>
+			<image :src="staticImageUrl + '/purchase/purchase.png'" mode="aspectFit"></image>
 		</view>
 	</z-paging>
 </template>
@@ -30,6 +30,9 @@ import { getDepotHeadList } from '@/apis'
 import { formatDateToChinese } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
+import { staticImageUrl } from '@/common/contanst'
+
+
 export default {
 	components: {
 		TagCountText,
@@ -37,6 +40,7 @@ export default {
 	},
 	data() {
 		return {
+			staticImageUrl,
 			loading: true,
 			dataList: [],
 			total: '',

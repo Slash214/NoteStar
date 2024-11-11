@@ -187,7 +187,7 @@ export default {
 				let { rows, total, totalStockCount } = data
 				let array = rows.map((item) => ({
 					...item,
-					imgList: item.imgName.split(',')
+					imgList: item?.imgName?.split(',') || []
 				}))
 
 				// console.error('array', array)

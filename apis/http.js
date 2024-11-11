@@ -40,6 +40,10 @@ const request = (options) => {
 							title: res.data?.message || '服务错误',
 							icon: 'none'
 						})
+						uni.clearStorageSync()
+						uni.reLaunch({
+							url: '/pages/login/login'	
+						})
 					}
 				} else {
 					// 处理 HTTP 状态码错误

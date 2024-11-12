@@ -134,7 +134,7 @@
 					</view>
 					<view class="flex flex-items-center mt5">
 						<text>本次实付：</text>
-						<u--text mode="price" :text="totalPrice" color="#ccc"></u--text>
+						<u--text mode="price" :text="form.changeAmount" color="#ccc"></u--text>
 					</view>
 				</view>
 
@@ -275,19 +275,30 @@ export default {
 		}
 	},
 	onShow() {
+		// 进货的accountId = 1
+		// 销售的accountId =
+
+		// 重置 loadIndex 和 cacheSelectList
+		this.loadIndex = 0
+		this.cacheSelectList = []
+
 		const list = uni.getStorageSync('selectList')
+
 		if (list) {
 			console.log('选择了商品', list)
 			const info = uni.getStorageSync('goodsInfo')
 			this.totalPrice = info.totalPrice
+			this.form.changeAmount = info.totalPrice
 			this.priceList[2].value = info.totalPrice
 			this.length = info.productKindCount
-			// this.cacheSelectList = list
 
 			// 开始分批次加载数据
 			this.loadBatchData(list)
 			// 计算毛利润
 			this.genGrossPrice(list)
+
+			// 重新计算总金额
+			this.calculateTotalAmount()
 		}
 	},
 	onLoad(options) {
@@ -304,18 +315,24 @@ export default {
 	methods: {
 		onPriceChange: debounce(function (item) {
 			console.log(item)
-			
-			 // 整单折扣
+
+			// 整单折扣
 			if (item.id === 1) {
 				const discountRate = item.value / 100
-				this.priceList.find((i) => i.id === 2).value = this.formatMoney(
-					this.totalPrice * (1 - discountRate)
-				) // 更新优惠金额
+				this.priceList.find((i) => i.id === 2).value = this.formatMoney(this.totalPrice * (1 - discountRate)) // 更新优惠金额
 				this.priceList.find((i) => i.id === 3).value = this.formatMoney(this.totalPrice * discountRate) // 更新折后金额
 			}
 			// 优惠金额
 			if (item.id === 2) {
-				
+				const discountMoney = item.value
+				if (this.totalPrice !== 0) {
+					const newDiscountLastMoney = this.totalPrice - discountMoney
+					this.priceList.find((i) => i.id === 3).value = this.formatMoney(newDiscountLastMoney) // 更新折后金额
+					this.priceList.find((i) => i.id === 1).value = (
+						(newDiscountLastMoney / this.totalPrice) *
+						100
+					).toFixed(2) // 更新整单折扣
+				}
 			}
 			if (item.id === 3) {
 				const discountLastMoney = item.value
@@ -324,18 +341,16 @@ export default {
 						(discountLastMoney / this.totalPrice) *
 						100
 					).toFixed(2) // 更新整单折扣
-					this.priceList.find((i) => i.id === 2).value = this.formatMoney(
-						this.totalPrice - discountLastMoney
-					) // 更新优惠金额
+					this.priceList.find((i) => i.id === 2).value = this.formatMoney(this.totalPrice - discountLastMoney) // 更新优惠金额
 				}
 			}
 			this.calculateTotalAmount()
-			
-			
 		}, 300),
 		calculateTotalAmount() {
 			const discountLastMoney = Number(this.priceList.find((i) => i.id === 3).value)
+			this.form.discountLastMoney = discountLastMoney
 			const otherMoney = Number(this.priceList.find((i) => i.id === 4).value)
+			this.form.otherMoney = otherMoney
 			this.form.changeAmount = discountLastMoney + otherMoney
 			console.log('应收金额:', this.form.changeAmount)
 		},
@@ -371,10 +386,12 @@ export default {
 			}
 
 			console.log('this', this.cacheSelectList)
+			// type: '出库',
+			// subType: '零售',
 			// return
 			let info = {
-				type: '出库',
-				subType: '零售',
+				type: this.type === 1 ? '出库' : '入库',
+				subType: this.type === 1 ? '零售' : '采购',
 				depotId: this.curSelectStore.id,
 				organId: 60, // 客户id，写死
 				operTime: formatTimestamp(this.curTimeTemp),
@@ -384,9 +401,9 @@ export default {
 				remark: this.remark,
 				fileName: this.fileList,
 				...this.form,
-				totalPrice: this.totalPrice,
-				accountId: '',
-				originalTotalPrice: '' // 原始总价
+				totalPrice: this.form.changeAmount,
+				accountId: 1,
+				originalTotalPrice: this.totalPrice // 原始总价
 			}
 
 			let rows = this.cacheSelectList.map((item) => ({
@@ -399,7 +416,7 @@ export default {
 				barCode: item.mbarCode,
 				operNumber: item.nums,
 				unitPrice: item.commodityDecimal,
-				allPrice: item?.allPrice,
+				allPrice: item?.allPrice || 0,
 				remark: item?.remark
 			}))
 
@@ -434,20 +451,20 @@ export default {
 			this.timeShow = false
 		},
 		loadBatchData(list) {
-			const start = this.loadIndex * this.batchSize
-			const end = start + this.batchSize
-			const batchData = list.slice(start, end)
-			// 合并数据
-			this.cacheSelectList = this.cacheSelectList.concat(batchData)
-			this.length = this.cacheSelectList.length
-			// 判断是否还有更多数据需要加载
-			if (end < list.length) {
-				this.loadIndex++
-				// 每隔一秒加载下一批数据
-				setTimeout(() => {
-					this.loadBatchData(list)
-				}, 1000)
-			}
+		    const start = this.loadIndex * this.batchSize
+		    const end = start + this.batchSize
+		    const batchData = list.slice(start, end)
+		    // 合并数据
+		    this.cacheSelectList = this.cacheSelectList.concat(batchData)
+		    this.length = this.cacheSelectList.length
+		    // 判断是否还有更多数据需要加载
+		    if (end < list.length) {
+		        this.loadIndex++
+		        // 每隔一秒加载下一批数据
+		        setTimeout(() => {
+		            this.loadBatchData(list)
+		        }, 1000)
+		    }
 		},
 		genGrossPrice(list) {
 			let totalProfit = list.reduce((accumulator, currentItem) => {
@@ -461,9 +478,49 @@ export default {
 
 			console.log('mao', this.form.grossProfit)
 		},
+		// 删除商品
 		handleClickAction(e) {
 			console.log('删除', e)
-			console.error('zsgf', this.cacheSelectList)
+			console.error('当前商品列表', this.cacheSelectList)
+			// 从 cacheSelectList 中移除被删除的商品
+			this.cacheSelectList = this.cacheSelectList.filter((item) => item.name !== e.name)
+			// 更新缓存
+			uni.setStorageSync('selectList', this.cacheSelectList)
+
+			// 更新商品数量
+			this.length = this.cacheSelectList.length
+
+			// 重新计算总价格
+			let totalPrice = this.cacheSelectList.reduce((accumulator, currentItem) => {
+				const unitPrice = new Big(currentItem.commodityDecimal)
+				const quantity = new Big(currentItem.nums)
+				const itemTotalPrice = unitPrice.times(quantity)
+				return accumulator.plus(itemTotalPrice)
+			}, new Big(0))
+			this.totalPrice = totalPrice.toFixed(2)
+
+			// 重新计算毛利润
+			this.genGrossPrice(this.cacheSelectList)
+
+			// 重新计算折扣和应付金额
+			this.recalculateDiscounts()
+		},
+		recalculateDiscounts() {
+			// 获取整单折扣
+			const discountRate = Number(this.priceList.find((i) => i.id === 1).value) / 100
+			// 计算优惠金额
+			const discountMoney = (this.totalPrice * (1 - discountRate)).toFixed(2)
+			// 计算折后金额
+			const discountLastMoney = (this.totalPrice * discountRate).toFixed(2)
+			// 更新 priceList 中的值
+			this.priceList.find((i) => i.id === 2).value = discountMoney
+			this.priceList.find((i) => i.id === 3).value = discountLastMoney
+
+			// 更新表单数据
+			this.form.discountLastMoney = Number(discountLastMoney)
+			const otherMoney = Number(this.priceList.find((i) => i.id === 4).value)
+			this.form.otherMoney = otherMoney
+			this.form.changeAmount = Number(discountLastMoney) + otherMoney
 		},
 		selectStore() {
 			this.storeShow = !this.storeShow
@@ -521,6 +578,7 @@ export default {
 				...item,
 				name: item.userName
 			}))
+			this.curSelectSales = this.salesRepList[0]
 			this.serviceList[2].value = this.salesRepList[0]?.name
 			this.saleColumns = [this.salesRepList]
 

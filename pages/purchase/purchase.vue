@@ -50,7 +50,8 @@ export default {
 		}
 	},
 	onLoad() {
-		
+		uni.removeStorageSync('selectList')
+		uni.removeStorageSync('currPage')
 	},
 	methods: {
 		screening() {

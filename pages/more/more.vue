@@ -5,8 +5,13 @@
 			<view class="card" v-for="item in list" :key="item.id">
 				<view v-text="item.title" class="title"></view>
 				<view class="card-content">
-					<view class="card-content-item flex-column flex-center flex-items-center" v-for="(el, index) in item.children" :key="index" @click="handleClick(el)">
-						<image :src="el.imgUrl" mode="widthFix"></image>
+					<view
+						class="card-content-item flex-column flex-center flex-items-center"
+						v-for="(el, index) in item.children"
+						:key="index"
+						@click="handleClick(el)"
+					>
+						<image :src="staticImageUrl + el.imgUrl" mode="widthFix"></image>
 						<text>{{ el.title }}</text>
 					</view>
 				</view>
@@ -16,9 +21,11 @@
 </template>
 
 <script>
+import { staticImageUrl } from '@/common/contanst'
 export default {
 	data() {
 		return {
+			staticImageUrl,
 			list: [
 				{
 					id: 1,
@@ -27,7 +34,7 @@ export default {
 						{
 							title: '库存查询',
 							path: '/pages/packageE/stock-check/stock-check',
-							imgUrl: '/static/more/kucunchaxun.png'
+							imgUrl: '/more/kucunchaxun.png'
 						}
 					]
 				},
@@ -38,17 +45,17 @@ export default {
 						{
 							title: '日常收支',
 							path: '/pages/packageE/daily-summary/daily-summary',
-							imgUrl: '/static/more/richangshouzhi.png'
+							imgUrl: '/more/richangshouzhi.png'
 						},
 						{
 							title: '资金流水',
 							path: '/pages/packageE/cash-flow/cash-flow',
-							imgUrl: '/static/more/zijinliushui.png'
+							imgUrl: '/more/zijinliushui.png'
 						},
 						{
 							title: '账户',
 							path: '/pages/packageE/account/account',
-							imgUrl: '/static/more/zhanghu.png'
+							imgUrl: '/more/zhanghu.png'
 						}
 					]
 				},
@@ -59,7 +66,7 @@ export default {
 						{
 							title: '销售统计',
 							path: '/pages/packageE/sales-statistics/sales-statistics',
-							imgUrl: '/static/more/xiaoshoutongji.png'
+							imgUrl: '/more/xiaoshoutongji.png'
 						}
 					]
 				}
@@ -68,6 +75,7 @@ export default {
 	},
 	onLoad() {
 		// 根据身份去判断
+		uni.removeStorageSync('selectList')
 	},
 	methods: {
 		handleClick(e) {

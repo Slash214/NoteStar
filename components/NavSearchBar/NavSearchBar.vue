@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import debounce from 'lodash/debounce'
+// import debounce from 'lodash/debounce'
+import { debounce } from '@/utils'
 export default {
 	name: 'NavSearchBar',
 	props: {

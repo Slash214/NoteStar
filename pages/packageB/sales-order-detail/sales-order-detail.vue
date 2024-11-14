@@ -1,10 +1,17 @@
 <template>
 	<view>
-		<AppletHeader title="销售单详情"></AppletHeader>
+		<AppletHeader
+			:title="type === 1 ? '销售单详情' : '进货单详情'"
+			right-icon="more-dot-fill"
+			@rightClick="rightClick"
+		></AppletHeader>
 		<view class="container">
 			<view class="white box">
 				<view class="flex flex-between flex-items-center">
-					<text>{{ name }}</text>
+					<view class="flex">
+						<text v-if="isDelete">已作废</text>
+						<text>{{ name }}</text>
+					</view>
 					<text>{{ time }}</text>
 				</view>
 				<u-divider :dot="true"></u-divider>
@@ -17,13 +24,13 @@
 			<view class="white product mt10">
 				<view class="title mb20">
 					<text class="line"></text>
-					<text>销售商品</text>
+					<text>{{ type === 1 ? '销售商品' : '进货商品' }}</text>
 				</view>
-			
-			    <view class="flex mb20" v-for="item in productList" :key="item.id">
-			     	<view class="imagebox">
-			     		<image :src="item.imgName" mode="aspectFit"></image>
-			     	</view>
+
+				<view class="flex mb20" v-for="item in productList" :key="item.id">
+					<view class="imagebox">
+						<image :src="item.imgName" mode="aspectFit"></image>
+					</view>
 					<view class="content">
 						<u--text :text="item.name"></u--text>
 						<u--text :text="item.barCode"></u--text>
@@ -31,12 +38,12 @@
 							<view class="flex">
 								<u--text mode="price" :text="item.unitPrice"></u--text>
 								<text class="ml5 mr5">x</text>
-								<text>{{item.operNumber}}</text>
+								<text>{{ item.operNumber }}</text>
 							</view>
 							<u--text align="right" mode="price" :text="item.allPrice"></u--text>
 						</view>
 					</view>
-			    </view>
+				</view>
 			</view>
 
 			<view class="white box mt10">
@@ -50,13 +57,36 @@
 				<u--text text="备注"></u--text>
 				<u--text :text="remark"></u--text>
 			</view>
+
+			<view class="fixed-bottom" v-if="!isDelete">
+				<view class="fixed-bottom-button" @click="fixItems">
+					<u-icon size="24" name="edit-pen"></u-icon>
+					<text>修改</text>
+				</view>
+			</view>
+
+			<u-modal
+				showCancelButton
+				:show="modalShow"
+				@confirm="onDelete"
+				@cancel="modalShow = false"
+				title="温馨提示"
+				content="确定作废当前单据吗？作废后不可恢复"
+			></u-modal>
+			<u-action-sheet
+				:actions="actionsList"
+				cancelText="取消"
+				@close="show = false"
+				@select="onSelect"
+				:show="show"
+			></u-action-sheet>
 		</view>
 	</view>
 </template>
 
 <script>
 import { formatDateToChinese } from '@/utils'
-import { getDetailByNumbe } from '@/apis'
+import { getDetailByNumbe, deleteDepotHead } from '@/apis'
 export default {
 	data() {
 		return {
@@ -66,20 +96,50 @@ export default {
 			name: '',
 			time: '',
 			remark: '',
-			productList: []
+			productList: [],
+			type: 1,
+			show: false,
+			modalShow: false,
+			actionsList: [
+				{ id: 1, name: '历史记录' },
+				{ id: 2, name: '作废' }
+			],
+			id: 0,
+			isDelete: false
 		}
 	},
 	onLoad(options) {
+		// number 订单号  和 type 类型 1 销售  2 进货
 		console.log('是多少', options)
 		this.number = options?.number || ''
+		this.type = +options?.type || 1
 		this.getData()
 	},
 	methods: {
+		onSelect(e) {
+			console.log(e)
+			if (e.id === 2) {
+				// 作废
+				this.modalShow = true
+			}
+		},
+		async onDelete() {
+			console.log('确认删除')
+			this.modalShow = false
+			await deleteDepotHead({ id: this.id })
+			this.isDelete = true
+		},
+		fixItems() {
+			console.log('修改')
+		},
+		rightClick() {
+			this.show = !this.show
+		},
 		async getData() {
 			const { data } = await getDetailByNumbe({
 				number: this.number
 			})
-
+			this.id = data.id
 			let {
 				number,
 				depotName,
@@ -125,7 +185,24 @@ export default {
 
 <style scoped lang="scss">
 .container {
-	padding-bottom: 80px;
+	padding-bottom: 100px;
+
+	.fixed-bottom {
+		box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+		&-button {
+			width: 240rpx;
+			height: 90rpx;
+			background: #fff;
+			border-radius: 20rpx;
+			border: 1px solid #ccc;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: #000;
+			margin: auto;
+		}
+	}
+
 	.white {
 		background-color: #fff;
 		padding: 25rpx;
@@ -143,13 +220,13 @@ export default {
 				margin-right: 15rpx;
 			}
 		}
-		
+
 		.imagebox {
 			width: 60px;
 			height: 60px;
 			border-radius: 20rpx;
 			margin-right: 10px;
-			background-color: #CDD7DC;
+			background-color: #cdd7dc;
 			overflow: hidden;
 		}
 		.content {

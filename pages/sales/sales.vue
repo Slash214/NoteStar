@@ -1,7 +1,13 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="销售" left-icon="account" right-icon=" " :autoBack="false"></AppletHeader>
+			<AppletHeader
+				:autoBack="false"
+				@leftClick="modalVisible = true"
+				title="销售"
+				left-icon="account"
+				right-icon=" "
+			></AppletHeader>
 			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
 		</template>
 
@@ -10,7 +16,9 @@
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClick(item)">
-				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
+				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">
+					{{ item.time }}
+				</view>
 				<view class="dataItem flex flex-between">
 					<view class="">
 						<view class="organName">{{ item.organName }}</view>
@@ -24,6 +32,8 @@
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 			<image :src="staticImageUrl + '/sales/kaidan.png'" mode="aspectFit"></image>
 		</view>
+
+		<user-popup :visible="modalVisible" @close="modalVisible = false"></user-popup>
 	</z-paging>
 </template>
 
@@ -33,14 +43,17 @@ import { formatDateToChinese, timestampToDate } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
 import { staticImageUrl } from '@/common/contanst'
+import UserPopup from '@/components/UserPopup/UserPopup.vue'
 
 export default {
 	components: {
 		TagCountText,
-		NavSearchBar
+		NavSearchBar,
+		UserPopup
 	},
 	data() {
 		return {
+			modalVisible: false,
 			staticImageUrl,
 			loading: true,
 			dataList: [],
@@ -68,11 +81,11 @@ export default {
 			let { startTime, endTime, arr } = screenData
 			console.log('筛选结果', screenData)
 			let obj = {}
-			obj.beginTime = `${startTime} 00:00:00`;
-			obj.endTime = `${endTime} 23:59:59`;
-			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id;
-			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id;
-			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id;
+			obj.beginTime = `${startTime} 00:00:00`
+			obj.endTime = `${endTime} 23:59:59`
+			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
+			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
+			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
 			this.reqObj = obj
 			console.log('请求测试', this.reqObj)
 			this.$refs.paging.reload()
@@ -86,9 +99,8 @@ export default {
 			})
 		},
 		handleClick(item) {
-			// console.log('item', item)
 			uni.navigateTo({
-				url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}`
+				url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}&type=1`
 			})
 		},
 		getKeyWords(v) {

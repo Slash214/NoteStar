@@ -105,7 +105,7 @@ export default {
 	},
 	onLoad() {},
 	onShow() {
-		// this.$refs.paging.reload()
+		this.$refs.paging.reload()
 	},
 	methods: {
 		leftClick() {
@@ -113,7 +113,7 @@ export default {
 		},
 		addProduct() {
 			console.log('添加商品')
-			uni.redirectTo({
+			uni.navigateTo({
 				url: '/pages/packageD/set-product/set-product?isUpdate=false'
 			})
 		},

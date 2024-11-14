@@ -91,7 +91,9 @@ export default {
 			})
 		},
 		onOpenOrder() {
-			console.log('开单')
+			uni.navigateTo({
+				url: '/pages/packageB/set-form/set-form?type=1'
+			})
 		}
 	}
 }

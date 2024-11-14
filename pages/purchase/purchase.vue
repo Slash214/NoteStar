@@ -1,13 +1,13 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<AppletHeader title="进货" left-icon="account" right-icon=" "></AppletHeader>
+		<AppletHeader :autoBack="false" @leftClick="modalVisible = true" title="进货" left-icon="account" right-icon=" "></AppletHeader>
 		<nav-search-bar desc="单号/客户/商品/备注"></nav-search-bar>
 		
 		<view class="container">
 			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
-			<view class="list" v-for="(item, index) in dataList" :key="item.id">
+			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClick(item)">
 				<view class="dataTitle" v-if="index === 0 || item.time !== dataList[index - 1].time">{{ item.time }}</view>
 				<view class="dataItem flex flex-between">
 					<view class="">
@@ -22,6 +22,8 @@
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 			<image :src="staticImageUrl + '/purchase/purchase.png'" mode="aspectFit"></image>
 		</view>
+		
+		<user-popup :visible="modalVisible" @close="modalVisible = false"></user-popup>
 	</z-paging>
 </template>
 
@@ -31,15 +33,17 @@ import { formatDateToChinese } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import TagCountText from '@/components/TagCountText/TagCountText.vue'
 import { staticImageUrl } from '@/common/contanst'
-
+import UserPopup from '@/components/UserPopup/UserPopup.vue'
 
 export default {
 	components: {
 		TagCountText,
-		NavSearchBar
+		NavSearchBar,
+		UserPopup
 	},
 	data() {
 		return {
+			modalVisible: false,
 			staticImageUrl,
 			loading: true,
 			dataList: [],
@@ -71,6 +75,13 @@ export default {
 		handleClickSearch(v) {
 			console.log('开始搜索', v)
 			this.keyword = v
+		},
+		handleClick(item) {
+			console.log(item)
+			let number = item.number
+			uni.navigateTo({
+				url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}`
+			})
 		},
 		async queryList(pageNo, pageSize) {
 			let obj = {}

@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<AppletHeader title="筛选"></AppletHeader>
+		<AppletHeader title="筛选" right-icon=" "></AppletHeader>
 		<view class="block">
 			<u--text bold margin="0 0 10px 5px" size="18" text="时间"></u--text>
 			<view class="grid grid-4">

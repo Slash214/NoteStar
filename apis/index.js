@@ -194,6 +194,16 @@ export const addDepotHeadAndDetail = (data) => {
 	})
 }
 
+// 作废单据
+export const deleteDepotHead = (data) => {
+	return request({
+		url: '/depotHead/delete',
+		data,
+		method: 'GET'
+	})
+}
+
+
 // 生成订单号
 export const genbuildNumber = (data) => {
 	return request({

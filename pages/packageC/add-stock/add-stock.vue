@@ -1,5 +1,13 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList" :default-page-size="20" :auto="!isCache" auto-show-back-to-top safe-area-inset-bottom>
+	<z-paging
+		ref="paging"
+		v-model="dataList"
+		@query="queryList"
+		:default-page-size="20"
+		:auto="!isCache"
+		auto-show-back-to-top
+		safe-area-inset-bottom
+	>
 		<view slot="top">
 			<AppletHeader title="销售" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>
 			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
@@ -12,17 +20,32 @@
 				<view class="list-item">
 					<view class="flex flex-between">
 						<view class="image-box">
-							<u--image radius="10" :showLoading="true" :src="item.imgName" width="60px" height="60px"></u--image>
+							<u--image
+								radius="10"
+								:showLoading="true"
+								:src="item.imgName"
+								width="60px"
+								height="60px"
+							></u--image>
 						</view>
 						<view class="content">
 							<u--text size="18" color="#000" :text="item.name"></u--text>
 							<u--text color="#9D9EA0" margin="5px 0" :text="item.mbarCode"></u--text>
 							<u--text margin="0 0 5px 0" :text="'库存：' + item.stock"></u--text>
-							<u--text mode="price" :text="item.purchaseDecimal"></u--text>
+							<u--text
+								mode="price"
+								:text="type === 1 ? item.commodityDecimal : item.purchaseDecimal"
+							></u--text>
 						</view>
 					</view>
 					<view class="list-item-number">
-						<u-number-box :longPress="false" :min="0" integer @change="handleClick(item, $event)" v-model="item.nums"></u-number-box>
+						<u-number-box
+							:longPress="false"
+							:min="0"
+							integer
+							@change="handleClick(item, $event)"
+							v-model="item.nums"
+						></u-number-box>
 					</view>
 				</view>
 			</view>
@@ -40,7 +63,12 @@
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'fixed-button istype1' : 'fixed-button istype2' " @click="handleSelectionSuccess">选好了</view>
+				<view
+					:class="type === 1 ? 'fixed-button istype1' : 'fixed-button istype2'"
+					@click="handleSelectionSuccess"
+				>
+					选好了
+				</view>
 			</view>
 		</template>
 	</z-paging>
@@ -51,7 +79,7 @@ import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import FixedBottom from '@/components/FixedBottom/FixedBottom.vue'
 import { getMaterialList } from '@/apis/index.js'
 import Big from 'big.js'
-import cloneDeep from 'lodash/cloneDeep'
+import { cloneDeep } from '@/utils'
 
 export default {
 	components: {
@@ -69,12 +97,14 @@ export default {
 			cachePage: 1,
 			typeArray: {
 				1: { text: '销售', desc: '名称/条形码/简拼' },
-				2: { text: '进货', desc: '单号/客户/商品/备注' },
+				2: { text: '进货', desc: '单号/客户/商品/备注' }
 			},
 			type: 1
 		}
 	},
-	async onLoad() {
+	async onLoad(options) {
+		console.log(options)
+		this.type = +options?.type || 1
 		const storedList = uni.getStorageSync('selectList')
 		if (storedList) {
 			this.isCache = true
@@ -84,6 +114,7 @@ export default {
 				return {
 					...item,
 					purchaseDecimal: new Big(item.purchaseDecimal),
+					commodityDecimal: new Big(item.commodityDecimal),
 					nums: new Big(item.nums) // 将字符串转换回 Big 对象
 				}
 			})
@@ -114,7 +145,11 @@ export default {
 			return this.selectList.reduce((sum, item) => sum.plus(item.nums), new Big(0))
 		},
 		totalPrice() {
-			return this.selectList.reduce((sum, item) => sum.plus(item.nums.times(item.purchaseDecimal)), new Big(0))
+			return this.selectList.reduce(
+				(sum, item) =>
+					sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
+				new Big(0)
+			)
 		},
 		productKindCount() {
 			return this.selectList.length
@@ -144,7 +179,7 @@ export default {
 				stock: item.stock,
 				mbarCode: item.mbarCode,
 				meId: item.meId,
-				commodityDecimal: item.commodityDecimal,
+				commodityDecimal: new Big(item.commodityDecimal),
 				costPrice: item.costPrice
 			}))
 		},
@@ -167,6 +202,7 @@ export default {
 				return {
 					...item,
 					purchaseDecimal: item.purchaseDecimal.toString(),
+					commodityDecimal: item.commodityDecimal.toString(),
 					nums: item.nums.toString() // 将 Big 对象转换为字符串
 				}
 			})
@@ -283,11 +319,11 @@ export default {
 		color: #fff;
 		font-weight: 700;
 	}
-	
+
 	.istype1 {
-		background: linear-gradient(to right, #5FCADD, #6ADAE8);
+		background: linear-gradient(to right, #5fcadd, #6adae8);
 	}
-	
+
 	.istype2 {
 		background: linear-gradient(to right, #fa6400, #f79151);
 	}

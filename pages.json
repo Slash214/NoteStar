@@ -107,6 +107,13 @@
 					"style": {
 						"navigationBarTitleText": ""
 					}
+				},
+				{
+					"path" : "shop-result/shop-result",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},

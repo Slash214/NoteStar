@@ -11,7 +11,12 @@
 		<view class="grid">
 			<view class="grid-item" v-for="item of cardList" :key="item.id">
 				<u--text size="14" color="#B7E9FF" :text="item.title"></u--text>
-				<u--text bold size="24" color="#fff" :text="item.id === 5 ? `${item.price * 100}.00%` : formatMoney(item.price)"></u--text>
+				<u--text
+					bold
+					size="24"
+					color="#fff"
+					:text="item.id === 5 ? `${Math.round(item.price * 100)}.00%` : formatMoney(item.price)"
+				></u--text>
 			</view>
 			<view class="abs" @click="modalVisible = true">
 				<u-icon name="question-circle" size="18" color="#fff"></u-icon>
@@ -22,7 +27,13 @@
 			<view class="list" v-for="item in dataList" :key="item.id">
 				<view class="header">
 					<view class="img-box">
-						<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px" mode="aspectFit"></u--image>
+						<u--image
+							:showLoading="true"
+							:src="item.imgName"
+							width="60px"
+							height="60px"
+							mode="aspectFit"
+						></u--image>
 					</view>
 					<u--text size="16" :text="item.materialName" bold color="#000"></u--text>
 				</view>
@@ -42,7 +53,7 @@
 					</view>
 					<view class="main-item">
 						<text>毛利率：</text>
-						<text>{{ item.salesGrossProfitMargin * 100 }}.00%</text>
+						<text>{{ Math.round(item.salesGrossProfitMargin * 100) }}.00%</text>
 					</view>
 					<view class="main-item">
 						<text>销售：</text>
@@ -57,8 +68,8 @@
 				<u--text size="18" color="#000" text="说明" bold align="center"></u--text>
 				<view class="modal-box">
 					<view class="mb20" v-for="item in textList" :key="item.id">
-						<text class="title">{{item.text}}</text>
-						<text>{{item.desc}}</text>
+						<text class="title">{{ item.text }}</text>
+						<text>{{ item.desc }}</text>
 					</view>
 				</view>
 			</view>
@@ -88,7 +99,7 @@ export default {
 				{ id: 1, text: '毛利', desc: '= 商品销售额 - 销售成本' },
 				{ id: 2, text: '销售毛利率', desc: '= 毛利 / 商品销售额' },
 				{ id: 3, text: '商品销售额', desc: '指销售商品的金额，不包含运费和抹零' },
-				{ id: 4, text: '销售成本', desc: '销售商品的成本根据商品每次进货价加权平均计算得出' },
+				{ id: 4, text: '销售成本', desc: '销售商品的成本根据商品每次进货价加权平均计算得出' }
 			],
 			show: true,
 			formatMoney,
@@ -119,6 +130,9 @@ export default {
 		}
 	},
 	methods: {
+		formatToTwoDecimalPlaces(value) {
+			return parseFloat(value.toFixed(2))
+		},
 		getSearchValue(v) {
 			console.log(v)
 			this.keywords = v
@@ -155,12 +169,12 @@ export default {
 				console.log(data)
 				let { rows, totalSales } = data
 
-				this.cardList[0].price = totalSales.totalSalesPrice
-				this.cardList[1].price = totalSales.totalSalesCount
-				this.cardList[2].price = totalSales.totalSalespurchasePrice
-				this.cardList[3].price = totalSales.totalSalesGrossProfit
-				this.cardList[4].price = totalSales.totalSalesGrossProfitMargin
-
+				this.cardList[0].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesPrice)
+				this.cardList[1].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesCount)
+				this.cardList[2].price = this.formatToTwoDecimalPlaces(totalSales.totalSalespurchasePrice)
+				this.cardList[3].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfit)
+				this.cardList[4].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfitMargin)
+				// console.log('this.cardList[4].price', this.cardList[4].price)
 				let array = rows
 				this.$refs.paging.complete(array)
 				// this.loading = false
@@ -207,9 +221,9 @@ export default {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		
+
 		.title {
-			color: #3775FE;
+			color: #3775fe;
 		}
 	}
 }
@@ -238,12 +252,12 @@ export default {
 		.main {
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
-			grid-column-gap: 30rpx;
+			grid-column-gap: 20rpx;
 			grid-row-gap: 10rpx;
 			&-item {
 				text {
 					&:first-child {
-						width: 184rpx;
+						width: 164rpx;
 						color: #737373;
 					}
 				}

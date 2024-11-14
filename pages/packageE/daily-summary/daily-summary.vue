@@ -26,12 +26,13 @@
 		</view>
 		
 		<view class="fixed-btn" @click="gotoView">
-			<image src="/static/more/inOut.png" mode="aspectFit"></image>
+			<image :src="staticImageUrl + '/more/inOut.png'" mode="aspectFit"></image>
 		</view>
 	</z-paging>
 </template>
 
 <script>
+import { staticImageUrl } from '@/common/contanst'
 import { getInOutinfoList } from '@/apis'
 import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 import { formatDateToChinese, timestampToDate } from '@/utils'
@@ -43,6 +44,7 @@ export default {
 	},
 	data() {
 		return {
+			staticImageUrl,
 			keywords: '',
 			salesMan: '',
 			beginTime: '',

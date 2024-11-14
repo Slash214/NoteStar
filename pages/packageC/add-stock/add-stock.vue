@@ -9,7 +9,7 @@
 		safe-area-inset-bottom
 	>
 		<view slot="top">
-			<AppletHeader title="销售" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>
+			<AppletHeader :title="type === 1 ? '销售' : '进货'" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>
 			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
 		</view>
 
@@ -23,7 +23,7 @@
 							<u--image
 								radius="10"
 								:showLoading="true"
-								:src="item.imgName"
+								:src="item.cover"
 								width="60px"
 								height="60px"
 							></u--image>
@@ -108,7 +108,7 @@ export default {
 		const storedList = uni.getStorageSync('selectList')
 		if (storedList) {
 			this.isCache = true
-			const page = uni.getStorageSync('currPage')
+			const page = uni.getStorageSync('currPage') || 1
 			this.currPage = +page
 			this.selectList = storedList.map((item) => {
 				return {
@@ -170,18 +170,25 @@ export default {
 			this.$refs.paging.reload()
 		},
 		formatData(data) {
-			return data.map((item) => ({
-				nums: new Big(0),
-				id: item.id,
-				name: item.name,
-				imgName: item.imgName,
-				purchaseDecimal: new Big(item.purchaseDecimal),
-				stock: item.stock,
-				mbarCode: item.mbarCode,
-				meId: item.meId,
-				commodityDecimal: new Big(item.commodityDecimal),
-				costPrice: item.costPrice
-			}))
+			return data.map(item => {
+				
+				const imgList = item?.imgName?.split(',') || [] 
+				const cover = imgList[0] || '' 
+				return {
+					nums: new Big(0),
+					id: item.id,
+					name: item.name,
+					// imgName: item.imgName,
+					imgList,
+					cover,
+					purchaseDecimal: new Big(item.purchaseDecimal),
+					stock: item.stock,
+					mbarCode: item.mbarCode,
+					meId: item.meId,
+					commodityDecimal: new Big(item.commodityDecimal),
+					costPrice: item.costPrice
+				}
+			})
 		},
 		handleSelectionSuccess() {
 			console.log(this.selectList)

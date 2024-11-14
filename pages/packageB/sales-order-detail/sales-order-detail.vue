@@ -29,7 +29,7 @@
 
 				<view class="flex mb20" v-for="item in productList" :key="item.id">
 					<view class="imagebox">
-						<image :src="item.imgName" mode="aspectFit"></image>
+						<image v-if="item.cover" mode="widthFix" :src="item.cover"></image>
 					</view>
 					<view class="content">
 						<u--text :text="item.name"></u--text>
@@ -85,8 +85,9 @@
 </template>
 
 <script>
-import { formatDateToChinese } from '@/utils'
+import { formatDateToChinese, formatImageArray } from '@/utils'
 import { getDetailByNumbe, deleteDepotHead } from '@/apis'
+import Big from 'big.js'
 export default {
 	data() {
 		return {
@@ -105,7 +106,8 @@ export default {
 				{ id: 2, name: '作废' }
 			],
 			id: 0,
-			isDelete: false
+			isDelete: false,
+			updateData: {}
 		}
 	},
 	onLoad(options) {
@@ -130,7 +132,62 @@ export default {
 			this.isDelete = true
 		},
 		fixItems() {
-			console.log('修改')
+			// 去修改前需要记录数据
+			console.log('修改', this.productList)
+
+			// let purchaseDecimal = 0 , commodityDecimal = 0
+			// if (this.type === 1) {
+			// }
+
+			let selectList = this.productList.map((item) => ({
+				id: item.materialId,
+				cover: item.cover,
+				imgList: item.imgList,
+				mbarCode: item.barCode,
+				name: item.name,
+				stock: item.stock,
+				purchaseDecimal: new Big(item.purchaseDecimal),
+				commodityDecimal: new Big(item.commodityDecimal),
+				nums: new Big(item.operNumber),
+				costPrice: item.costPrice,
+				meId: item.meId,
+				total: item.allPrice
+			}))
+			console.log(selectList)
+
+			let total = selectList.reduce((sum, item) => sum.plus(item.nums), new Big(0))
+			let totalPrice = selectList.reduce(
+				(sum, item) =>
+					sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
+				new Big(0)
+			)
+			console.log('其他参数', this.updateData)
+			let goodsInfo = {
+				productKindCount: selectList.length,
+				total: total.toFixed(),
+				totalPrice: totalPrice.toFixed()
+			}
+			console.log('其他参数', goodsInfo)
+			uni.setStorageSync('goodsInfo', goodsInfo)
+			uni.setStorageSync('goodsUpdate', this.updateData)
+			this.saveSelectList(selectList)
+			// return
+			uni.navigateTo({
+				url: `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1`
+			})
+		},
+		
+		saveSelectList(selectList) {
+			// 深拷贝 selectList，以免修改原始数据
+			const listToStore = selectList.map((item) => {
+				return {
+					...item,
+					purchaseDecimal: item.purchaseDecimal.toString(),
+					commodityDecimal: item.commodityDecimal.toString(),
+					nums: item.nums.toString() // 将 Big 对象转换为字符串
+				}
+			})
+			uni.setStorageSync('selectList', listToStore)
 		},
 		rightClick() {
 			this.show = !this.show
@@ -155,8 +212,39 @@ export default {
 				organName,
 				remark,
 				fileName,
-				depotHeadMaterialVoList
+				depotHeadMaterialVoList,
+				depotId,
+				salesMan,
+				subType,
+				type,
+				creator,
+				moneyAroundDown,
+				discountMoney,
+				grossProfit,
+				status,
+				id
 			} = data || {}
+
+			this.updateData = {
+				depotId,
+				number,
+				salesMan,
+				subType,
+				type,
+				changeAmount,
+				creator,
+				operTime,
+				organName,
+				moneyAroundDown,
+				discount,
+				discountLastMoney,
+				discountMoney,
+				otherMoney,
+				remark,
+				grossProfit,
+				status,
+				id
+			}
 
 			this.list = [
 				{ id: 1, text: '单据编号', desc: number },
@@ -176,8 +264,9 @@ export default {
 				{ id: 4, text: '本单应收', desc: totalPrice },
 				{ id: 5, text: '本单已收', desc: changeAmount }
 			]
-			this.productList = depotHeadMaterialVoList
+			this.productList = formatImageArray(depotHeadMaterialVoList)
 			console.log('数据', data)
+			console.log('productList', this.productList)
 		}
 	}
 }
@@ -228,6 +317,9 @@ export default {
 			margin-right: 10px;
 			background-color: #cdd7dc;
 			overflow: hidden;
+			image {
+				width: 100%;
+			}
 		}
 		.content {
 			flex: 1;

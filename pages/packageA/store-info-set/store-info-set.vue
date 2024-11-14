@@ -2,7 +2,7 @@
 	<custom-view
 		:getData="this.type === 1 ? getDepotList : getUserByDepotId"
 		:transformData="transformData"
-		:params="{ depotId: this.type === 2 ? 0 : '' }"
+		:params="{ depotId: this.type === 2 ? 0 : 0 }"
 	>
 		<template slot="top">
 			<AppletHeader @rightClick="rightClick" :title="objItem[type].title"></AppletHeader>

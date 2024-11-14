@@ -2,13 +2,13 @@
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top :refresher-enabled="false">
 		<template slot="top">
 			<AppletHeader title="库存查询" rightIcon=" "></AppletHeader>
-			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
+			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="商品名称/条形码/简拼"></nav-search-bar>
 		</template>
 
 		<view class="container">
 			<view class="select flex">
 				<view class="flex" @click="visible = true">
-					<text>{{curStore.name}}</text>
+					<text>{{ curStore.name }}</text>
 					<u-icon name="arrow-down-fill" size="12"></u-icon>
 				</view>
 				<view class="flex" @click="selectSort">
@@ -16,7 +16,12 @@
 					<u-icon name="arrow-down-fill" size="12"></u-icon>
 				</view>
 			</view>
-			<horizontal-card title="实际库存" :titlePrice="total" subtitle="总金额" :subtitlePrice="totalCostPrice"></horizontal-card>
+			<horizontal-card
+				title="实际库存"
+				:titlePrice="total"
+				subtitle="总金额"
+				:subtitlePrice="totalCostPrice"
+			></horizontal-card>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="cardItem" v-for="item of dataList" :key="item.id">
 				<view class="img-box">
@@ -35,7 +40,13 @@
 		</view>
 
 		<select-shop :show="visible" @cancel="visible = false" @confirm="storeConfirm"></select-shop>
-		<u-picker :show="show" @cancel="show = false" @confirm="sortConfirm" keyName="label" :columns="[sortList]"></u-picker>
+		<u-picker
+			:show="show"
+			@cancel="show = false"
+			@confirm="sortConfirm"
+			keyName="label"
+			:columns="[sortList]"
+		></u-picker>
 	</z-paging>
 </template>
 
@@ -69,13 +80,16 @@ export default {
 			curStore: {
 				id: 0,
 				name: '全部门店'
-			},
+			}
 		}
 	},
 	onLoad() {
 		this.curSortItem = this.sortList[0]
 	},
 	methods: {
+		rightClick() {
+			console.log('选择')
+		},
 		storeConfirm(e) {
 			console.log('店铺', e)
 			this.curStore = e
@@ -105,7 +119,7 @@ export default {
 					currentPage: pageNo,
 					pageSize: pageSize,
 					enabled: true,
-					depotId: this.curStore?.id || "",
+					depotId: this.curStore?.id || '',
 					sortType: this.curSortItem.value,
 					materialParam: this.keywords,
 					sortRule: this.sortRule,
@@ -128,6 +142,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.container {
+	padding: 0 30rpx;
+}
 .select {
 	height: 82rpx;
 	margin-bottom: 20rpx;

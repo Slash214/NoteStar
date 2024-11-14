@@ -169,6 +169,9 @@ export default {
 	},
 	onShow() {
 		uni.removeStorageSync('screenData')
+		uni.removeStorageSync('goodsUpdate')
+		uni.removeStorageSync('selectList')
+		uni.removeStorageSync('goodsInfo')
 	},
 	onReady() {
 	},

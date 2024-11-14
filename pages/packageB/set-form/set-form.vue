@@ -67,7 +67,12 @@
 						>
 							<view class="swipe-action flex u-border-bottom">
 								<view class="image-box">
-									<u--image width="60" mode="widthFix" :showLoading="true" :src="item.imgName"></u--image>
+									<u--image
+										width="60"
+										mode="widthFix"
+										:showLoading="true"
+										:src="item.cover"
+									></u--image>
 								</view>
 								<view class="ml10 swipe-action-content">
 									<u--text bold :text="item.name"></u--text>
@@ -137,7 +142,9 @@
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'red-button istype1' : 'red-button istype2'" @click="saveData">保存</view>
+				<view :class="type === 1 ? 'red-button istype1' : 'red-button istype2'" @click="saveData">
+					{{ !goodsUpdate ? '保存' : '更新' }}
+				</view>
 			</view>
 		</fixed-bottom>
 
@@ -273,7 +280,8 @@ export default {
 					params: {}
 				}
 			},
-			orderNumber: ''
+			orderNumber: '',
+			goodsUpdate: null
 		}
 	},
 	onShow() {
@@ -312,16 +320,56 @@ export default {
 	},
 	onLoad(options) {
 		this.type = +options?.type || 1
+
 		console.log('参数', options)
 		this.getData()
 		this.curTimeTemp = Date.now()
 		this.serviceList[1].value = timestampToDate(this.curTimeTemp)
+
+		if (options?.isUpdate === '1') {
+			console.log('更新状态')
+			let obj = uni.getStorageSync('goodsUpdate')
+			console.log(obj)
+			this.objItem[this.type].mode = 'update'
+			this.goodsUpdate = obj
+			this.orderNumber = obj.number
+			this.serviceList[1].value = timestampToDate(obj.operTime)
+			this.curTimeTemp = obj.operTime
+			this.remark = obj.remark
+			const updatedForm = {
+				...this.form, // 保留form中其他可能的字段
+				discount: obj.discount || 0,
+				discountMoney: obj.discountMoney || 0,
+				discountLastMoney: obj.discountLastMoney || 0,
+				otherMoney: obj.otherMoney || 0,
+				grossProfit: obj.grossProfit || 0,
+				moneyAroundDown: obj.moneyAroundDown || '', // 如果你希望默认为空字符串
+				changeAmount: obj.changeAmount || '' // 实付金额，默认为空字符串
+			}
+
+			this.priceList[0].value = obj.discount
+			this.priceList[1].value = obj.discountMoney
+			this.priceList[2].value = obj.discountLastMoney
+			this.priceList[3].value = obj.otherMoney
+
+			this.form = updatedForm
+			console.log('updatedForm', updatedForm)
+		}
 	},
 	onReady() {
 		// 微信小程序需要用此写法
 		this.$refs.datetimePicker.setFormatter(this.formatter)
 	},
 	methods: {
+		applyMoneyAroundDown() {
+			// 进行抹零操作：保留整数部分，去掉小数部分
+			const moneyAroundDown = parseFloat(this.form.changeAmount).toFixed(2) - Math.floor(this.form.changeAmount)
+			this.form.moneyAroundDown = moneyAroundDown.toFixed(2) // 设置抹零金额
+			uni.showToast({
+				title: '成功抹零',
+				icon: 'none'
+			})
+		},
 		onPriceChange: debounce(function (item) {
 			console.log(item)
 
@@ -397,10 +445,6 @@ export default {
 				return
 			}
 
-			console.log('保存')
-			// let orderNumber = null
-			// this.num
-
 			// 创建模式才生成订单号，修改不需要
 			if (this.objItem[this.type].mode === 'add') {
 				const result = await genbuildNumber({
@@ -408,7 +452,9 @@ export default {
 				})
 				this.orderNumber = result?.data?.defaultNumber || null
 			}
-
+			uni.showLoading({
+				title: '正在保存'
+			})
 			console.log('this', this.cacheSelectList)
 			// type: '出库',
 			// subType: '零售',
@@ -428,6 +474,10 @@ export default {
 				totalPrice: this.form.changeAmount,
 				accountId: 1,
 				originalTotalPrice: Number(this.totalPrice) // 原始总价
+			}
+
+			if (this.goodsUpdate) {
+				info['id'] = this.goodsUpdate.id
 			}
 
 			let rows = this.cacheSelectList.map((item) => {
@@ -458,8 +508,14 @@ export default {
 				...info,
 				shopCartInfoList: rows
 			}
-			const { data, message, code } = await addDepotHeadAndDetail(this.objItem[this.type].params)
-			// console.log('data', data)
+
+			const FN = !this.goodsUpdate ? addDepotHeadAndDetail : updateDepotHeadAndDetail
+			const { data, message, code } = await FN(this.objItem[this.type].params)
+			uni.hideLoading()
+			uni.showToast({
+				title: '操作成功',
+				icon: 'none'
+			})
 			if (code === 0) {
 				uni.showToast({
 					title: message,
@@ -473,6 +529,7 @@ export default {
 					url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}`
 				})
 			}
+
 			// setTimeout(() => {
 			// 	uni.navigateBack()
 			// }, 300)
@@ -618,20 +675,27 @@ export default {
 					location: item.location
 				}))
 			]
-			this.curSelectStore = this.shopList[0]
 
 			this.salesRepList = r2.data.map((item) => ({
 				...item,
 				name: item.userName
 			}))
+			this.curSelectStore = this.shopList[0]
 			this.curSelectSales = this.salesRepList[0]
 			this.serviceList[2].value = this.salesRepList[0]?.name
 			this.saleColumns = [this.salesRepList]
 
+			// 如果是更新状态
+			if (this.goodsUpdate) {
+				// 当前选择的店铺， 时间， 业务员
+				this.curSelectStore = this.shopList.filter((item) => item.id === this.goodsUpdate.depotId)[0]
+				this.curSelectSales = this.salesRepList.filter((item) => item.id === this.goodsUpdate.salesMan)[0]
+				this.serviceList[2].value = this.curSelectSales.name
+			}
+
 			// 时间
 		},
 		selectProduct() {
-			console.log('选择商品')
 			uni.navigateTo({
 				url: `/pages/packageC/add-stock/add-stock?type=${this.type}`
 			})

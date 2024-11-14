@@ -1,4 +1,4 @@
-import Big from 'big.js'; 
+import Big from 'big.js';
 
 /**
  * 将日期转换为 "YYYY年MM月DD日 星期X" 格式的字符串
@@ -165,27 +165,41 @@ export function debounce(func, wait) {
 }
 
 export function cloneDeep(value) {
-  // 处理 Big 类型的深拷贝
-  if (value instanceof Big) {
-    return new Big(value.toString());  // Big 类型的深拷贝
-  }
+	// 处理 Big 类型的深拷贝
+	if (value instanceof Big) {
+		return new Big(value.toString()); // Big 类型的深拷贝
+	}
 
-  // 处理数组
-  if (Array.isArray(value)) {
-    return value.map(cloneDeep);  // 递归拷贝数组元素
-  }
+	// 处理数组
+	if (Array.isArray(value)) {
+		return value.map(cloneDeep); // 递归拷贝数组元素
+	}
 
-  // 处理对象
-  if (value && typeof value === 'object') {
-    const result = {};
-    for (const key in value) {
-      if (value.hasOwnProperty(key)) {
-        result[key] = cloneDeep(value[key]);  // 递归拷贝对象属性
-      }
-    }
-    return result;
-  }
+	// 处理对象
+	if (value && typeof value === 'object') {
+		const result = {};
+		for (const key in value) {
+			if (value.hasOwnProperty(key)) {
+				result[key] = cloneDeep(value[key]); // 递归拷贝对象属性
+			}
+		}
+		return result;
+	}
 
-  // 基本数据类型直接返回
-  return value;
+	// 基本数据类型直接返回
+	return value;
+}
+
+
+
+export const formatImageArray = (data) => {
+	return data.map(item => {
+		const imgList = item?.imgName?.split(',') || [] // 直接处理 imgName
+		const cover = imgList[0] || '' // 如果 imgList 为空，则 cover 默认为空字符串
+		return {
+			...item,
+			imgList,
+			cover
+		}
+	})
 }

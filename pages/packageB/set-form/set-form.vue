@@ -96,7 +96,7 @@
 						<text>合计 已选{{ length }}，</text>
 						<u--text bold mode="price" :text="totalPrice"></u--text>
 					</view>
-					<view class="flex mt10 flex-items-center">毛利润：￥{{ form.grossProfit }}</view>
+					<view v-if="type === 2" class="flex mt10 flex-items-center">毛利润：￥{{ form.grossProfit }}</view>
 				</view>
 			</view>
 
@@ -255,7 +255,6 @@ export default {
 
 			loadIndex: 0,
 			batchSize: 20,
-
 			form: {
 				discount: 100, // 整单折扣
 				discountMoney: 0, // 优惠金额
@@ -448,7 +447,7 @@ export default {
 			// 创建模式才生成订单号，修改不需要
 			if (this.objItem[this.type].mode === 'add') {
 				const result = await genbuildNumber({
-					type: 1
+					type: this.type === 2 ? 0 : 1
 				})
 				this.orderNumber = result?.data?.defaultNumber || null
 			}
@@ -456,9 +455,23 @@ export default {
 				title: '正在保存'
 			})
 			console.log('this', this.cacheSelectList)
-			// type: '出库',
-			// subType: '零售',
-			// return
+
+			const newFrom = { 
+				discount: this.priceList[0].value, // 整单折扣
+				discountMoney: this.priceList[1].value, // 优惠金额
+				discountLastMoney: this.priceList[2].value, // 折后金额
+				otherMoney: this.priceList[3].value, // 运费,
+				grossProfit: this.form.grossProfit, // 毛利润
+				moneyAroundDown: this.form.moneyAroundDown, // 摸0金额
+				changeAmount: this.form.changeAmount // 实付
+			} 
+
+			// 进货没有毛利润
+			if (this.type === 2) {
+				delete newFrom.grossProfit
+				delete newFrom.moneyAroundDown
+			}
+			
 			let info = {
 				type: this.type === 1 ? '出库' : '入库',
 				subType: this.type === 1 ? '零售' : '采购',
@@ -470,7 +483,7 @@ export default {
 				defaultNumber: this.orderNumber,
 				remark: this.remark,
 				fileName: this.fileList,
-				...this.form,
+				...newFrom,
 				totalPrice: this.form.changeAmount,
 				accountId: 1,
 				originalTotalPrice: Number(this.totalPrice) // 原始总价
@@ -525,7 +538,7 @@ export default {
 				uni.removeStorageSync('selectList')
 				uni.removeStorageSync('goodsInfo')
 
-				uni.navigateTo({
+				uni.reLaunch({
 					url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}`
 				})
 			}

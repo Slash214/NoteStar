@@ -119,7 +119,7 @@
 
 				<view class="amount">
 					<text>应收：￥{{ form.changeAmount }}</text>
-					<text class="btns" @click="applyMoneyAroundDown">抹零</text>
+					<text v-if="type === 1" class="btns" @click="applyMoneyAroundDown">抹零</text>
 				</view>
 			</view>
 
@@ -262,7 +262,7 @@ export default {
 				otherMoney: 0, // 运费,
 				grossProfit: 0, // 毛利润
 				moneyAroundDown: '', // 摸0金额
-				changeAmount: '' // 实付
+				changeAmount: 0 // 实付
 			},
 			curTimeTemp: '',
 			cacheSelectList: [],
@@ -418,8 +418,8 @@ export default {
 			this.form.moneyAroundDown = moneyAroundDown.toFixed(2) // 设置抹零金额
 
 			// 更新抹零金额后的总金额（去掉小数部分）
-			const roundedAmount = Math.floor(this.form.changeAmount)
-			this.form.changeAmount = roundedAmount.toFixed(2) // 更新应收金额，保留整数部分
+			// const roundedAmount = Math.floor(this.form.changeAmount)
+			// this.form.changeAmount = roundedAmount.toFixed(2) // 更新应收金额，保留整数部分
 
 			console.log('应收金额:', this.form.changeAmount)
 			console.log('抹零金额:', this.form.moneyAroundDown)

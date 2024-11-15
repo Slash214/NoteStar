@@ -103,7 +103,7 @@
 import CustomDropdown from '@/components/CustomDropdown/CustomDropdown.vue'
 import UserPopup from '@/components/UserPopup/UserPopup.vue'
 import { getBusinessOverview } from '@/apis'
-import { formatMoney, timestampToDate } from '@/utils/index.js'
+import { formatMoney, formatTimestamp, timestampToDate } from '@/utils/index.js'
 export default {
 	components: {
 		CustomDropdown,
@@ -257,7 +257,7 @@ export default {
 			this.reportData[2].value = keyData.preGrossProfit || 0
 			this.reportData[3].num = keyData.nowSalesRevenue || 0
 			this.reportData[3].value = keyData.preSalesRevenue || 0
-			this.lastTime = keyData.lastCreateTime
+			this.lastTime = keyData.lastCreateTime || formatTimestamp(Date.now())
 			console.log('data', data)
 
 			this.pelpop = employeePerformance.map((item) => ({

@@ -280,7 +280,8 @@ export default {
 				}
 			},
 			orderNumber: '',
-			goodsUpdate: null
+			goodsUpdate: null,
+			isUpdate: false
 		}
 	},
 	onShow() {
@@ -302,19 +303,24 @@ export default {
 				}
 			})
 			console.log(list)
-			const info = uni.getStorageSync('goodsInfo')
-			this.totalPrice = info.totalPrice
-			this.form.changeAmount = info.totalPrice
-			this.priceList[2].value = info.totalPrice
-			this.length = info.productKindCount
-
 			// 开始分批次加载数据
 			this.loadBatchData(list)
-			// 计算毛利润
-			this.genGrossPrice(list)
+			if (!this.isUpdate) {
+				const info = uni.getStorageSync('goodsInfo')
+				this.totalPrice = info.totalPrice
+				this.form.changeAmount = info.totalPrice
+				this.priceList[2].value = info.totalPrice
+				this.length = info.productKindCount
+				// 开始分批次加载数据
+				// this.loadBatchData(list)
+				// 计算毛利润
+				this.genGrossPrice(list)
+				// 重新计算总金额
+				this.calculateTotalAmount()
+			}
+			
 
-			// 重新计算总金额
-			this.calculateTotalAmount()
+			
 		}
 	},
 	onLoad(options) {
@@ -327,6 +333,7 @@ export default {
 
 		if (options?.isUpdate === '1') {
 			console.log('更新状态')
+			this.isUpdate = true
 			let obj = uni.getStorageSync('goodsUpdate')
 			console.log(obj)
 			this.objItem[this.type].mode = 'update'
@@ -350,7 +357,7 @@ export default {
 			this.priceList[1].value = obj.discountMoney
 			this.priceList[2].value = obj.discountLastMoney
 			this.priceList[3].value = obj.otherMoney
-
+            this.totalPrice = obj.discountMoney + obj.discountLastMoney
 			this.form = updatedForm
 			console.log('updatedForm', updatedForm)
 		}

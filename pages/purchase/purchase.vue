@@ -1,12 +1,28 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<AppletHeader
+		<!-- <AppletHeader
 			:autoBack="false"
 			@leftClick="modalVisible = true"
 			title="进货"
 			left-icon="account"
 			right-icon=" "
-		></AppletHeader>
+		></AppletHeader> -->
+
+		<u-navbar bgColor="#F1F5F8" right-icon=" " leftIcon="account" :placeholder="true" autoBack="false"
+			@leftClick="modalVisible = true">
+			<!-- 中间内容 -->
+			<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
+				<view class="flex flex-center">
+					<text :class="status === item.id ? 'tab-text ml15 active' : ' tab-text ml15'" 
+					v-for="item of statusArray" :key="item.id" @click="handleClickTab(item)">{{item.name}}</text>
+				</view>
+				<view class="slot-right" @click="handleClickRight">
+					<u-icon name=" "></u-icon>
+				</view>
+			</view>
+		</u-navbar>
+
+
 		<nav-search-bar desc="单号/客户/商品/备注" @rightClick="rightClick" @search="getKeyWords"></nav-search-bar>
 
 		<view class="container">
@@ -36,166 +52,269 @@
 </template>
 
 <script>
-import { getDepotHeadList } from '@/apis'
-import { formatDateToChinese, formatMoney } from '@/utils'
-import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-import TagCountText from '@/components/TagCountText/TagCountText.vue'
-import { staticImageUrl } from '@/common/contanst'
-import UserPopup from '@/components/UserPopup/UserPopup.vue'
+	import {
+		getDepotHeadList
+	} from '@/apis'
+	import {
+		formatDateToChinese,
+		formatMoney
+	} from '@/utils'
+	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
+	import TagCountText from '@/components/TagCountText/TagCountText.vue'
+	import {
+		staticImageUrl
+	} from '@/common/contanst'
+	import UserPopup from '@/components/UserPopup/UserPopup.vue'
 
-export default {
-	components: {
-		TagCountText,
-		NavSearchBar,
-		UserPopup
-	},
-	data() {
-		return {
-			modalVisible: false,
-			staticImageUrl,
-			loading: true,
-			dataList: [],
-			total: '',
-			totalPrice: '',
-			formatDateToChinese,
-			keyword: ''
-		}
-	},
-	onLoad() {
-		uni.removeStorageSync('selectList')
-		uni.removeStorageSync('currPage')
-	},
-	onShow() {
-		const screenData = uni.getStorageSync('screenData')
-		if (screenData) {
-			let { startTime, endTime, arr } = screenData
-			console.log('筛选结果', screenData)
-			let obj = {}
-			obj.beginTime = `${startTime} 00:00:00`
-			obj.endTime = `${endTime} 23:59:59`
-			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
-			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
-			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
-			this.reqObj = obj
-			console.log('请求测试', this.reqObj)
-			this.$refs.paging.reload()
-		}
-	},
-	methods: {
-		rightClick() {
-			console.log('点击右边的')
-			uni.navigateTo({
-				url: '/pages/packageB/screening-page/screening-page'
-			})
+	export default {
+		components: {
+			TagCountText,
+			NavSearchBar,
+			UserPopup
 		},
-		getKeyWords(v) {
-			console.log('获取的', v)
-			this.keyword = v
-			this.$refs.paging.reload()
+		data() {
+			return {
+				modalVisible: false,
+				staticImageUrl,
+				loading: true,
+				dataList: [],
+				total: '',
+				totalPrice: '',
+				formatDateToChinese,
+				keyword: '',
+				// 1 是进货  2是预订  3是退货
+				status: 1,
+				statusArray: [{
+						id: 1,
+						name: '进货'
+					},
+					{
+						id: 2,
+						name: '预订'
+					},
+					{
+						id: 3,
+						name: '退货'
+					},
+				],
+				width: 0
+			}
 		},
-		screening() {
-			uni.navigateTo({
-				url: '/pages/packageB/screening-page/screening-page'
-			})
+		onLoad() {
+			uni.removeStorageSync('selectList')
+			uni.removeStorageSync('currPage')
+
+			const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
+			console.log('信息', menuButtonInfo)
+			this.width = menuButtonInfo.width
+
 		},
-		scanCode() {
-			console.log('扫码')
+		onShow() {
+			const screenData = uni.getStorageSync('screenData')
+			if (screenData) {
+				let {
+					startTime,
+					endTime,
+					arr
+				} = screenData
+				console.log('筛选结果', screenData)
+				let obj = {}
+				obj.beginTime = `${startTime} 00:00:00`
+				obj.endTime = `${endTime} 23:59:59`
+				obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
+				obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
+				obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
+				this.reqObj = obj
+				console.log('请求测试', this.reqObj)
+				this.$refs.paging.reload()
+			}
 		},
-		gotoSetForm() {
-			console.log('进货的')
-			uni.navigateTo({
-				url: '/pages/packageB/set-form/set-form?type=2'
-			})
-		},
-		handleClickSearch(v) {
-			console.log('开始搜索', v)
-			this.keyword = v
-		},
-		handleClick(item) {
-			console.log(item)
-			let number = item.number
-			uni.navigateTo({
-				url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}`
-			})
-		},
-		async queryList(pageNo, pageSize) {
-			let obj = {}
-			try {
-				const { data } = await getDepotHeadList({
-					apiName: 'depotHeadList',
-					currentPage: pageNo,
-					pageSize: pageSize,
-					search: {
-						type: '入库',
-						subType: '采购',
-						// 搜索关键词
-						fuzzyQueryParam: '',
-						...obj
-					}
+		methods: {
+			handleClickTab(item) {
+				console.log(item)
+				this.status = item.id
+			},
+			rightClick() {
+				console.log('点击右边的')
+				uni.navigateTo({
+					url: '/pages/packageB/screening-page/screening-page'
 				})
-				let { rows, totalPrice, total } = data || {}
-				this.total = total
-				this.totalPrice = totalPrice
-				// console.log('data', data)
-				let array = rows.map((item) => ({ ...item, money: formatMoney(item.totalPrice), time: formatDateToChinese(item.operTime) }))
-				this.$refs.paging.complete(array)
-				console.log('array', array)
-				this.loading = false
-			} catch (e) {
-				console.log('请求失败', e)
-				this.$refs.paging.complete(false)
+			},
+			getKeyWords(v) {
+				console.log('获取的', v)
+				this.keyword = v
+				this.$refs.paging.reload()
+			},
+			screening() {
+				uni.navigateTo({
+					url: '/pages/packageB/screening-page/screening-page'
+				})
+			},
+			scanCode() {
+				console.log('扫码')
+			},
+			gotoSetForm() {
+				console.log('进货的')
+				uni.navigateTo({
+					url: '/pages/packageB/set-form/set-form?type=2'
+				})
+			},
+			handleClickSearch(v) {
+				console.log('开始搜索', v)
+				this.keyword = v
+			},
+			handleClick(item) {
+				console.log(item)
+				let number = item.number
+				uni.navigateTo({
+					url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}`
+				})
+			},
+			async queryList(pageNo, pageSize) {
+				let obj = {}
+				try {
+					const {
+						data
+					} = await getDepotHeadList({
+						apiName: 'depotHeadList',
+						currentPage: pageNo,
+						pageSize: pageSize,
+						search: {
+							type: '入库',
+							subType: '采购',
+							// 搜索关键词
+							fuzzyQueryParam: '',
+							...obj
+						}
+					})
+					let {
+						rows,
+						totalPrice,
+						total
+					} = data || {}
+					this.total = total
+					this.totalPrice = totalPrice
+					// console.log('data', data)
+					let array = rows.map((item) => ({
+						...item,
+						money: formatMoney(item.totalPrice),
+						time: formatDateToChinese(item.operTime)
+					}))
+					this.$refs.paging.complete(array)
+					console.log('array', array)
+					this.loading = false
+				} catch (e) {
+					console.log('请求失败', e)
+					this.$refs.paging.complete(false)
+				}
 			}
 		}
 	}
-}
 </script>
 
 <style lang="scss" scoped>
-.title {
-	width: 100%;
-	height: 75rpx;
-	background-color: #fafbfd;
-	border-radius: 10rpx;
-	padding: 0 30rpx;
-	color: #9d9ea0;
-	margin-bottom: 20px;
-}
+	.slot-content {
+		flex: 1;
+		text-align: center;
+		position: relative;
+		margin-left: 45px;
 
-.fix-icon {
-	position: fixed;
-	z-index: 9;
-	background-color: #fa6400;
-	bottom: 50rpx;
-	right: 30rpx;
-	width: 180rpx;
-	height: 90rpx;
-	border-radius: 50rpx;
-	box-shadow: 5px 5px 20px rgba(250, 100, 0, 0.5);
-	image {
-		width: 120rpx;
-	}
-}
-.list {
-	margin-bottom: 25rpx;
-	.dataTitle {
-		margin: 0 0 17rpx 20rpx;
-		color: #9d9ea0;
-	}
-	.dataItem {
-		background-color: #fff;
-		padding: 25rpx;
-		border-radius: 20rpx;
-		.organName {
-			color: #000;
-			font-weight: 600;
+		.slot-right {
+			position: absolute;
+			top: 50%;
+			right: 15px;
+			transform: translateY(-50%);
+		}
+
+		.tab-text {
 			font-size: 32rpx;
-			margin-bottom: 25rpx;
+			color: #111;
+			display: block;
+		
 		}
-		.price {
-			color: #000;
+		
+		.active {
+			font-size: 36rpx;
+			position: relative;
 			font-weight: 600;
-			font-size: 34rpx;
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: -3rpx;
+				left: 5rpx;
+				width: 85%;
+				height: 8rpx;
+				border-radius: 40rpx;
+				background: linear-gradient(to right, #5fcadd, #e5f0f6);
+				border-top-left-radius: 20px;
+				border-top-right-radius: 20px;
+				border-bottom-right-radius: 20px;
+				border-bottom-left-radius: 20px;
+				background-image: linear-gradient(to right, rgb(95, 202, 221), rgb(229, 240, 246));
+				background-position-x: initial;
+				background-position-y: initial;
+				background-size: initial;
+				background-repeat-x: initial;
+				background-repeat-y: initial;
+				background-attachment: initial;
+				background-origin: initial;
+				background-clip: initial;
+				background-color: initial;
+			}
 		}
 	}
-}
+
+	.title {
+		width: 100%;
+		height: 75rpx;
+		background-color: #fafbfd;
+		border-radius: 10rpx;
+		padding: 0 30rpx;
+		color: #9d9ea0;
+		margin-bottom: 20px;
+	}
+
+	.fix-icon {
+		position: fixed;
+		z-index: 9;
+		background-color: #fa6400;
+		bottom: 50rpx;
+		right: 30rpx;
+		width: 180rpx;
+		height: 90rpx;
+		border-radius: 50rpx;
+		box-shadow: 5px 5px 20px rgba(250, 100, 0, 0.5);
+
+		image {
+			width: 120rpx;
+		}
+	}
+
+	.list {
+		margin-bottom: 25rpx;
+
+		.dataTitle {
+			margin: 0 0 17rpx 20rpx;
+			color: #9d9ea0;
+		}
+
+		.dataItem {
+			background-color: #fff;
+			padding: 25rpx;
+			border-radius: 20rpx;
+
+			.organName {
+				color: #000;
+				font-weight: 600;
+				font-size: 32rpx;
+				margin-bottom: 25rpx;
+			}
+
+			.price {
+				color: #000;
+				font-weight: 600;
+				font-size: 34rpx;
+			}
+		}
+	}
 </style>

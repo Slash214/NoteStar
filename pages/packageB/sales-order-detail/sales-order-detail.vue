@@ -110,6 +110,11 @@ export default {
 			updateData: {}
 		}
 	},
+	onShow() {
+		uni.removeStorageSync('goodsUpdate')
+		uni.removeStorageSync('goodsInfo')
+		uni.removeStorageSync('selectList')
+	},
 	onLoad(options) {
 		// number 订单号  和 type 类型 1 销售  2 进货
 		console.log('是多少', options)

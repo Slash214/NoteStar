@@ -90,7 +90,7 @@
 						title: '账户',
 						required: true,
 						value: '现金',
-						right: 'arrow-down-fill',
+						right: ' ',
 						select: true
 					},
 					{
@@ -272,7 +272,13 @@
 					depotId: 1
 				})
 				this.person = data
-				console.log(data)
+				const user = uni.getStorageSync('userInfo')
+				let curItem = this.person.filter(item => item.userName === user.username)[0]
+				
+				this.formList[4].value = user.username
+				this.formList[4].select = true
+				this.salesMan = curItem.id
+				
 			},
 			handleClick(item) {
 				console.log(item)

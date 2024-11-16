@@ -4,9 +4,9 @@
 		<view class="container">
 			<view class="box">
 				<u--text bold size="18" :text="objItem.name"></u--text>
-				<view class="mt10 mb10">
-					<text>条形码：</text>
-					<text>{{ objItem.mbarCode }}</text>
+				<view class="mt10 mb10 codes">
+					<text class="text">条形码：</text>
+					<text class="number">{{ objItem.mbarCode }}</text>
 				</view>
 				<view class="imgList">
 					<view class="img-item" v-for="(item, key) in imgList" :key="key">
@@ -105,6 +105,19 @@ export default {
 	background: #fff;
 	padding: 25rpx;
 	margin-bottom: 17rpx;
+	font-size: 28rpx;
+	.codes {
+		font-size: 28rpx;
+		color: #9D9EA0;
+		margin-bottom: 20px;
+		.text {
+			width: 200rpx;
+		}
+			
+		.number {
+			font-weight: 700;
+		}
+	}
 
 	&-item {
 		display: flex;

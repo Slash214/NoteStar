@@ -1,22 +1,31 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<view slot="top">
-			<AppletHeader title="按商品"></AppletHeader>
+			<AppletHeader title="按商品" right-icon=" "></AppletHeader>
 			<NavSearchBar @srarch="getSearchValue" @rightClick="handleClick" desc="名称/条形码/简拼"></NavSearchBar>
 		</view>
 
 		<view class="" slot="loading">
 			<u-loading :show="true"></u-loading>
 		</view>
+
+		<view class="select flex">
+			<view class="flex" @click="visible = true">
+				<text>{{ curStore.name }}</text>
+				<u-icon name="arrow-down-fill" size="12"></u-icon>
+			</view>
+			<view class="flex" @click="selectSort">
+				<text>{{ curSortItem.label }}</text>
+				<u-icon name="arrow-down-fill" size="12"></u-icon>
+			</view>
+		</view>
+
+
 		<view class="grid">
 			<view class="grid-item" v-for="item of cardList" :key="item.id">
 				<u--text size="14" color="#B7E9FF" :text="item.title"></u--text>
-				<u--text
-					bold
-					size="24"
-					color="#fff"
-					:text="item.id === 5 ? `${Math.round(item.price * 100)}.00%` : formatMoney(item.price)"
-				></u--text>
+				<u--text bold size="24" color="#fff"
+					:text="item.id === 5 ? `${Math.round(item.price * 100)}.00%` : formatMoney(item.price)"></u--text>
 			</view>
 			<view class="abs" @click="modalVisible = true">
 				<u-icon name="question-circle" size="18" color="#fff"></u-icon>
@@ -24,16 +33,11 @@
 		</view>
 
 		<view class="content">
-			<view class="list" v-for="item in dataList" :key="item.id">
+			<view class="list" v-for="item in dataList" :key="item.id" @click="handleClickCard(item)">
 				<view class="header">
 					<view class="img-box">
-						<u--image
-							:showLoading="true"
-							:src="item.imgName"
-							width="60px"
-							height="60px"
-							mode="aspectFit"
-						></u--image>
+						<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px"
+							mode="aspectFit"></u--image>
 					</view>
 					<u--text size="16" :text="item.materialName" bold color="#000"></u--text>
 				</view>
@@ -74,195 +78,291 @@
 				</view>
 			</view>
 		</u-popup>
+		
+		<select-shop :show="visible" @cancel="visible = false" @confirm="storeConfirm"></select-shop>
+		<u-picker
+			:show="sortShow"
+			@cancel="sortShow = false"
+			@confirm="sortConfirm"
+			keyName="label"
+			:columns="[sortList]"
+		></u-picker>
 	</z-paging>
 </template>
 
 <script>
-import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-import { formatMoney } from '@/utils'
-import { getSalesStatistics } from '@/apis'
-export default {
-	components: {
-		NavSearchBar
-	},
-	data() {
-		return {
-			modalVisible: false,
-			cardList: [
-				{ id: 1, title: '商品销售额(￥)：', price: 0 },
-				{ id: 2, title: '销售：', price: 0 },
-				{ id: 3, title: '销售成本(￥)：', price: 0 },
-				{ id: 4, title: '毛利(￥)：', price: 0 },
-				{ id: 5, title: '销售毛利率(￥)：', price: 0 }
-			],
-			textList: [
-				{ id: 1, text: '毛利', desc: '= 商品销售额 - 销售成本' },
-				{ id: 2, text: '销售毛利率', desc: '= 毛利 / 商品销售额' },
-				{ id: 3, text: '商品销售额', desc: '指销售商品的金额，不包含运费和抹零' },
-				{ id: 4, text: '销售成本', desc: '销售商品的成本根据商品每次进货价加权平均计算得出' }
-			],
-			show: true,
-			formatMoney,
-			keywords: '',
-			dataList: [],
-			beginTime: '',
-			endTime: '',
-			salesMan: ''
-		}
-	},
-	onLoad() {},
-	onShow() {
-		// 判断有没有缓存
-		const screenData = uni.getStorageSync('screenData') || null
-		if (screenData) {
-			console.log('缓存', screenData)
-			this.beginTime = screenData.startTime
-			this.endTime = screenData.endTime
-			this.salesMan = screenData.arr[1].obj?.id ? screenData.arr[1].obj?.id : ''
-			this.$refs.paging.reload()
-		} else {
-			// 开始时间和结束时间默认为本月的
-			let endTime = new Date()
-			// 获取当前月份的1号时间
-			let startTime = new Date(endTime.getFullYear(), endTime.getMonth(), 1)
-			this.beginTime = this.formatDate(startTime)
-			this.endTime = this.formatDate(endTime)
-		}
-	},
-	methods: {
-		formatToTwoDecimalPlaces(value) {
-			return parseFloat(value.toFixed(2))
+	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
+	import SelectShop from '@/components/SelectShop/SelectShop.vue' 
+	import {
+		formatMoney
+	} from '@/utils'
+	import {
+		getSalesStatistics
+	} from '@/apis'
+	export default {
+		components: {
+			NavSearchBar,
+			SelectShop
 		},
-		getSearchValue(v) {
-			console.log(v)
-			this.keywords = v
-			this.$refs.paging.reload()
+		data() {
+			return {
+				sortList: [
+					{ label: '按商品销售额升序', value: 1 },
+					{ label: '按销量升序', value: 2 },
+					{ label: '按销售毛利升序', value: 3 }
+				],
+				sortShow: false,
+				curSortItem: {},
+				curStore: {
+					id: 0,
+					name: '全部门店'
+				},
+				visible: false,
+				
+				
+				modalVisible: false,
+				cardList: [{
+						id: 1,
+						title: '商品销售额(￥)：',
+						price: 0
+					},
+					{
+						id: 2,
+						title: '销售：',
+						price: 0
+					},
+					{
+						id: 3,
+						title: '销售成本(￥)：',
+						price: 0
+					},
+					{
+						id: 4,
+						title: '毛利(￥)：',
+						price: 0
+					},
+					{
+						id: 5,
+						title: '销售毛利率(￥)：',
+						price: 0
+					}
+				],
+				textList: [{
+						id: 1,
+						text: '毛利',
+						desc: '= 商品销售额 - 销售成本'
+					},
+					{
+						id: 2,
+						text: '销售毛利率',
+						desc: '= 毛利 / 商品销售额'
+					},
+					{
+						id: 3,
+						text: '商品销售额',
+						desc: '指销售商品的金额，不包含运费和抹零'
+					},
+					{
+						id: 4,
+						text: '销售成本',
+						desc: '销售商品的成本根据商品每次进货价加权平均计算得出'
+					}
+				],
+				show: true,
+				formatMoney,
+				keywords: '',
+				dataList: [],
+				beginTime: '',
+				endTime: '',
+				salesMan: ''
+			}
 		},
-		handleClick() {
-			console.log('筛选')
-			uni.navigateTo({
-				url: '/pages/packageB/screening-page/screening-page'
-			})
+		onLoad() {
+			this.curSortItem = this.sortList[0]
 		},
-		formatDate(date) {
-			let year = date.getFullYear()
-			let month = (date.getMonth() + 1).toString().padStart(2, '0') // 月份从0开始，需要加1
-			let day = date.getDate().toString().padStart(2, '0')
-			return `${year}-${month}-${day}`
+		onShow() {
+			// 判断有没有缓存
+			const screenData = uni.getStorageSync('screenData') || null
+			if (screenData) {
+				console.log('缓存', screenData)
+				this.beginTime = screenData.startTime
+				this.endTime = screenData.endTime
+				this.salesMan = screenData.arr[1].obj?.id ? screenData.arr[1].obj?.id : ''
+				this.$refs.paging.reload()
+			} else {
+				// 开始时间和结束时间默认为本月的
+				let endTime = new Date()
+				// 获取当前月份的1号时间
+				let startTime = new Date(endTime.getFullYear(), endTime.getMonth(), 1)
+				this.beginTime = this.formatDate(startTime)
+				this.endTime = this.formatDate(endTime)
+			}
 		},
-		// showModal() {
-		// 	console.log('弹窗提示的')
-		// },
-		async queryList(page, pageNo) {
-			try {
-				const { data } = await getSalesStatistics({
-					apiName: 'material',
-					currentPage: page,
-					pageSize: pageNo,
-					materialParam: this.keywords,
-					beginTime: this.beginTime,
-					endTime: this.endTime,
-					salesMan: this.salesMan,
-					sortType2: 1,
-					sortType1: 1
+		methods: {
+			storeConfirm(e) {
+				console.log('选择的', e)
+			},
+			handleClickCard(item) {
+				console.log('去详情', item)
+			},
+			formatToTwoDecimalPlaces(value) {
+				return parseFloat(value.toFixed(2))
+			},
+			getSearchValue(v) {
+				console.log(v)
+				this.keywords = v
+				this.$refs.paging.reload()
+			},
+			handleClick() {
+				console.log('筛选')
+				uni.navigateTo({
+					url: '/pages/packageB/screening-page/screening-page'
 				})
-				console.log(data)
-				let { rows, totalSales } = data
+			},
+			formatDate(date) {
+				let year = date.getFullYear()
+				let month = (date.getMonth() + 1).toString().padStart(2, '0') // 月份从0开始，需要加1
+				let day = date.getDate().toString().padStart(2, '0')
+				return `${year}-${month}-${day}`
+			},
+			// showModal() {
+			// 	console.log('弹窗提示的')
+			// },
+			async queryList(page, pageNo) {
+				try {
+					const {
+						data
+					} = await getSalesStatistics({
+						apiName: 'material',
+						currentPage: page,
+						pageSize: pageNo,
+						materialParam: this.keywords,
+						beginTime: this.beginTime,
+						endTime: this.endTime,
+						salesMan: this.salesMan,
+						sortType2: 1,
+						sortType1: 1
+					})
+					console.log(data)
+					let {
+						rows,
+						totalSales
+					} = data
 
-				this.cardList[0].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesPrice)
-				this.cardList[1].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesCount)
-				this.cardList[2].price = this.formatToTwoDecimalPlaces(totalSales.totalSalespurchasePrice)
-				this.cardList[3].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfit)
-				this.cardList[4].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfitMargin)
-				// console.log('this.cardList[4].price', this.cardList[4].price)
-				let array = rows
-				this.$refs.paging.complete(array)
-				// this.loading = false
-			} catch (e) {
-				console.log('请求失败', e)
-				this.$refs.paging.complete(false)
+					this.cardList[0].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesPrice)
+					this.cardList[1].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesCount)
+					this.cardList[2].price = this.formatToTwoDecimalPlaces(totalSales.totalSalespurchasePrice)
+					this.cardList[3].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfit)
+					this.cardList[4].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfitMargin)
+					// console.log('this.cardList[4].price', this.cardList[4].price)
+					let array = rows
+					this.$refs.paging.complete(array)
+					// this.loading = false
+				} catch (e) {
+					console.log('请求失败', e)
+					this.$refs.paging.complete(false)
+				}
 			}
 		}
 	}
-}
 </script>
 
 <style scoped lang="scss">
-.grid {
-	width: 100%;
-	height: 600rpx;
-	background-color: #1d73ff;
-	clip-path: ellipse(100% 68% at 50% 30%);
-	padding: 50rpx;
-	color: #fff;
-	position: relative;
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	grid-column-gap: 30rpx;
-	grid-row-gap: 0;
-	&-item {
-	}
-
-	.abs {
-		position: absolute;
-		right: 50rpx;
-		top: 50rpx;
-	}
-}
-
-.modal {
-	padding: 40rpx;
-	&-box {
-		margin-top: 50rpx;
-		border-radius: 20rpx;
-		background: #f1f5f8;
-		height: 450rpx;
-		padding: 40rpx;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-
-		.title {
-			color: #3775fe;
-		}
-	}
-}
-
-.content {
-	margin: -130rpx auto auto auto;
-	padding: 20px 20px 40px 20px;
-	position: relative;
-	z-index: 2;
-	.list {
-		background-color: #ffffff;
+	.select {
+		height: 82rpx;
 		margin-bottom: 20rpx;
-		padding: 30rpx;
-		border-radius: 20rpx;
-		.header {
+
+		view {
+			width: 50%;
 			display: flex;
 			align-items: center;
-			.img-box {
-				background-color: #cdd7dc;
-				width: 120rpx;
-				height: 120rpx;
-				border-radius: 10rpx;
-				margin-right: 10px;
+			justify-content: center;
+			font-size: 28rpx;
+			color: #737373;
+		}
+	}
+
+	.grid {
+		width: 100%;
+		height: 600rpx;
+		background-color: #1d73ff;
+		clip-path: ellipse(100% 68% at 50% 30%);
+		padding: 50rpx;
+		color: #fff;
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-column-gap: 30rpx;
+		grid-row-gap: 0;
+
+		&-item {}
+
+		.abs {
+			position: absolute;
+			right: 50rpx;
+			top: 50rpx;
+		}
+	}
+
+	.modal {
+		padding: 40rpx;
+
+		&-box {
+			margin-top: 50rpx;
+			border-radius: 20rpx;
+			background: #f1f5f8;
+			height: 450rpx;
+			padding: 40rpx;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+
+			.title {
+				color: #3775fe;
 			}
 		}
-		.main {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			grid-column-gap: 20rpx;
-			grid-row-gap: 10rpx;
-			&-item {
-				text {
-					&:first-child {
-						width: 164rpx;
-						color: #737373;
+	}
+
+	.content {
+		margin: -130rpx auto auto auto;
+		padding: 20px 20px 40px 20px;
+		position: relative;
+		z-index: 2;
+
+		.list {
+			background-color: #ffffff;
+			margin-bottom: 20rpx;
+			padding: 30rpx;
+			border-radius: 20rpx;
+
+			.header {
+				display: flex;
+				align-items: center;
+
+				.img-box {
+					background-color: #cdd7dc;
+					width: 120rpx;
+					height: 120rpx;
+					border-radius: 10rpx;
+					margin-right: 10px;
+				}
+			}
+
+			.main {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-column-gap: 20rpx;
+				grid-row-gap: 10rpx;
+
+				&-item {
+					text {
+						&:first-child {
+							width: 164rpx;
+							color: #737373;
+						}
 					}
 				}
 			}
 		}
 	}
-}
 </style>

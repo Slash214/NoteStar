@@ -12,31 +12,15 @@
 			<view class="box">
 				<u--form labelPosition="left" labelWidth="100">
 					<u-form-item required label="商品名称" prop="userInfo.name" borderBottom>
-						<u--input v-model="baseForm.name" placeholder="请输入内容" border="none"></u--input>
+						<u--input v-model="baseForm.name" placeholder="请输入" border="none"></u--input>
 					</u-form-item>
-					<u-form-item label="门店" prop="userInfo.name" borderBottom>
+					<u-form-item v-if="!isUpdate" label="门店" prop="userInfo.name" borderBottom>
 						<view class="flex flex-between" @click="handleSelect">
 							<text>{{ baseForm.store || '点击选择门店' }}</text>
 							<u-icon name="arrow-down-fill"></u-icon>
 						</view>
 					</u-form-item>
 					<u-form-item label="商品图片" prop="userInfo.name" borderBottom>
-						<!-- <u-upload
-							width="60"
-							height="60"
-							:size-type="['compressed']"
-							max-count="6"
-							:max-size="5 * 1024 * 1024"
-							:action="UPLOAD_FILE_URL"
-							:header="{
-								
-							}"
-							:show-progress="false"
-							:file-list="baseForm.imgListShow.map(v => ({ url: v }))"
-							:before-upload="uploadBefore"
-							@on-success="uploadSuccess"
-							@on-remove="uploadRemove"
-						></u-upload> -->
 						<u-upload width="60" height="60" :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="1" multiple :maxCount="6"></u-upload>
 					</u-form-item>
 				</u--form>
@@ -57,6 +41,8 @@
 					</u-form-item>
 				</u--form>
 			</view>
+			
+			<u--text text="价格" bold margin="10px"></u--text>
 
 			<view class="box">
 				<u--form labelPosition="left" labelWidth="100">
@@ -78,7 +64,7 @@
 			</view>
 		</view>
 
-		<select-shop :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
+		<select-shop :all="false" :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
 	</view>
 </template>
 

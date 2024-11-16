@@ -96,7 +96,7 @@
 						<text>合计 已选{{ length }}，</text>
 						<u--text bold mode="price" :text="totalPrice"></u--text>
 					</view>
-					<view v-if="type === 2" class="flex mt10 flex-items-center">毛利润：￥{{ form.grossProfit }}</view>
+					<view v-if="type === 1" class="flex mt10 flex-items-center">毛利润：￥{{ form.grossProfit }}</view>
 				</view>
 			</view>
 

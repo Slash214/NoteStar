@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<AppletHeader title="开单成功" right-icon="完成" @rightClick="rightClick" right-icon-size="14"></AppletHeader>
+		<AppletHeader :autoBack="false" @leftClick="rightClick" title="开单成功" right-icon="完成" @rightClick="rightClick" right-icon-size="14"></AppletHeader>
 		<view class="container">
 			<view class="box">
 				<view class="top">

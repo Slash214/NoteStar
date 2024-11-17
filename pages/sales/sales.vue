@@ -71,8 +71,6 @@ export default {
 		}
 	},
 	onLoad() {
-		uni.removeStorageSync('selectList')
-		uni.removeStorageSync('currPage')
 		this.reqObj.beginTime = timestampToDate(Date.now())
 	},
 	onShow() {
@@ -90,6 +88,12 @@ export default {
 			console.log('请求测试', this.reqObj)
 			this.$refs.paging.reload()
 		}
+		
+		uni.removeStorageSync('selectList')
+		uni.removeStorageSync('currPage')
+		uni.removeStorageSync('goodsInfo')
+		uni.removeStorageSync('goodsUpdate')
+		
 	},
 	methods: {
 		rightClick() {

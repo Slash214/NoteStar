@@ -172,6 +172,20 @@
 			},
 			async queryList(pageNo, pageSize) {
 				let obj = {}
+				
+				let statusType = {}
+				if (this.status !== 1) {
+					statusType = {
+						type: '入库',
+						subType: '采购',
+					}
+				} else  {
+					statusType = {
+						type: '进货',
+						subType: '预定',
+					}
+				}
+				
 				try {
 					const {
 						data

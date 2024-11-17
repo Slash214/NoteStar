@@ -14,18 +14,18 @@
 				<u-icon name="arrow-down-fill" color="#c0c4cc" size="12"></u-icon>
 			</view>
 		</view>
-		<view class="main" v-if="isShow">
+		<view class="main">
 			<view class="nav flex flex-between">
 				<view class="">
 					<u--text margin="0 0 0 5px" size="12" text="收入"></u--text>
 					<u--text margin="5px 0" bold size="20" mode="price" :text="navData.totalInPrice"></u--text>
-					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalInCount + '笔记'"></u--text>
+					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalInCount + '笔'"></u--text>
 				</view>
 
 				<view class="">
 					<u--text margin="0 0 0 5px" size="12" text="支出"></u--text>
 					<u--text margin="5px 0" bold size="20" mode="price" :text="navData.totalOutPrice"></u--text>
-					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalOutCount + '笔记'"></u--text>
+					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalOutCount + '笔'"></u--text>
 				</view>
 			</view>
 		</view>
@@ -105,6 +105,8 @@ export default {
 				totalOutPrice
 			}
 			let array = []
+			
+			console.error('this.navData', this.navData)
 			if (data.data[firstKey]) {
 				this.isShow = true
 				array = [data.data[firstKey]]

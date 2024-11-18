@@ -19,13 +19,13 @@
 				<view class="">
 					<u--text margin="0 0 0 5px" size="12" text="收入"></u--text>
 					<u--text margin="5px 0" bold size="20" mode="price" :text="navData.totalInPrice"></u--text>
-					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalInCount + '笔'"></u--text>
+					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalInCount+ '笔'"></u--text>
 				</view>
 
 				<view class="">
 					<u--text margin="0 0 0 5px" size="12" text="支出"></u--text>
 					<u--text margin="5px 0" bold size="20" mode="price" :text="navData.totalOutPrice"></u--text>
-					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalOutCount + '笔'"></u--text>
+					<u--text margin="0 0 0 5px" size="12" :text="'共' + navData.totalOutCount+ '笔'"></u--text>
 				</view>
 			</view>
 		</view>
@@ -35,9 +35,9 @@
 				<view class="list" v-for="(item, index) in dataList" :key="index">
 					<text class="time">{{ formatDateToChinese(item.operTime) }}</text>
 					<view class="flex content">
-						<text>收入{{ item.totalInCount }}笔</text>
+						<text>收入{{ item.totalInCount}}笔</text>
 						<text>￥{{ formatMoney(item.totalInPrice) }}</text>
-						<text>支出{{ item.totalOutCount }}笔</text>
+						<text>支出{{ item.totalOutCount}}笔</text>
 						<text>￥{{ formatMoney(item.totalOutPrice) }}</text>
 					</view>
 				</view>
@@ -99,9 +99,9 @@ export default {
 			let firstKey = keys[0]
 			let { totalInCount, totalInPrice, totalOutCount, totalOutPrice } = data
 			this.navData = {
-				totalInCount,
+				totalInCount: totalInCount || 0,
 				totalInPrice,
-				totalOutCount,
+				totalOutCount: totalOutCount || 0,
 				totalOutPrice
 			}
 			let array = []

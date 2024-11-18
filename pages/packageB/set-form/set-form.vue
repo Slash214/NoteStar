@@ -49,7 +49,7 @@
 					<u-swipe-action>
 						<u-swipe-action-item :options="options" v-for="(item, index) of cacheSelectList" :key="item.id"
 							:index="index" :name="item.name" @click="handleClickAction">
-							<view class="swipe-action flex u-border-bottom">
+							<view class="swipe-action flex u-border-bottom" @click="handleClickItemSet(item)">
 								<view class="image-box">
 									<u--image width="60" mode="widthFix" :showLoading="true"
 										:src="item.cover"></u--image>
@@ -127,6 +127,24 @@
 		<u-datetime-picker ref="datetimePicker" :show="timeShow" v-model="curTimeTemp" mode="date"
 			@confirm="confirmTime" @cancel="timeShow = false" :formatter="formatter" :closeOnClickOverlay="true"
 			@close="timeShow = false"></u-datetime-picker>
+
+
+		<!-- 商品详情弹窗 -->
+		<u-popup :show="shopVisible" @close="shopVisible = false">
+			<view class="shopMask">
+				<view class="content">
+					<view></view>
+				</view>
+				
+				<view class="froms">
+					
+				</view>
+				
+				<view class="">
+					
+				</view>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
@@ -160,6 +178,8 @@
 		},
 		data() {
 			return {
+				shopVisible: true,
+				curShopData: {},
 				staticImageUrl,
 				formatMoney,
 				timeShow: false,
@@ -218,7 +238,7 @@
 					}
 				],
 				length: 0,
-				totalPrice: 0,
+				// totalPrice: 0,
 				nowPrice: '',
 				curSelectStore: {},
 				curSelectSales: {},
@@ -614,6 +634,11 @@
 				this.form.grossProfit = totalProfit.toFixed(2)
 
 				console.log('mao', this.form.grossProfit)
+			},
+			handleClickItemSet(item) {
+				console.log('点击出现商品详情', item)
+				this.shopVisible = true
+				this.curShopData = item
 			},
 			// 删除商品
 			handleClickAction(e) {

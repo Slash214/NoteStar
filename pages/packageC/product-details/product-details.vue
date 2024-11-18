@@ -91,6 +91,9 @@ export default {
 			})
 		},
 		onOpenOrder() {
+			
+			// 缓存列表
+			
 			uni.navigateTo({
 				url: '/pages/packageB/set-form/set-form?type=1'
 			})

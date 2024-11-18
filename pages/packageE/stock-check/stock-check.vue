@@ -88,7 +88,9 @@ export default {
 	},
 	methods: {
 		rightClick() {
-			console.log('选择')
+			uni.navigateTo({
+				url: '/pages/packageC/stock-filter/stock-filter'
+			})
 		},
 		storeConfirm(e) {
 			console.log('店铺', e)

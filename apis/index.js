@@ -265,3 +265,12 @@ export const addAccountItem = (data) => {
 	})
 }
 
+
+// 开单历史记录
+export const getHistoryDetailByNumber = (data) => {
+	return request({
+		url: '/depotHead/getHistoryDetailByNumber',
+		data,
+		method: 'GET'
+	})
+}

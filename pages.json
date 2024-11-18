@@ -114,6 +114,13 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "stock-filter/stock-filter",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},
@@ -129,6 +136,13 @@
 					"path": "set-product/set-product",
 					"style": {
 						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path" : "history/history",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
 					}
 				}
 			]

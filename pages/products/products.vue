@@ -106,6 +106,11 @@ export default {
 	onLoad() {},
 	onShow() {
 		this.$refs.paging.reload()
+		
+		uni.removeStorageSync('screenData')
+		uni.removeStorageSync('goodsUpdate')
+		uni.removeStorageSync('selectList')
+		uni.removeStorageSync('goodsInfo')
 	},
 	methods: {
 		leftClick() {

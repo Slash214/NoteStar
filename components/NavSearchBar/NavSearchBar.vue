@@ -11,7 +11,9 @@
 				:placeholder="desc"
 				v-model="keyword"
 			></u-search>
-			<view v-if="showRight" class="ml15" @click="screening">筛选</view>
+			<view v-if="showRight" class="ml15" @click="screening">
+				<image class="images" mode="widthFix" src="https://haoxianhui.com//hxh/2024/11/19/5e093d14b79a4cc2ad6766a456adc410.png"></image>
+			</view>
 		</view>
 	</u-sticky>
 </template>
@@ -80,5 +82,10 @@ export default {
 	display: flex;
 	align-items: center;
 	flex: 1;
+	
+	.images {
+		width: 45px;
+		display: block;
+	}
 }
 </style>

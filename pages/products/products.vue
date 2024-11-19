@@ -38,6 +38,15 @@
 				</view>
 			</view>
 		</view>
+		
+		
+		
+		<template slot="empty">
+			<view class="">
+				<image style="height: 250rpx" mode="heightFix" src="https://haoxianhui.com/hxh/2024/11/19/ac89cf2053c24b12873fde0e32c5ebe5.png"></image>
+			    <view style="text-align: center;">暂无商品，点击右上角马上新增</view>
+			</view>
+		</template>
 
 		<view class="" slot="loading">
 			<u-loading :show="true"></u-loading>

@@ -18,10 +18,10 @@
 			</view>
 		</view>
 		<view class="bottom">
-			<view class="clear">
+			<view class="clear" @click="clearAll">
 				清空条件
 			</view>
-			<view class="sure">
+			<view class="sure" @click="handleClik">
 				确定
 			</view>
 		</view>
@@ -65,6 +65,13 @@
 					}
 				})
 			},
+			clearAll() {
+				this.list.forEach(e => e.select = false)
+				this.list1.forEach(e => e.select = false)
+				
+				this.list[0].select = true
+				this.list1[0].select = true
+			},
 			onSelectShop(item) {
 				this.list1.forEach(e => {
 					e.select = false
@@ -73,6 +80,9 @@
 					}
 				})
 			},
+			handleClik() {
+				uni.navigateBack()
+			}
 		}
 	}
 </script>

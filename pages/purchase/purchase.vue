@@ -46,6 +46,13 @@
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 			<image :src="staticImageUrl + '/purchase/purchase.png'" mode="aspectFit"></image>
 		</view>
+		
+        <template slot="empty">
+			<view class="">
+				<image style="height: 250rpx" mode="heightFix" :src="staticImageUrl + '/purchase/empty-purchase.png'"></image>
+			    <view style="text-align: center;">暂无进货单，点击右下角马上开单</view>
+			</view>
+		</template>
 
 		<user-popup :visible="modalVisible" @close="modalVisible = false"></user-popup>
 	</z-paging>
@@ -110,7 +117,8 @@
 
 		},
 		onShow() {
-			const screenData = uni.getStorageSync('screenData')
+			uni.removeStorageSync('t1screenData')
+			const screenData = uni.getStorageSync('t2screenData')
 			if (screenData) {
 				let {
 					startTime,
@@ -124,6 +132,7 @@
 				obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
 				obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
 				obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
+				obj.deleteFlag = !arr[3].obj.id ? "0" : "1"
 				this.reqObj = obj
 				console.log('请求测试', this.reqObj)
 				this.$refs.paging.reload()
@@ -137,7 +146,7 @@
 			rightClick() {
 				console.log('点击右边的')
 				uni.navigateTo({
-					url: '/pages/packageB/screening-page/screening-page'
+					url: `/pages/packageB/screening-page/screening-page?type=2`
 				})
 			},
 			getKeyWords(v) {
@@ -147,7 +156,7 @@
 			},
 			screening() {
 				uni.navigateTo({
-					url: '/pages/packageB/screening-page/screening-page'
+					url:  `/pages/packageB/screening-page/screening-page?type=2`
 				})
 			},
 			scanCode() {
@@ -198,7 +207,7 @@
 							subType: '采购',
 							// 搜索关键词
 							fuzzyQueryParam: '',
-							...obj
+							...this.reqObj
 						}
 					})
 					let {

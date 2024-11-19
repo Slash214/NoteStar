@@ -68,6 +68,7 @@ export default {
 			dataList: [],
 			keywords: '',
 			sortRule: 1,
+			// sortType: 1,
 			total: 0,
 			totalCostPrice: 0,
 			loading: true,

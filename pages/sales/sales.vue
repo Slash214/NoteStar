@@ -32,6 +32,13 @@
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 			<image :src="staticImageUrl + '/sales/kaidan.png'" mode="aspectFit"></image>
 		</view>
+		
+		<template slot="empty">
+			<view class="">
+				<image style="height: 250rpx" mode="heightFix" src="https://haoxianhui.com/hxh/2024/11/19/5005a4c6600b40208b1cbea5ca7d7412.png"></image>
+			    <view style="text-align: center;">暂无销售单，点击右下角马上开单</view>
+			</view>
+		</template>
 
 		<user-popup :visible="modalVisible" @close="modalVisible = false"></user-popup>
 	</z-paging>
@@ -74,7 +81,9 @@ export default {
 		this.reqObj.beginTime = timestampToDate(Date.now())
 	},
 	onShow() {
-		const screenData = uni.getStorageSync('screenData')
+		uni.removeStorageSync('t2screenData')
+		
+		const screenData = uni.getStorageSync('t1screenData')
 		if (screenData) {
 			let { startTime, endTime, arr } = screenData
 			console.log('筛选结果', screenData)
@@ -84,6 +93,7 @@ export default {
 			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
 			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
 			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
+			obj.deleteFlag = !arr[3].obj.id ? "0" : "1"
 			this.reqObj = obj
 			console.log('请求测试', this.reqObj)
 			this.$refs.paging.reload()
@@ -99,7 +109,7 @@ export default {
 		rightClick() {
 			console.log('点击右边的')
 			uni.navigateTo({
-				url: '/pages/packageB/screening-page/screening-page'
+				url: `/pages/packageB/screening-page/screening-page?type=1`
 			})
 		},
 		handleClick(item) {
@@ -119,7 +129,6 @@ export default {
 			})
 		},
 		async queryList(pageNo, pageSize) {
-			let obj = {}
 			try {
 				const { data } = await getDepotHeadList({
 					apiName: 'depotHeadList',

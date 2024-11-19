@@ -178,7 +178,7 @@
 		},
 		data() {
 			return {
-				shopVisible: true,
+				shopVisible: false,
 				curShopData: {},
 				staticImageUrl,
 				formatMoney,

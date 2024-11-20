@@ -6,15 +6,15 @@
 			<view class="white box">
 				<view class="flex flex-between flex-items-center">
 					<view class="flex flex-items-center">
-						<text class="fix" v-if="isDelete">已作废</text>
-						<text class="name">{{ name }}</text>
+						<view class="fix" v-if="isDelete">已作废</view>
+						<view class="name">{{ name }}</view>
 					</view>
-					<text>{{ time }}</text>
+					<view>{{ time }}</view>
 				</view>
 				<u-divider :dot="true"></u-divider>
 				<view class="flex flex-items-center" v-for="item in list" :key="item.id">
 					<text class="mr15">{{ item.text }}：</text>
-					<text>{{ item.desc }}</text>
+					<view>{{ item.desc }}</view>
 				</view>
 			</view>
 
@@ -29,7 +29,7 @@
 						<image v-if="item.cover" mode="widthFix" :src="item.cover"></image>
 					</view>
 					<view class="content">
-						<u--text :text="item.name"></u--text>
+						<u--text bold :text="item.name"></u--text>
 						<u--text :text="item.barCode"></u--text>
 						<view class="flex mt10">
 							<view class="flex">
@@ -51,13 +51,18 @@
 			<view class="white box mt10">
 				<view class="flex flex-items-center" v-for="item in bootomList" :key="item.id">
 					<text class="mr15 mb5">{{ item.text }}：</text>
-					<u--text :mode="item.id !== 1 ? 'price' : 'text'" :text="item.desc"></u--text>
+					<view class="" v-if="item.id !== 1">
+						￥{{formatMoney(item.desc)}}
+					</view>
+					<view v-else>
+						{{item.desc}}%
+					</view>
 				</view>
 			</view>
 
 			<view class="white remark mt10">
-				<u--text text="备注"></u--text>
-				<u--text :text="remark"></u--text>
+				<u--text margin="10px 0" size="14" text="备注:"></u--text>
+				<u--text size="14" :text="remark"></u--text>
 			</view>
 
 			<view class="fixed-bottom" v-if="!isDelete">
@@ -404,6 +409,7 @@
 				line-height: 2;
 				color: #575757;
 				font-size: 28rpx;
+				width: 160rpx;
 			}
 
 			.fix {

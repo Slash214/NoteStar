@@ -192,12 +192,12 @@ export default {
 		},
 		handleSelectionSuccess() {
 			console.log(this.selectList)
-			let goodsInfo = {
-				productKindCount: this.productKindCount,
-				total: this.productCount.toFixed(),
-				totalPrice: this.totalPrice.toFixed()
-			}
-			uni.setStorageSync('goodsInfo', goodsInfo)
+			// let goodsInfo = {
+			// 	productKindCount: this.productKindCount,
+			// 	total: this.productCount.toFixed(),
+			// 	totalPrice: this.totalPrice.toFixed()
+			// }
+			// uni.setStorageSync('goodsInfo', goodsInfo)
 			// 缓存选择列表 处理big类型
 			this.saveSelectList()
 			uni.setStorageSync('currPage', this.cachePage)

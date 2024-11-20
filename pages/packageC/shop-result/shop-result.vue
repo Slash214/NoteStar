@@ -13,7 +13,7 @@
 				</view>
 				<view class="flex">
 					<text>合计金额：</text>
-					<u--text mode="price" text="3600"></u--text>
+					<u--text mode="price" :text="total"></u--text>
 				</view>
 				<view :class="type === 1 ? 'xs btns' : 'jh btns'" @click="handleClick">再来一单</view>
 			</view>
@@ -27,13 +27,15 @@ export default {
 		return {
 			// 1 销售单  2 进货单
 			type: 1,
-			orderNumber: ""
+			orderNumber: "",
+			total: 0
 		}
 	},
 	onLoad(options) {
 		console.log(options)
 		this.type = +options?.type || 1
 		this.orderNumber = options.orderNum
+		this.total = options.total || 0
 	},
 	methods: {
 		handleClick() {

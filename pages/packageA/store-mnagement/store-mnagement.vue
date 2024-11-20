@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<AppletHeader title="店铺管理"></AppletHeader>
+		<AppletHeader title="店铺管理" right-icon=" "></AppletHeader>
 		<view class="box">
 			<u-cell-group >
 				<u-cell @click="handleClick" name="1" title="门店管理" :border="true" :isLink="true"></u-cell>

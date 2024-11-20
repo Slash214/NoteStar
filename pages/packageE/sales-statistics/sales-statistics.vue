@@ -2,7 +2,7 @@
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<view slot="top">
 			<AppletHeader title="按商品" right-icon=" "></AppletHeader>
-			<NavSearchBar @srarch="getSearchValue" @rightClick="handleClick" desc="名称/条形码/简拼"></NavSearchBar>
+			<NavSearchBar @search="getSearchValue" @rightClick="handleClick" desc="名称/条形码/简拼"></NavSearchBar>
 		</view>
 
 		<view class="" slot="loading">
@@ -21,7 +21,7 @@
 		</view>
 
 
-		<view class="grid">
+		<view class="grid" v-if="dataList.length">
 			<view class="grid-item" v-for="item of cardList" :key="item.id">
 				<u--text size="14" color="#B7E9FF" :text="item.title"></u--text>
 				<u--text bold size="24" color="#fff"
@@ -33,38 +33,40 @@
 		</view>
 
 		<view class="content">
-			<view class="list" v-for="item in dataList" :key="item.id" @click="handleClickCard(item)">
-				<view class="header">
-					<view class="img-box">
-						<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px"
-							mode="aspectFit"></u--image>
+			<block v-for="obj of dataList" :key="obj.id">
+				<view class="list" @click="() => handleClickCard(obj)">
+					<view class="header">
+						<view class="img-box">
+							<u--image :showLoading="true" :src="obj.imgName" width="60px" height="60px"
+								mode="aspectFit"></u--image>
+						</view>
+						<u--text size="16" :text="obj.materialName" bold color="#000"></u--text>
 					</view>
-					<u--text size="16" :text="item.materialName" bold color="#000"></u--text>
+					<u-line margin="20rpx"></u-line>
+					<view class="main">
+						<view class="main-item">
+							<text>商品销售额：</text>
+							<text>{{ obj.salesPrice }}</text>
+						</view>
+						<view class="main-item">
+							<text>销售成本：</text>
+							<text>{{ obj.salespurchasePrice }}</text>
+						</view>
+						<view class="main-item">
+							<text>销售毛利：</text>
+							<text>{{ obj.salesGrossProfit }}</text>
+						</view>
+						<view class="main-item">
+							<text>毛利率：</text>
+							<text>{{ obj.salesGrossProfitMargin }}%</text>
+						</view>
+						<view class="main-item">
+							<text>销售：</text>
+							<text>{{ obj.salesCount }}</text>
+						</view>
+					</view>
 				</view>
-				<u-line margin="20rpx"></u-line>
-				<view class="main">
-					<view class="main-item">
-						<text>商品销售额：</text>
-						<text>{{ item.salesPrice }}</text>
-					</view>
-					<view class="main-item">
-						<text>销售成本：</text>
-						<text>{{ item.salespurchasePrice }}</text>
-					</view>
-					<view class="main-item">
-						<text>销售毛利：</text>
-						<text>{{ item.salesGrossProfit }}</text>
-					</view>
-					<view class="main-item">
-						<text>毛利率：</text>
-						<text>{{ Math.round(item.salesGrossProfitMargin * 100) }}.00%</text>
-					</view>
-					<view class="main-item">
-						<text>销售：</text>
-						<text>{{ item.salesCount }}</text>
-					</view>
-				</view>
-			</view>
+			</block>
 		</view>
 
 		<u-popup :show="modalVisible" @close="modalVisible = false">
@@ -79,20 +81,22 @@
 			</view>
 		</u-popup>
 		
+		<template slot="empty">
+			<view class="">
+				<image style="height: 250rpx" mode="heightFix" src="https://haoxianhui.com/hxh/2024/11/19/ac89cf2053c24b12873fde0e32c5ebe5.png"></image>
+			    <view style="text-align: center;">暂无销售销售利润</view>
+			</view>
+		</template>
+
 		<select-shop :show="visible" @cancel="visible = false" @confirm="storeConfirm"></select-shop>
-		<u-picker
-			:show="sortShow"
-			@cancel="sortShow = false"
-			@confirm="sortConfirm"
-			keyName="label"
-			:columns="[sortList]"
-		></u-picker>
+		<u-picker :show="sortShow" @cancel="sortShow = false" @confirm="sortConfirm" keyName="label"
+			:columns="[sortList]"></u-picker>
 	</z-paging>
 </template>
 
 <script>
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-	import SelectShop from '@/components/SelectShop/SelectShop.vue' 
+	import SelectShop from '@/components/SelectShop/SelectShop.vue'
 	import {
 		formatMoney
 	} from '@/utils'
@@ -106,10 +110,18 @@
 		},
 		data() {
 			return {
-				sortList: [
-					{ label: '按商品销售额升序', value: 1 },
-					{ label: '按销量升序', value: 2 },
-					{ label: '按销售毛利升序', value: 3 }
+				sortList: [{
+						label: '按商品销售额升序',
+						value: 1
+					},
+					{
+						label: '按销量升序',
+						value: 2
+					},
+					{
+						label: '按销售毛利升序',
+						value: 3
+					}
 				],
 				sortShow: false,
 				curSortItem: {},
@@ -118,8 +130,8 @@
 					name: '全部门店'
 				},
 				visible: false,
-				
-				
+
+
 				modalVisible: false,
 				cardList: [{
 						id: 1,
@@ -219,15 +231,15 @@
 					url: '/pages/packageB/screening-page/screening-page'
 				})
 			},
+			formatToTwoDecimalPlaces(value) {
+				return value.toFixed(2);
+			},
 			formatDate(date) {
 				let year = date.getFullYear()
 				let month = (date.getMonth() + 1).toString().padStart(2, '0') // 月份从0开始，需要加1
 				let day = date.getDate().toString().padStart(2, '0')
 				return `${year}-${month}-${day}`
 			},
-			// showModal() {
-			// 	console.log('弹窗提示的')
-			// },
 			async queryList(page, pageNo) {
 				try {
 					const {
@@ -255,8 +267,18 @@
 					this.cardList[3].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfit)
 					this.cardList[4].price = this.formatToTwoDecimalPlaces(totalSales.totalSalesGrossProfitMargin)
 					// console.log('this.cardList[4].price', this.cardList[4].price)
-					let array = rows
-					this.$refs.paging.complete(array)
+					console.error('rows', rows)
+
+					rows = rows.map(item => ({
+						...item,
+						salesGrossProfit: this.formatToTwoDecimalPlaces(item.salesGrossProfit),
+						salesGrossProfitMargin: this.formatToTwoDecimalPlaces(item.salesGrossProfitMargin *
+							100),
+						salesPrice: this.formatToTwoDecimalPlaces(item.salesPrice),
+						salespurchasePrice: this.formatToTwoDecimalPlaces(item.salespurchasePrice),
+					}));
+
+					this.$refs.paging.complete(rows)
 					// this.loading = false
 				} catch (e) {
 					console.log('请求失败', e)

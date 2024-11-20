@@ -284,7 +284,7 @@ export default {
 			storeShow: false,
 			salesShow: false,
 			timeShow: false,
-			shopShow: true,
+			shopShow: false,
 			storeList: [],
 			salesList: [],
 
@@ -709,7 +709,7 @@ export default {
 
 		handleClickItemSet(item) {
 			console.log('点击出现商品详情', item)
-			this.shopVisible = true
+			// this.shopVisible = true
 			this.curShopData = item
 		},
 

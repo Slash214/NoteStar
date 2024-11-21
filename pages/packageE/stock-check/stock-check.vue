@@ -23,7 +23,7 @@
 				:subtitlePrice="totalCostPrice"
 			></horizontal-card>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
-			<view class="cardItem" v-for="item of dataList" :key="item.id">
+			<view class="cardItem" v-for="item of dataList" :key="item.id" @click="gotoStockDetails(item)">
 				<view class="img-box">
 					<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px"></u--image>
 				</view>
@@ -55,6 +55,8 @@ import SelectShop from '@/components/SelectShop/SelectShop.vue'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 import { getStockList } from '@/apis'
+import Big from 'big.js';
+
 export default {
 	components: {
 		NavSearchBar,
@@ -88,6 +90,13 @@ export default {
 		this.curSortItem = this.sortList[0]
 	},
 	methods: {
+		gotoStockDetails(item) {
+			console.log('去商品库存', item)
+			let depotId = this.curStore.id
+			uni.navigateTo({
+				url: `/pages/packageE/stock-details/stock-details?id=${item.id}&depotId=${depotId}`
+			})
+		},
 		rightClick() {
 			uni.navigateTo({
 				url: '/pages/packageC/stock-filter/stock-filter'
@@ -129,8 +138,10 @@ export default {
 					isStock: false
 				})
 				let { rows, totalCostPrice, total } = data || {}
-				this.total = total
-				this.totalCostPrice = totalCostPrice
+				// this.total = total
+				// this.totalCostPrice = totalCostPrice
+				this.total = new Big(total);
+				this.totalCostPrice = new Big(totalCostPrice);
 				console.log('data', data)
 				// let array = rows.map((item) => ({ ...item, time: formatDateToChinese(item.operTime) }))
 				this.$refs.paging.complete(rows)

@@ -2,17 +2,18 @@
 	<view class="flex flex-items-center horizontal-card">
 		<view class="flex flex-items-center">
 			<text>{{ title }}:</text>
-			<u--text color="#9d9ea0" :text="titlePrice" mode="price"></u--text>
+			<text >￥{{formatMoney(titlePrice)}}</text>
 		</view>
 		<view class="line"></view>
 		<view class="flex flex-items-center">
 			<text>{{ subtitle }}:</text>
-			<u--text color="#9d9ea0" :text="subtitlePrice" mode="price"></u--text>
+			<text>￥{{formatMoney(subtitlePrice)}}</text>
 		</view>
 	</view>
 </template>
 
 <script>
+import { formatMoney } from '@/utils'	
 export default {
 	name: 'HorizontalCard',
 	props: {
@@ -34,7 +35,9 @@ export default {
 		}
 	},
 	data() {
-		return {}
+		return {
+			formatMoney
+		}
 	}
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
 	<view class="main">
 		<AppletHeader :title="objItem[type].name" right-icon=" "></AppletHeader>
-		<view class="container">
+		<view :class="shopShow ? 'no-scroll container' : 'container'">
 			<view class="white box">
 				<!-- 门店列表选择 -->
 				<view class="box-item">
@@ -177,33 +177,53 @@
 			<u-popup bgColor="#F1F5F8" :show="shopShow" @close="shopShow = false" :round="10" closeable>
 				<view class="modals">
 					<view class="flex flex-items-center flex-between modal-header">
-						<view class="">图片</view>
-						<view class="box">
-							<u--text text="标题名称" bold></u--text>
-							<u--text text="111111111"></u--text>
+						<view class="">
+							<u--image :showLoading="true" :src="curShopData.cover" width="60px" height="60px"></u--image>
+						</view>
+						<view class="modal-content-box">
+							<u--text margin="0 0 15px 0" :text="curShopData.name" bold></u--text>
+							<u--text color="#9D9EA0" :text="curShopData.mbarCode"></u--text>
 						</view>
 
-						<view class="">库存：42</view>
+						<view class="stock">库存：{{ curShopData.stock }}</view>
 					</view>
 
 					<view class="modal-card">
 						<view class="flex flex-items-center">
 							<text class="w16">单价</text>
-							<u--input border="none" v-model="remarks" placeholder="请输入内容"></u--input>
+							<u--input
+								border="none"
+								v-model="curShopData.price"
+								@change="onAlonePrice($event, 1)"
+								placeholder="请输入内容"
+							></u--input>
 						</view>
 						<view class="flex flex-items-center">
 							<text class="w16">数量</text>
-							<u--input border="none" v-model="remarks" placeholder="请输入内容"></u--input>
+							<u-number-box v-model="curShopData.nums" @change="shopDataChange"></u-number-box>
 						</view>
 						<view class="flex flex-items-center">
 							<text class="w16">总价</text>
-							<u--input border="none" v-model="remarks" placeholder="请输入内容"></u--input>
+							<u--input
+								border="none"
+								v-model="curShopData.total"
+								@change="onAlonePrice($event, 2)"
+								placeholder="请输入内容"
+							></u--input>
 						</view>
 					</view>
 
 					<view class="modal-card">
 						<u--text text="备注" size="14"></u--text>
-						<u--textarea border="none" v-model="remarks" placeholder="请输入内容"></u--textarea>
+						<u--textarea border="none" v-model="curShopData.remarks" placeholder="请输入内容"></u--textarea>
+					</view>
+
+					<view class="abs-button">
+						<view class="">
+							<view class="money">￥{{ formatMoney(curShopData.total) }}</view>
+							<view>种类： 1，数量{{ curShopData.nums }}</view>
+						</view>
+						<view class="btn flex flex-items-center flex-center" @click="fixOneShopData">确定</view>
 					</view>
 				</view>
 			</u-popup>
@@ -334,7 +354,9 @@ export default {
 			},
 
 			// 更新的
-			goodsUpdate: {}
+			goodsUpdate: {},
+			// 当前商品
+			curShopData: {}
 		}
 	},
 	onReady() {
@@ -431,6 +453,7 @@ export default {
 		}
 	},
 	methods: {
+		// 删除商品
 		handleClickAction(e) {
 			console.log('删除商品', e)
 			this.productList = this.productList.filter((item) => item.name !== e.name)
@@ -709,8 +732,57 @@ export default {
 
 		handleClickItemSet(item) {
 			console.log('点击出现商品详情', item)
-			// this.shopVisible = true
-			this.curShopData = item
+      // 深拷贝对象
+			this.curShopData = { ...item }
+			this.shopShow = true
+		},
+
+		// 单个商品数量改变
+		shopDataChange(e) {
+			const value = e.value
+			this.curShopData.nums = value.toString()
+			 try {
+        this.curShopData.bNums = new Big(value || '0');
+        // 重新计算总价
+        const total = this.curShopData.bPrice.times(this.curShopData.bNums);
+        this.curShopData.total = total.toFixed(2);
+      } catch (error) {
+        console.error('数量输入错误:', error);
+        this.curShopData.total = '0.00';
+      }
+		},
+
+		onAlonePrice(e, type) {
+			console.log(e, type)
+
+			if (type === 1) {
+				this.curShopData.bPrice = new Big(e || '0')
+				// 重新计算总价
+				const total = this.curShopData.bPrice.times(this.curShopData.bNums)
+				this.curShopData.total = total.toFixed(2)
+			}
+
+			if (type === 2) {
+				const bTotal = new Big(e || '0')
+				// 计算新的单价
+				if (!this.curShopData.bNums.eq(0)) {
+					this.curShopData.bPrice = bTotal.div(this.curShopData.bNums)
+					this.curShopData.price = this.curShopData.bPrice.toFixed(2)
+				} else {
+					this.curShopData.price = '0.00'
+				}
+			}
+		},
+
+		fixOneShopData() {
+			console.log('修改单个商品')
+			// this.productList
+			const index = this.productList.findIndex(item => item.id === this.curShopData.id);
+			if (index !== -1) {
+			  this.productList.splice(index, 1, this.curShopData);
+			}
+			this.shopShow = false
+			this.onPriceChange(0)
 		},
 
 		// 选择商品
@@ -737,6 +809,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.no-scroll {
+	overflow: hidden;
+	height: 50vh;
+}
 .main {
 	padding-bottom: 120px;
 }
@@ -865,19 +941,48 @@ export default {
 }
 
 .modals {
-	padding: 30rpx;
+	padding: 30rpx 30rpx 0 30rpx;
 	height: 70vh;
 	width: 100%;
+	position: relative;
+	.abs-button {
+		position: absolute;
+		z-index: 1000;
+		background-color: #fff;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 200rpx;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 25rpx;
+		box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+		.money {
+			color: #fa6400;
+			font-weight: 700;
+			font-size: 36rpx;
+			margin-bottom: 15px;
+		}
+		.btn {
+			width: 180rpx;
+			height: 90rpx;
+			background: linear-gradient(to right, #fa6400, #f79151);
+			border-radius: 20rpx;
+			color: #fff;
+			font-weight: 700;
+		}
+	}
 	.modal-card {
 		border-radius: 20rpx;
 		background: #fff;
 		padding: 40rpx 40rpx 20rpx 40rpx;
 		margin-bottom: 17rpx;
-		
+
 		view {
 			margin-bottom: 20px;
 		}
-		
+
 		.w16 {
 			width: 140rpx;
 		}
@@ -885,13 +990,18 @@ export default {
 	.modal-header {
 		width: 100%;
 		margin-bottom: 17rpx;
-		.img-box {
-			width: 120rpx;
-		}
-		.box {
-			flex: 1;
-			margin: 0 10px;
-		}
+	}
+
+	.modal-content-box {
+		flex: 1;
+		margin: 0 10px;
+	}
+
+	.stock {
+		color: #9d9ea0;
+		display: flex;
+		align-items: flex-end;
+		height: 55px;
 	}
 }
 

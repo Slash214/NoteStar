@@ -157,6 +157,16 @@ export const getCapitalFlow = (data) => {
 	})
 }
 
+// 获取商品库存
+export const getStockDetail = (data) => {
+	return request({
+		url: '/material/getStockDetail',
+		method: 'GET',
+		data
+	})
+}
+
+
 
 export const getInOutinfoList = (data) => {
 	return request({

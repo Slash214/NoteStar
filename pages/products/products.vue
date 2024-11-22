@@ -76,13 +76,11 @@
 <script>
 import { getMaterialList, deleteMaterial } from '@/apis'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-import TagCountText from '@/components/TagCountText/TagCountText.vue'
 import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 import UserPopup from '@/components/UserPopup/UserPopup.vue'
 export default {
 	components: {
 		NavSearchBar,
-		TagCountText,
 		UserPopup,
 		HorizontalCard
 	},

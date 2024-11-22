@@ -12,7 +12,8 @@
 		</template>
 
 		<view class="container">
-			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice || 0"></tag-count-text>
+			<horizontal-card title="共" :titlePrice="total" subtitle="合计" :subtitlePrice="totalPrice"></horizontal-card>
+			
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClick(item)">
@@ -32,11 +33,15 @@
 		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 			<image :src="staticImageUrl + '/sales/kaidan.png'" mode="aspectFit"></image>
 		</view>
-		
+
 		<template slot="empty">
 			<view class="">
-				<image style="height: 250rpx" mode="heightFix" src="https://haoxianhui.com/hxh/2024/11/19/5005a4c6600b40208b1cbea5ca7d7412.png"></image>
-			    <view style="text-align: center;">暂无销售单，点击右下角马上开单</view>
+				<image
+					style="height: 250rpx"
+					mode="heightFix"
+					src="https://haoxianhui.com/hxh/2024/11/19/5005a4c6600b40208b1cbea5ca7d7412.png"
+				></image>
+				<view style="text-align: center">暂无销售单，点击右下角马上开单</view>
 			</view>
 		</template>
 
@@ -48,13 +53,13 @@
 import { getDepotHeadList } from '@/apis'
 import { formatDateToChinese, timestampToDate } from '@/utils'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-import TagCountText from '@/components/TagCountText/TagCountText.vue'
 import { staticImageUrl } from '@/common/contanst'
 import UserPopup from '@/components/UserPopup/UserPopup.vue'
+import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 
 export default {
 	components: {
-		TagCountText,
+		HorizontalCard,
 		NavSearchBar,
 		UserPopup
 	},
@@ -82,7 +87,7 @@ export default {
 	},
 	onShow() {
 		uni.removeStorageSync('t2screenData')
-		
+
 		const screenData = uni.getStorageSync('t1screenData')
 		if (screenData) {
 			let { startTime, endTime, arr } = screenData
@@ -93,17 +98,16 @@ export default {
 			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
 			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
 			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
-			obj.deleteFlag = !arr[3].obj.id ? "0" : "1"
+			obj.deleteFlag = !arr[3].obj.id ? '0' : '1'
 			this.reqObj = obj
 			console.log('请求测试', this.reqObj)
 			this.$refs.paging.reload()
 		}
-		
+
 		uni.removeStorageSync('selectList')
 		uni.removeStorageSync('currPage')
 		uni.removeStorageSync('goodsInfo')
 		uni.removeStorageSync('goodsUpdate')
-		
 	},
 	methods: {
 		rightClick() {

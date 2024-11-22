@@ -22,7 +22,10 @@
 				</view>
 				<view class="dataItem flex flex-between">
 					<view class="">
-						<view class="organName">{{ item.organName }}</view>
+						<view class="organName flex flex-items-center">
+						 <text class="deleteFlag" v-if="item.deleteFlag == 1">已作废</text>
+						 <text>{{ item.organName }}</text>
+						</view>
 						<view class="number">{{ item.number }}</view>
 					</view>
 					<u--text align="right" color="#000" size="18" bold mode="price" :text="item.totalPrice"></u--text>
@@ -202,6 +205,17 @@ export default {
 			font-weight: 600;
 			font-size: 32rpx;
 			margin-bottom: 25rpx;
+			.deleteFlag {
+				color: #5B6066;
+				font-weight: normal;
+				height: 32rpx;
+				line-height: 32rpx;
+				padding: 0 10rpx;
+				font-size: 26rpx;
+				background: #EFF4F8;
+				margin-right: 10rpx;
+				border-radius: 8rpx;
+			}
 		}
 		.price {
 			color: #000;

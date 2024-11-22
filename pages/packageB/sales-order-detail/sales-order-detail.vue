@@ -1,12 +1,13 @@
 <template>
 	<view>
-		<AppletHeader :title="type === 1 ? '销售单详情' : '进货单详情'" :right-icon="isDelete ? ' ' : 'more-dot-fill'" @rightClick="rightClick">
+		<AppletHeader :title="type === 1 ? '销售单详情' : '进货单详情'" :right-icon="isDelete ? ' ' : 'more-dot-fill'"
+			@rightClick="rightClick">
 		</AppletHeader>
 		<view class="container">
 			<view class="white box">
 				<view class="flex flex-between flex-items-center">
 					<view class="flex flex-items-center">
-						<view class="fix" v-if="isDelete">已作废</view>
+						<view class="fix" v-if="isDelete || deleteFlag == 1">已作废</view>
 						<view class="name">{{ name }}</view>
 					</view>
 					<view>{{ time }}</view>
@@ -65,7 +66,7 @@
 				<u--text size="14" :text="remark"></u--text>
 			</view>
 
-			<view class="fixed-bottom" v-if="!isDelete">
+			<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
 				<view class="fixed-bottom-button" @click="fixItems">
 					<u-icon size="24" name="edit-pen"></u-icon>
 					<text>修改</text>
@@ -94,6 +95,7 @@
 	export default {
 		data() {
 			return {
+				deleteFlag: "0",
 				formatMoney,
 				number: '',
 				list: [],
@@ -246,7 +248,8 @@
 					discountMoney,
 					grossProfit,
 					status,
-					id
+					id,
+					deleteFlag
 				} = data || {}
 				this.total = totalPrice
 				this.updateData = {
@@ -269,7 +272,7 @@
 					status,
 					id
 				}
-
+				this.deleteFlag = deleteFlag
 				this.list = [{
 						id: 1,
 						text: '单据编号',
@@ -405,6 +408,7 @@
 
 		.box {
 			text-align: justify;
+
 			text {
 				line-height: 2;
 				color: #575757;
@@ -423,7 +427,7 @@
 				margin-right: 10rpx;
 				border-radius: 8rpx;
 			}
-			
+
 			.name {
 				font-weight: 600;
 				color: #141414;

@@ -77,6 +77,10 @@ export default {
 		// 根据身份去判断
 		uni.removeStorageSync('selectList')
 	},
+	onShow() {
+		uni.removeStorageSync('flowScreenData')
+		uni.removeStorageSync('t2screenData')
+	},
 	methods: {
 		handleClick(e) {
 			console.log('点击', e)

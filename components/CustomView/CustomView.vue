@@ -7,6 +7,10 @@
 		<slot name="content" :dataList="dataList">
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 		</slot>
+
+		<template slot="empty">
+			<slot name="empty"></slot>
+		</template>
 	</z-paging>
 </template>
 
@@ -52,7 +56,6 @@ export default {
 
 				this.$refs.paging.complete(processedData)
 				this.loading = false
-
 			} catch (e) {
 				console.log('请求失败', e)
 				this.$refs.paging.complete(false)

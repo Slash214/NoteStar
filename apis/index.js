@@ -83,7 +83,7 @@ export const getDepotByUserId = (data) => {
 	})
 }
 
-// getAccountByDepotId
+// getAccountByDepotId 获取账号
 export const getAccountByDepotId = (data) => {
 	return request({
 		url: '/account/getAccountByDepotId',

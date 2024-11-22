@@ -144,6 +144,13 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "fund-flow-screening/fund-flow-screening",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},

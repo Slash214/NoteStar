@@ -151,6 +151,20 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "product-screening/product-screening",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
+				},
+				{
+					"path" : "product-details/product-details",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},
@@ -239,20 +253,6 @@
 				},
 				{
 					"path" : "stock-details/stock-details",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
-					}
-				},
-				{
-					"path" : "product-screening/product-screening",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
-					}
-				},
-				{
-					"path" : "product-details/product-details",
 					"style" : 
 					{
 						"navigationBarTitleText" : ""

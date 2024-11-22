@@ -256,7 +256,7 @@ export default {
 		handleClickCard(item) {
 			console.log('去详情', item)
 			uni.navigateTo({
-				url: `/pages/packageE/product-details/product-details?obj=${JSON.stringify(item)}`
+				url: `/pages/packageD/product-details/product-details?obj=${JSON.stringify(item)}`
 			})
 		},
 		formatToTwoDecimalPlaces(value) {
@@ -268,7 +268,7 @@ export default {
 		},
 		handleClick() {
 			uni.navigateTo({
-				url: '/pages/packageE/product-screening/product-screening'
+				url: '/pages/packageD/product-screening/product-screening'
 			})
 		},
 		formatToTwoDecimalPlaces(value) {

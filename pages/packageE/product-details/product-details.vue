@@ -226,10 +226,7 @@ export default {
 .popup {
 	width: 100%;
 	padding: 20px;
-	.cancel {
-	}
-	.comfirm {
-	}
+
 }
 
 .container {

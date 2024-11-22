@@ -1,12 +1,27 @@
 <template>
-	<z-paging :refresher-enabled="false" ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
+	<z-paging
+		:refresher-enabled="false"
+		ref="paging"
+		v-model="dataList"
+		:default-page-size="20"
+		@query="queryList"
+		auto-show-back-to-top
+	>
 		<template slot="top">
 			<AppletHeader title="商品热销" right-icon=" "></AppletHeader>
 		</template>
 		<view class="main">
 			<view class="select">
-				<view class="" @click="show = true">{{shopName}}</view>
-				<view class="">今日：{{ endTime }}</view>
+				<view class="flex" @click="show = true">
+					{{ curShop.name }}
+
+					<u-icon name="arrow-down-fill" size="8"></u-icon>
+				</view>
+				<view class="flex" @click="timeShow = true">
+					{{ curTime.name }}
+
+					<u-icon name="arrow-down-fill" size="8"></u-icon>
+				</view>
 			</view>
 			<view class="nav flex flex-between flex-items-center">
 				<text>商品</text>
@@ -29,8 +44,19 @@
 				</view>
 			</view>
 		</view>
-		
-		<select-shop :show="show" @cancel="cancel" @confirm="confirm"></select-shop>
+
+		<select-shop :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
+
+		<u-popup :show="timeShow" @close="timeShow = false">
+			<view class="popup">
+				<time-filter-box @changeTime="changeTime"></time-filter-box>
+				<view class="flex">
+					<u-button type="info" text="取消" @click="timeShow = false"></u-button>
+					<view class="ml10 mr10"></view>
+					<u-button type="primary" text="确定" @click="selectTime"></u-button>
+				</view>
+			</view>
+		</u-popup>
 	</z-paging>
 </template>
 
@@ -38,45 +64,69 @@
 import { getHotSellingGoods } from '@/apis'
 import { timestampToDate } from '@/utils'
 import SelectShop from '@/components/SelectShop/SelectShop.vue'
+import TimeFilterBox from '@/components/TimeFilterBox/TimeFilterBox.vue'
 export default {
 	components: {
-		SelectShop
+		SelectShop,
+		TimeFilterBox
 	},
 	data() {
 		return {
 			dataList: [],
-			beginTime: '',
-			endTime: '',
 			show: false,
-			depotId: '',
-			shopName: '全部门店'
+			timeShow: false,
+			curShop: {
+				name: '全部门店',
+				id: 0
+			},
+			curTime: {
+				name: '本月',
+				tamp: '',
+				start: '',
+				end: ''
+			},
+			cacheTime: {}
 		}
 	},
-	onLoad() {
-		this.beginTime = timestampToDate(Date.now())
-		this.endTime = this.beginTime
-	},
+	onLoad() {},
 	methods: {
-		cancel() {
-			console.log('取消了')
-			this.show = false
+		changeTime(e) {
+			console.log('选择时间', e)
+			this.cacheTime = e
+			if (e.first) {
+				this.curTime = {
+					name: `${e.name}${e.endTime}`,
+					start: e.startTime,
+					end: e.endTime
+				}
+			}
+		},
+		selectTime() {
+			console.log('选择了', this.cacheTime)
+			let e = this.cacheTime
+			this.curTime = {
+				name: `${e.name}${e.endTime}`,
+				start: e.startTime,
+				end: e.endTime
+			}
+			this.timeShow = false
+			this.$refs.paging.reload()
 		},
 		confirm(e) {
 			console.log(e)
 			this.show = false
-			this.depotId = !e.id ? "" : e.id
-			this.shopName = e.name
+			this.curShop = e
 			this.$refs.paging.reload()
 		},
 		async queryList(pageNo, pageSize) {
-			let obj = {}
+			let { s, e } = this.fmatDat()
 			try {
 				const { data } = await getHotSellingGoods({
 					currentPage: pageNo,
 					pageSize,
-					beginTime: this.beginTime,
-					endTime: this.endTime,
-					depotId: this.depotId
+					beginTime: this.curTime.start || s,
+					endTime: this.curTime.end || e,
+					depotId: this.curShop.id || ''
 				})
 				let { hotSellingGoods } = data || {}
 				console.log('data', hotSellingGoods)
@@ -86,12 +136,33 @@ export default {
 				console.log('请求失败', e)
 				this.$refs.paging.complete(false)
 			}
+		},
+		fmatDat() {
+			const today = new Date()
+			const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+
+			// 格式化日期为 YYYY-MM-DD
+			const formatDate = (date) => {
+				const year = date.getFullYear()
+				const month = String(date.getMonth() + 1).padStart(2, '0')
+				const day = String(date.getDate()).padStart(2, '0')
+				return `${year}-${month}-${day}`
+			}
+			let s = formatDate(firstDay)
+			let e = formatDate(today)
+
+			return { s, e }
 		}
 	}
 }
 </script>
 
 <style lang="scss" scoped>
+.popup {
+	width: 100%;
+	padding: 20px;
+}
+
 .main {
 	background-color: #fff;
 }

@@ -1,13 +1,15 @@
 <template>
 	<view :class="isFix ? 'fixed' : ''">
-		<AppletHeader :autoBack="false" @leftClick="handleClick" title="经营情况" left-icon="account" right-icon=" "></AppletHeader>
+		<AppletHeader :autoBack="false" @leftClick="handleClick" title="经营概况" left-icon="account" right-icon=" "></AppletHeader>
 		<view class="">
 			<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 			<view class="nav">
 				<view class="set-title">
 					<view class="flex flex-items-center" @click="show = !show">
-						<text>关键数据</text>
-						<u-icon :name="show ? 'eye-fill' : 'eye-off'" color="#fff" size="24"></u-icon>
+						<text style="font-weight: 600;">关键数据</text>
+						<view class="ml5">
+							<u-icon :name="show ? eyeOpenIcon : eyeCloseIcon" color="#fff" size="24"></u-icon>
+						</view>
 						<view class="time">
 							更新于
 							{{ lastTime }}
@@ -31,8 +33,8 @@
 					<u--text bold text="销售趋势" size="17" color="#000"></u--text>
 					<view class="tip">
 						<view class="flex" @click="salesVisible = true">
-							<text class="ml5">{{salesName}}</text>
-							<u-icon name="arrow-down-fill"></u-icon>
+							<text class="ml5 mr10">{{salesName}}</text>
+							<u-icon name="arrow-down-fill" size="14" color="#c0c4cc"></u-icon>
 						</view>
 						
 						<view class="tip-text">
@@ -40,14 +42,26 @@
 							<text @click="toggleCurrentDay(false)" :class="!currSeven ? 'active ml10' : 'ml10'">近30天</text>
 						</view>
 					</view>
-					<qiun-data-charts 
-					      type="area"
-					      :opts="areaOptions"
-						  :ontouch="true"
-						  :onmovetip="true"
-						  :tooltipShow="true"
-					      :chartData="chartData"
-					    />
+					<view class="chart-container">
+						<!-- timeType = 3 是按月查询   1是按日期yyyy-mm-dd 查询 -->
+							<block v-if="timeType === 1">
+								<qiun-data-charts
+								      type="area"
+								      :opts="areaOptions"
+									  :ontouch="true"
+									  :onmovetip="true"
+									  :tooltipShow="true"
+								      :chartData="chartData"
+								    />
+							</block>
+							
+							<block v-if="timeType === 3">
+								<qiun-data-charts type="line"
+									:opts="lineOptions" 
+									:chartData="monthChartData"
+								/>
+							</block>
+					</view>
 				</view>
 				<view class="white mb20 commodity">
 					<view class="flex flex-items-center">
@@ -111,6 +125,8 @@ export default {
 	},
 	data() {
 		return {
+			eyeOpenIcon: 'https://haoxianhui.com/hxh/2024/11/22/acb0e5cdaa8643f58d8ecc8c1f452036.png',
+			eyeCloseIcon: 'https://haoxianhui.com/hxh/2024/11/22/be34236133d44cb28f58a828d5659408.png',
 			columns: [[{ label: '销售额', value: 1 },
 				{ label: '销售笔数', value: 2 },
 				{ label: '销售毛利', value: 3 },
@@ -144,6 +160,20 @@ export default {
 			// 	username: '王'
 			// },
 			chartData: {},
+			monthChartData: {},
+			lineOptions: {
+				dataLabel: false,  //是否显示图表区域内数据点上方的数据文案
+				dataPointShape:false, //是否显示数据点的图形标识
+				color: ['#F06822', '#336EEE'],
+				xAxis: {
+					labelCount: 7, // 数据点文字（刻度点）单屏幕限制显示的数量
+				},
+				extra:{
+					line:{
+						type:'curve', // 可选值："straight"尖角折线模式,"curve"曲线圆滑模式,"step"时序图模式
+					},
+				}
+			},
 			areaOptions: {
 				dataLabel: false,  //是否显示图表区域内数据点上方的数据文案
 				dataPointShape:false, //是否显示数据点的图形标识
@@ -204,10 +234,10 @@ export default {
 			console.log(e)
 			if (e.mode === 'date') {
 				this.time = timestampToDate(e.value)
+				this.timeType = 1
 			} else {
 				this.time = timestampToDate(e.value, 2)
 				this.timeType = 3
-				
 			}
 
 			this.getData()
@@ -269,20 +299,56 @@ export default {
 			// salesTrends
 			//  = []
 			
-			let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1]
+			if (this.timeType === 1) {
+				let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1]
+				
+				let categories = eacherData?.map(item => item.x.slice(-2))
+				let series = eacherData?.map(item => item.y)
+				let res = {
+				    categories,
+				    series: [
+				      {
+				        name: "",
+				        data: series
+				      },
+				    ]
+				  };
+				this.chartData = JSON.parse(JSON.stringify(res));
+			}
 			
-			let categories = eacherData?.map(item => item.x.slice(-2))
-			let series = eacherData?.map(item => item.y)
-			let res = {
-			    categories,
-			    series: [
-			      {
-			        name: "",
-			        data: series
-			      },
-			    ]
-			  };
-			this.chartData = JSON.parse(JSON.stringify(res));
+			
+			
+			if (this.timeType === 3) {
+				// 处理月维度图表数据
+				let monthChartData = {
+					categories: [],
+					series: [{
+						legendShape: 'circle',
+						name: '上月',
+						data: []
+					}, {
+						legendShape: 'circle',
+						name: '本月',
+						data: []
+					}]
+				}
+				// 填充categories数组 01 - 31
+				monthChartData.categories = Array.from({ length: 31 }, (_, index) => {
+				    const day = index + 1;
+				    return day < 10 ? '0' + day : String(day);
+				});
+				// 填充上月数据
+				monthChartData.series[0].data = Array.from({ length: 31 }, (_, index) => {
+				    const dataItem = data.salesTrends[1][index];
+				    return dataItem ? dataItem.y : 0; // 如果数据存在则使用y值，否则补充0
+				});
+				// 填充本月数据
+				monthChartData.series[1].data = Array.from({ length: 31 }, (_, index) => {
+				    const dataItem = data.salesTrends[0][index];
+				    return dataItem ? dataItem.y : 0; // 如果数据存在则使用y值，否则补充0
+				});
+				this.monthChartData = monthChartData;
+			}
 			
 			
 		},
@@ -372,6 +438,11 @@ export default {
 				color: #1D73FF;
 			}
 		}
+	}
+	
+	.chart-container {
+		width: 100%;
+		height: 400rpx;
 	}
 
 	.employee {

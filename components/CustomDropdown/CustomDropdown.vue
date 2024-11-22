@@ -2,11 +2,11 @@
 	<view class="dropdown">
 		<view class="dropdown-item" @click="toggleStoreVisible">
 			<text style="padding-right: 5px">{{curName}}</text>
-			<u-icon name="arrow-down-fill" size="12" color="#606266" />
+			<u-icon name="arrow-down-fill" size="8" color="#c0c4cc" />
 		</view>
 		<view class="dropdown-item" @click="toggleTimeVisible">
 			<text style="padding-right: 5px">日{{ formatTime(times) }}</text>
-			<u-icon name="arrow-down-fill" size="12" color="#606266" />
+			<u-icon name="arrow-down-fill" size="8" color="#c0c4cc" />
 		</view>
 
 		<u-popup :show="storeVisible" :round="10" mode="bottom" @close="toggleStoreVisible">

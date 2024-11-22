@@ -2,7 +2,7 @@
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<view slot="top">
 			<AppletHeader title="日常收支" right-icon=" "></AppletHeader>
-			<nav-search-bar @search="getSearchValue" desc="单号/备注"></nav-search-bar>
+			<nav-search-bar @search="getSearchValue" desc="单号/备注"  @rightClick="rightClick"></nav-search-bar>
 		</view>
 
 		<view class="container">
@@ -25,6 +25,14 @@
 			</view>
 		</view>
 		
+		
+		<template slot="empty">
+			<view class="">
+				<image style="height: 250rpx" mode="heightFix" src="https://haoxianhui.com/hxh/2024/11/22/6118c2c4089c4b818bcbfc92296f5bf2.png"></image>
+			    <view style="text-align: center;">暂无日常收支，点击右下角马上开单</view>
+			</view>
+		</template>
+		
 		<view class="fixed-btn" @click="gotoView">
 			<image :src="staticImageUrl + '/more/inOut.png'" mode="aspectFit"></image>
 		</view>
@@ -46,35 +54,53 @@ export default {
 		return {
 			staticImageUrl,
 			keywords: '',
-			salesMan: '',
-			beginTime: '',
-			endTime: '',
 			dataList: [],
 			inAmount: 0,
-			outAmount: 0
+			outAmount: 0,
+			reqObj: {
+				salesMan: '',
+				beginTime: '',
+				deleteFlag: '',
+				endTime: '',
+				creator: '',
+				deleteFlag: '',
+				depotId: ''
+			}
 		}
 	},
 	onLoad() {},
 	onShow() {
 		// 判断有没有缓存
-		const screenData = uni.getStorageSync('screenData') || null
+		const screenData = uni.getStorageSync('t2screenData') || null
 		if (screenData) {
 			console.log('缓存', screenData)
-			this.beginTime = screenData.startTime
-			this.endTime = screenData.endTime
-			this.salesMan = screenData.arr[1].obj?.id ? screenData.arr[1].obj?.id : ''
+			let { startTime, endTime, arr } = screenData
+			let obj = {}
+			obj.beginTime = `${startTime} 00:00:00`
+			obj.endTime = `${endTime} 23:59:59`
+			obj.depotId = !arr[0].obj.id ? '' : arr[0].obj.id
+			obj.salesMan = !arr[1].obj.id ? '' : arr[1].obj.id
+			obj.creator = !arr[2].obj.id ? '' : arr[2].obj.id
+			obj.deleteFlag = !arr[3].obj.id ? "0" : "1"
+			this.reqObj = obj
+			console.log('请求测试', this.reqObj)
 			this.$refs.paging.reload()
 		} else {
 			// 开始时间和结束时间默认为本月的
 			let endTime = new Date()
 			// 获取当前月份的1号时间
 			let startTime = new Date(endTime.getFullYear(), endTime.getMonth(), 1)
-			this.beginTime = timestampToDate(startTime)
-			this.endTime = timestampToDate(endTime)
+			this.reqObj.beginTime = timestampToDate(startTime)
+			this.reqObj.endTime = timestampToDate(endTime)
 			this.$refs.paging.reload()
 		}
 	},
 	methods: {
+		rightClick() {
+			uni.navigateTo({
+				url: `/pages/packageB/screening-page/screening-page?type=3`
+			})
+		},
 		handleClickItem(item) {
 			console.log(item)
 			let number = item.number
@@ -93,19 +119,11 @@ export default {
 			})
 		},
 		async queryList(page, pageNo) {
-			let obj = {
-				beginTime: this.beginTime,
-				endTime: this.endTime,
-				depotId: '',
-				salesMan: this.salesMan,
-				creator: ''
-			}
-
 			try {
 				const { data } = await getInOutinfoList({
 					currentPage: page,
 					pageSize: pageNo,
-					search: { materialParam: this.keywords, ...obj }
+					search: { fuzzyParam: this.keywords, ...this.reqObj }
 				})
 				console.log(data)
 				let { outAmount, inAmount } = data

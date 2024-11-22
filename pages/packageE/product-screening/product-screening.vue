@@ -42,15 +42,19 @@
 			:formatter="formatter"
 			:show="startShow"
 			v-model="timpStartTime"
+			closeOnClickOverlay
+			@close="startShow = false"
 			mode="date"
 		></u-datetime-picker>
 		<u-datetime-picker
 			ref="datetimePicker"
-			@cancel="endShow = false"
+			@close="startShow = false"
+			@cancel="startShow = false"
 			@confirm="confirmStart($event, 2)"
 			:formatter="formatter"
 			:show="endShow"
 			v-model="timpEndTime"
+			closeOnClickOverlay
 			mode="date"
 		></u-datetime-picker>
 
@@ -138,10 +142,13 @@ export default {
 		this.dataList = [
 			{
 				id: 1,
-				name: '门店',
+				name: '排序条件',
 				type: 1,
 				key: '',
-				data: store
+				data: [
+					{ id: 1, name: '升序', select: true },
+					{ id: 2, name: '降序', select: false },
+				]
 			},
 			{
 				id: 2,
@@ -150,36 +157,9 @@ export default {
 				key: '',
 				data: JSON.parse(JSON.stringify(array))
 			},
-			{
-				id: 3,
-				name: '制单人',
-				type: 3,
-				key: '',
-				data: JSON.parse(JSON.stringify(array))
-			},
-			{
-				id: 4,
-				name: '已作废单据',
-				type: 3,
-				key: '',
-				data: [
-					{
-						id: 0,
-						name: '不显示',
-						select: true
-					},
-					{
-						id: 1,
-						name: '显示',
-						select: false
-					}
-				]
-			}
 		]
 
-		// 销售t1， 进货t2
-		let name = this.type === 1 ? 't1' : 't2'
-		const obj = uni.getStorageSync(`${name}screenData`)
+		const obj = uni.getStorageSync(`productScreenData`)
 		console.log(obj)
 		if (obj) {
 			console.log('存在缓存')
@@ -187,7 +167,6 @@ export default {
 			this.endTime = obj.endTime
 
 			// 门店的
-
 			this.dataList.forEach((item, index) => {
 				item.data.forEach((e, i) => {
 					e.select = false
@@ -219,11 +198,8 @@ export default {
 			} else {
 				this.startShow = false
 				this.endShow = false
-				console.log('结束时间', val)
 				this.endTime = timestampToDate(val.value)
 			}
-			
-			
 		},
 		handleClickSumbit() {
 			console.log('确定')
@@ -247,8 +223,7 @@ export default {
 				endTime: this.endTime,
 				arr
 			}
-			let name = this.type === 1 ? 't1' : 't2'
-			uni.setStorageSync(`${name}screenData`, obj)
+			uni.setStorageSync('productScreenData', obj)
 			uni.navigateBack()
 		},
 		showTimeSelect(type) {
@@ -357,6 +332,7 @@ export default {
 <style scoped lang="scss">
 .container {
 	padding-bottom: 100px;
+	background-color: #fff;
 }
 
 .block {

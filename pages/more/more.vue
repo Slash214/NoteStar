@@ -80,6 +80,7 @@ export default {
 	onShow() {
 		uni.removeStorageSync('flowScreenData')
 		uni.removeStorageSync('t2screenData')
+		uni.removeStorageSync('productScreenData')
 	},
 	methods: {
 		handleClick(e) {

@@ -284,3 +284,14 @@ export const getHistoryDetailByNumber = (data) => {
 		method: 'GET'
 	})
 }
+
+
+
+// 获取商品销售详细的
+export const getMaterialSalesDetails = (data) => {
+	return request({
+		url: '/depotItem/getMaterialSalesDetails',
+		data,
+		method: 'GET'
+	})
+}

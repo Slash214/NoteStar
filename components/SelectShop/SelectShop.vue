@@ -25,13 +25,13 @@ export default {
 	},
 	methods: {
 		confirm(e) {
-			console.log(e)
+			// console.log(e)
 			let item = e.value[0]
 			this.$emit('confirm', item)
 		},
 		cancel(e) {
 			this.$emit('cancel', true)
-			console.log(e)
+			// console.log(e)
 		}
 	},
 	async created() {

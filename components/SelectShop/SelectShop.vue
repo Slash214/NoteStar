@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<u-picker @cancel="cancel"  @close="" @confirm="confirm" closeOnClickOverlay :show="show" keyName="name" :columns="columns"></u-picker>
+		<u-picker @cancel="cancel"  @close="cancel" @confirm="confirm" closeOnClickOverlay :show="show" keyName="name" :columns="columns"></u-picker>
 	</view>
 </template>
 

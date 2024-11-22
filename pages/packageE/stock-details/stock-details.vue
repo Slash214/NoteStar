@@ -2,6 +2,14 @@
 	<view>
 		<AppletHeader title="商品库存" right-icon=" "></AppletHeader>
 		<view class="main">
+			<view class="select" @click="show = true">
+				<text class="mr5">{{curStore.name}}</text>
+				<u-icon color='#999' name="arrow-down-fill" size="8"></u-icon>
+			</view>
+			
+			
+			<select-shop @cancel="show = false"  @confirm="onConfirm" :show="show"></select-shop>
+			
 			<view class="box u-border-bottom">
 				<view class="flex flex-items-center">
 					<view class="image-box">
@@ -20,7 +28,7 @@
 			<view class="card flex flex-between flex-items-center">
 				<view class="card-item" v-for="item in list" :key="item.id">
 					<text>{{ item.name }}</text>
-					<text>{{ item.value }}</text>
+					<text class="mt5">{{ item.value }}</text>
 				</view>
 			</view>
 
@@ -45,23 +53,46 @@
 					</block>
 					<block v-else>
 						<view class="flows" v-for="item in stockFlowsVoList" :key="item.materialId">
-							<u--text :text="formatDateToChinese(item.createTime)" margin="0 0 10px 0"></u--text>
+							<u--text
+								color="#9D9EA0"
+								:text="formatDateToChinese(item.createTime)"
+								margin="0 0 10px 8px"
+							></u--text>
 							<view class="flows-item">
 								<view class="flex flex-between flex-items-center title">
-									<text>{{item.name}}</text>
-									<text>{{item.changeNum}}</text>
+									<text>{{ item.name }}</text>
+									<text>{{ item.changeNum }}</text>
 								</view>
-								
+
 								<view class="flex flex-between flex-items-center">
 									<view class="">
 										<u--text color="#737373" margin="0 0 5px 0" :text="item.number"></u--text>
-										<u--text  color="#737373" :text="item.supplierName"></u--text>
+										<u--text color="#737373" :text="item.supplierName"></u--text>
 									</view>
-									
-									<u--text  :text="'结余' + item.currentNum"></u--text>
+
+									<u--text align="right" :text="'结余' + item.currentNum"></u--text>
 								</view>
 							</view>
 						</view>
+						
+						<view class="flows">
+							<u--text
+								color="#9D9EA0"
+								text="期初"
+								margin="0 0 10px 8px"
+							></u--text>
+							<view class="flows-item">
+								<view class="flex flex-between flex-items-center title">
+									<text>存始库存</text>
+									<text>0</text>
+								</view>
+
+							</view>
+						</view>
+					
+					    <view class="flex flex-items-center flex-center" v-if="!stockFlowsVoList.length">
+					    	没有更多了
+					    </view>
 					</block>
 				</view>
 			</view>
@@ -72,10 +103,16 @@
 <script>
 import { getStockDetail } from '@/apis'
 import { formatDateToChinese } from '../../../utils'
+import SelectShop from '@/components/SelectShop/SelectShop.vue'
 
 export default {
+	components: {
+		SelectShop
+	},
 	data() {
 		return {
+			show: false,
+			curStore: { id: 0, name: '全部门店'},
 			formatDateToChinese,
 			depotId: '',
 			page: 1,
@@ -106,6 +143,13 @@ export default {
 		console.log('加载更多')
 	},
 	methods: {
+		onConfirm(e) {
+			console.log(e)
+			this.curStore = e
+			this.depotId = e.id
+			this.show = false
+			this.getData()
+		},
 		handleTab(item) {
 			this.curId = item.id
 		},
@@ -135,6 +179,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.select {
+	height: 41px;
+	padding-left: 25rpx;
+    display: flex;
+	align-items: center;
+}	
+	
 .box {
 	background: #fff;
 	padding: 25rpx;

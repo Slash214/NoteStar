@@ -1,5 +1,5 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
+	<z-paging ref="paging" v-model="dataList" :default-page-size="20" :refresher-enabled="false" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
 			<AppletHeader
 				@rightClick="navRightClick"
@@ -7,16 +7,17 @@
 				right-icon="https://haoxianhui.com/hxh/2024/11/22/8ed8f9218a7943fea23281041aa4319b.png"
 			></AppletHeader>
 		</template>
-		<view class="select">
-			<view class="flex flex-items-center" @click="selectAllShop">
-				<text>全部门店</text>
+	<!-- 	<view class="select">
+			<view  @click="storShow = true" class="flex flex-items-center">
+				<text>{{curShop.name}}</text>
 				<u-icon name="arrow-down-fill" color="#c0c4cc" size="12"></u-icon>
 			</view>
-			<view class="flex flex-items-center" @click="selectTime">
+			<view  @click="selectTime" class="flex flex-items-center">
 				<text>日: {{ beginTime }}</text>
 				<u-icon name="arrow-down-fill" color="#c0c4cc" size="12"></u-icon>
 			</view>
-		</view>
+		</view> -->
+		<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 		<view class="main" v-if="dataList.length">
 			<view class="nav flex flex-between">
 				<view class="">
@@ -55,13 +56,20 @@
 			></image>
 			<view style="text-align: center">暂无资金流水</view>
 		</template>
+		
+		
 	</z-paging>
 </template>
 
 <script>
 import { timestampToDate, formatDateToChinese, formatMoney } from '@/utils'
 import { getCapitalFlow } from '@/apis'
+import CustomDropdown from '@/components/CustomDropdown/CustomDropdown.vue'
+
 export default {
+	components: {
+		CustomDropdown
+	},
 	data() {
 		return {
 			formatDateToChinese,
@@ -78,7 +86,7 @@ export default {
 			getCapitalFlow,
 			navData: {},
 			dataList: [],
-			isShow: false
+			isShow: false,
 		}
 	},
 	onLoad() {
@@ -98,11 +106,20 @@ export default {
 				url: '/pages/packageD/fund-flow-screening/fund-flow-screening'
 			})
 		},
-		selectAllShop() {
-			console.log('选择店铺', 1)
+		selectStore(e) {
+			console.log(e)
+			this.depotId = e.id
+			this.$refs.paging.reload()
 		},
 		selectTime() {
-			console.log('选择时间')
+			if (e.mode === 'date') {
+				this.time = timestampToDate(e.value)
+				this.timeType = 1
+			} else {
+				this.time = timestampToDate(e.value, 2)
+				this.timeType = 3
+			}
+			this.$refs.paging.reload()
 		},
 
 		async queryList(page, pageNo) {
@@ -111,7 +128,7 @@ export default {
 				beginTime: this.beginTime,
 				endTime: this.endTime,
 				timeType: this.timeType,
-				depotId: this.depotId,
+				depotId: this.depotId|| "",
 			}
 			
 			if (this.reqObj?.accountId) {

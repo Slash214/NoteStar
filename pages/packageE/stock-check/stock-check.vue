@@ -72,6 +72,7 @@ export default {
 			sortRule: 1,
 			// sortType: 1,
 			total: 0,
+			enabled: false,
 			totalCostPrice: 0,
 			loading: true,
 			sortList: [
@@ -88,6 +89,13 @@ export default {
 	},
 	onLoad() {
 		this.curSortItem = this.sortList[0]
+	},
+	onShow() {
+		const obj = uni.getStorageSync('stockData')
+		if (obj) {
+			this.enabled = obj.enabled
+			this.sortRule = obj.sortRule
+		}
 	},
 	methods: {
 		gotoStockDetails(item) {
@@ -130,7 +138,7 @@ export default {
 				const { data } = await getStockList({
 					currentPage: pageNo,
 					pageSize: pageSize,
-					enabled: true,
+					enabled: this.enabled,
 					depotId: this.curStore?.id || '',
 					sortType: this.curSortItem.value,
 					materialParam: this.keywords,

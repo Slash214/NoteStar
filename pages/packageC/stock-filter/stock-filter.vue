@@ -81,6 +81,14 @@
 				})
 			},
 			handleClik() {
+				let obj = this.list.filter(item => item.select)[0]
+				let obj2 = this.list1.filter(item => item.select)[0]
+				console.log(obj, obj2)
+				
+				let sortRule = obj.id === 1 ? 1 : 2 
+				let enabled = obj2.ida === 1 ? false : true
+				let i = { sortRule, enabled }
+				uni.setStorageSync('stockData', i)
 				uni.navigateBack()
 			}
 		}

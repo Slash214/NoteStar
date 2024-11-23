@@ -206,7 +206,7 @@
 							type: '入库',
 							subType: '采购',
 							// 搜索关键词
-							fuzzyQueryParam: '',
+							fuzzyQueryParam: this.keyword,
 							...this.reqObj,
 						},
 					})

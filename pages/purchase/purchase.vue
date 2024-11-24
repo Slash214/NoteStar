@@ -1,13 +1,5 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<!-- <AppletHeader
-			:autoBack="false"
-			@leftClick="modalVisible = true"
-			title="进货"
-			left-icon="account"
-			right-icon=" "
-		></AppletHeader> -->
-
 		<u-navbar bgColor="#F1F5F8" right-icon=" " leftIcon="account" :placeholder="true" autoBack="false"
 			@leftClick="modalVisible = true">
 			<!-- 中间内容 -->
@@ -25,7 +17,7 @@
 		<nav-search-bar desc="单号/客户/商品/备注" @rightClick="rightClick" @search="getKeyWords"></nav-search-bar>
 
 		<view class="container">
-			<tag-count-text :text="'共' + total + '笔'" :desc="'合计：' + totalPrice"></tag-count-text>
+			<horizontal-card title="共" :titlePrice="total" subtitle="合计" :subtitlePrice="totalPrice"></horizontal-card>
 			<view class="mb20"></view>
 			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClick(item)">
@@ -69,16 +61,17 @@
 		formatDateToChinese,
 		formatMoney
 	} from '@/utils'
-	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 	import {
 		staticImageUrl
 	} from '@/common/contanst'
+	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
+	import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 	import UserPopup from '@/components/UserPopup/UserPopup.vue'
-
 	export default {
 		components: {
 			NavSearchBar,
 			UserPopup,
+			HorizontalCard
 		},
 		data() {
 			return {

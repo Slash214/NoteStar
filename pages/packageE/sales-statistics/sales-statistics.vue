@@ -221,7 +221,8 @@ export default {
 
 			let obj = {
 				sortType2: screenData.arr[0].obj?.id,
-				salesMan: screenData.arr[1].obj?.id ? screenData.arr[1].obj?.id : ''
+				salesMan: screenData.arr[1].obj?.id ? screenData.arr[1].obj?.id : '',
+				sortType1: 1,
 			}
 
 			this.reqData = obj

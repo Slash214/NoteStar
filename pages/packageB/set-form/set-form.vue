@@ -166,6 +166,9 @@
 					<text>应收：￥{{ reqData.changeAmount }}</text>
 					<text v-if="type === 1" class="btns" @click="applyMoneyAroundDown">抹零</text>
 				</view>
+				<view class="moneyAroundDown" v-if="type === 1">
+					已抹零：{{reqData.moneyAroundDown}}
+				</view>
 			</view>
 
 			<view class="white box mt10" style="padding: 40rpx">
@@ -661,7 +664,7 @@ export default {
 			console.log('商品列表', this.productList)
 
 			const newFrom = { ...this.reqData }
-
+            let originalTotalPrice = this.totalPrice
 			if (this.type === 2) {
 				delete newFrom.moneyAroundDown
 			} else {
@@ -681,7 +684,7 @@ export default {
 				...newFrom,
 				totalPrice: this.reqData.changeAmount,
 				accountId: 1,
-				originalTotalPrice: this.totalPrice
+				originalTotalPrice
 			}
 
 			if (this.isUpdate) {
@@ -919,8 +922,6 @@ export default {
 	align-items: flex-end;
 	align-items: center;
 	justify-content: flex-end;
-	padding-bottom: 20px;
-
 	.btns {
 		width: 120rpx;
 		margin-left: 20rpx;
@@ -931,6 +932,12 @@ export default {
 		justify-content: center;
 		align-items: center;
 	}
+}
+
+.moneyAroundDown {
+	text-align: right;
+	color: #737373;
+	padding: 15px 0;
 }
 
 .grossProfit {

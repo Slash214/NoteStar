@@ -280,8 +280,8 @@ export const addAccountItem = (data) => {
 export const getHistoryDetailByNumber = (data) => {
 	return request({
 		url: '/depotHead/getHistoryDetailByNumber',
-		data,
-		method: 'GET'
+		method: 'GET',
+		data
 	})
 }
 
@@ -291,6 +291,15 @@ export const getHistoryDetailByNumber = (data) => {
 export const getMaterialSalesDetails = (data) => {
 	return request({
 		url: '/depotItem/getMaterialSalesDetails',
+		data,
+		method: 'GET'
+	})
+}
+
+
+export const getCapitalFlowDetail = (data) => {
+	return request({
+		url: '/depotHead/getCapitalFlowDetail',
 		data,
 		method: 'GET'
 	})

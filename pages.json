@@ -195,6 +195,20 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "flow-list/flow-list",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
+				},
+				{
+					"path" : "flow-list-details/flow-list-details",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},

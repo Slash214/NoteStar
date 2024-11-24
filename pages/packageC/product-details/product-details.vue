@@ -79,7 +79,7 @@ export default {
 		async getData() {
 			const { data } = await getMaterById({ id: this.id })
 			console.log(data)
-			this.imgList = data.imgName.split(',') || []
+			this.imgList = data?.imgName?.split(',') || []
 			this.objItem = data
 		},
 		gotoList() {

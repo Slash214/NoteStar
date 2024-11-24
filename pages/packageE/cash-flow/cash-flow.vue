@@ -7,16 +7,6 @@
 				right-icon="https://haoxianhui.com/hxh/2024/11/22/8ed8f9218a7943fea23281041aa4319b.png"
 			></AppletHeader>
 		</template>
-	<!-- 	<view class="select">
-			<view  @click="storShow = true" class="flex flex-items-center">
-				<text>{{curShop.name}}</text>
-				<u-icon name="arrow-down-fill" color="#c0c4cc" size="12"></u-icon>
-			</view>
-			<view  @click="selectTime" class="flex flex-items-center">
-				<text>日: {{ beginTime }}</text>
-				<u-icon name="arrow-down-fill" color="#c0c4cc" size="12"></u-icon>
-			</view>
-		</view> -->
 		<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 		<view class="main" v-if="dataList.length">
 			<view class="nav flex flex-between">
@@ -37,7 +27,7 @@
 		<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 
 		<view class="container">
-			<view class="list" v-for="(item, index) in dataList" :key="index">
+			<view class="list" v-for="(item, index) in dataList" :key="index" @click="hadndaleClick(item)">
 				<text class="time">{{ formatDateToChinese(item.operTime) }}</text>
 				<view class="flex content">
 					<text>收入{{ item.totalInCount }}笔</text>
@@ -101,6 +91,11 @@ export default {
 		}
 	},
 	methods: {
+		hadndaleClick(item) {
+			uni.navigateTo({
+				url: `/pages/packageB/flow-list/flow-list?time=${item.operTime}&id=${this.depotId}`
+			})
+		},
 		navRightClick() {
 			uni.navigateTo({
 				url: '/pages/packageD/fund-flow-screening/fund-flow-screening'

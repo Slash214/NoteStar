@@ -29,7 +29,7 @@
 			return {
 				// 1销售 2进货
 				type: 1,
-				number: 0,
+				nums: 0,
 				list: []
 			}
 		},
@@ -41,7 +41,8 @@
 			} = options
 
 			this.type = +type
-			this.number = number
+			this.nums = number
+			console.log('DAQ', this.nums)
 			this.getData()
 		},
 		methods: {
@@ -53,7 +54,7 @@
 				const {
 					data
 				} = await getHistoryDetailByNumber({
-					number: this.numbner
+					number: this.nums
 				})
 
 				this.list = data

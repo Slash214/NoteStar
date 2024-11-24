@@ -158,11 +158,6 @@
 			fixItems() {
 				// 去修改前需要记录数据
 				console.log('修改', this.productList)
-
-				// let purchaseDecimal = 0 , commodityDecimal = 0
-				// if (this.type === 1) {
-				// }
-
 				let selectList = this.productList.map((item) => ({
 					id: item.materialId,
 					cover: item.cover,

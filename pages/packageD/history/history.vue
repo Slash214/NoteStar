@@ -6,12 +6,12 @@
 			<u-divider text="没有更多了" v-if="!list.length" :hairline="true"></u-divider>
 			<block v-else>
 				<view class="box">
-					<text>单号：{{number}}</text>
+					<text>单号：{{nums}}</text>
 					<text style="padding: 0 5px;">|</text>
-					<text>修改次数：1</text>
+					<text>修改次数：{{length}}</text>
 				</view>
 				<view class="card" v-for="item in list" :key="item.id">
-					<u--text margin="0 0 10px 0" :text="item.changeTime" bold size="16"></u--text>
+					<u--text margin="0 0 10px 0" :text="formatTimestamp(item.changeTime)" bold size="16"></u--text>
 					<u--text :text="'操作人：' + item.modifierName" size="14"></u--text>
 				</view>
 			</block>
@@ -23,14 +23,17 @@
 	import {
 		getHistoryDetailByNumber
 	} from '@/apis'
-	// import { forma}
+	import { formatTimestamp } from '@/utils'
+
 	export default {
 		data() {
 			return {
 				// 1销售 2进货
 				type: 1,
 				nums: 0,
-				list: []
+				list: [],
+				length: 1,
+				formatTimestamp
 			}
 		},
 		onLoad(options) {
@@ -58,6 +61,7 @@
 				})
 
 				this.list = data
+				this.length = data.length
 				console.log('data', data)
 			}
 		},

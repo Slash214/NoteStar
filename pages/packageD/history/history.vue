@@ -11,7 +11,7 @@
 					<text>修改次数：{{length}}</text>
 				</view>
 				<view class="card" v-for="item in list" :key="item.id">
-					<u--text margin="0 0 10px 0" :text="formatTimestamp(item.changeTime)" bold size="16"></u--text>
+					<u--text margin="0 0 10px 0" :text="formatDateTime(item.changeTime)" bold size="16"></u--text>
 					<u--text :text="'操作人：' + item.modifierName" size="14"></u--text>
 				</view>
 			</block>
@@ -23,7 +23,7 @@
 	import {
 		getHistoryDetailByNumber
 	} from '@/apis'
-	import { formatTimestamp } from '@/utils'
+	import { formatDateTime } from '@/utils'
 
 	export default {
 		data() {
@@ -33,7 +33,7 @@
 				nums: 0,
 				list: [],
 				length: 1,
-				formatTimestamp
+				formatDateTime
 			}
 		},
 		onLoad(options) {

@@ -373,10 +373,10 @@
 				//  = []
 
 				if (this.timeType === 1) {
-					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1]
+					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1] || []
 
 					let categories = eacherData?.map(item => item.x.slice(-2))
-					let series = eacherData?.map(item => item.y)
+					let series = eacherData?.map(item => Number(item.y))
 					let res = {
 						categories,
 						series: [{

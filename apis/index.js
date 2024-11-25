@@ -304,3 +304,56 @@ export const getCapitalFlowDetail = (data) => {
 		method: 'GET'
 	})
 }
+
+
+export const addShopDataDeopt = (data) => {
+	return request({
+		url: '/depot/add',
+		data,
+		method: 'POST'
+	})
+}
+
+export const updateShopDataDeopt = (data) => {
+	return request({
+		url: '/depot/update',
+		data,
+		method: 'PUT'
+	})
+}
+
+
+
+export const addUserData = (data) => {
+	return request({
+		url: '/user/addUser',
+		data,
+		method: 'POST'
+	})
+}
+
+export const updateUserData = (data) => {
+	return request({
+		url: '/user/updateUser',
+		data,
+		method: 'PUT'
+	})
+}
+
+// 获取角色列表
+export const getRoleList = (data) => {
+	return request({
+		url: '/role/list',
+		data,
+		method: 'GET'
+	})
+}
+
+export const getUserByUserId = (data) => {
+	return request({
+		url: '/user/getUserByUserId',
+		data,
+		method: 'GET'
+	})
+}
+

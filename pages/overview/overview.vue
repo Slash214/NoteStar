@@ -94,7 +94,7 @@
 								</view>
 								<view class="mt10 flex flex-items-center">
 									<u-line-progress height="8" :showText="false" style="flex: 1"
-										:percentage="item.progress" activeColor="#E5B840"></u-line-progress>
+										:percentage="item.progress" activeColor="#F7CD01"></u-line-progress>
 									<text class="progress-text ml5">{{ item.progress }}%</text>
 								</view>
 							</view>
@@ -351,14 +351,15 @@
 					salesTrends
 				} = data || {}
 
-				this.reportData[0].num = keyData.nowCapitalIncome || 0
-				this.reportData[0].value = keyData.preSalesRevenue || 0
+				this.reportData[0].num = keyData.preSalesRevenue || 0
+				this.reportData[0].value = keyData.preSalesCount || 0
 				this.reportData[1].num = keyData.nowSalesCount || 0
 				this.reportData[1].value = keyData.preSalesCount || 0
 				this.reportData[2].num = keyData.nowGrossProfit || 0
 				this.reportData[2].value = keyData.preGrossProfit || 0
-				this.reportData[3].num = keyData.nowSalesRevenue || 0
+				this.reportData[3].num = keyData.nowCapitalIncome || 0
 				this.reportData[3].value = keyData.preCapitalIncome || 0
+				
 				this.lastTime = keyData.lastCreateTime || formatTimestamp(Date.now())
 				console.log('data', data)
 
@@ -372,10 +373,10 @@
 				//  = []
 
 				if (this.timeType === 1) {
-					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1]
+					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1] || []
 
 					let categories = eacherData?.map(item => item.x.slice(-2))
-					let series = eacherData?.map(item => item.y)
+					let series = eacherData?.map(item => Number(item.y))
 					let res = {
 						categories,
 						series: [{
@@ -464,7 +465,7 @@
 			&-item {
 				.price {
 					color: #fff;
-					font-size: 38rpx;
+					font-size: 48rpx;
 					font-weight: 600;
 					margin: 10rpx 0;
 				}

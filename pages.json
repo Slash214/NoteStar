@@ -122,6 +122,13 @@
 					{
 						"navigationBarTitleText" : ""
 					}
+				},
+				{
+					"path" : "select-store/select-store",
+					"style" : 
+					{
+						"navigationBarTitleText" : ""
+					}
 				}
 			]
 		},

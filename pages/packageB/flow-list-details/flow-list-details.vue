@@ -20,9 +20,12 @@
 				</view>
 
 				<view class="bottom">
-					<view>
+					<view class="flex">
 						<text class="label">业务单号:</text>
-						<text>{{objItem.number}}</text>
+						<view class="flex flex-between" style="flex: 1;" @click="gotoDetails(objItem.number)">
+							<text>{{objItem.number}}</text>
+							<u-icon name="arrow-right"></u-icon>
+						</view>
 					</view>
 					<view>
 						<text class="label">操作时间:</text>
@@ -62,10 +65,15 @@
 			let obj = options.obj
 			this.objItem = JSON.parse(obj)
 			console.log(this.objItem)
-
 		},
 		methods: {
-
+            gotoDetails(number) {
+				// console.log(number)
+				uni.navigateTo({
+					url: `/pages/packageE/daily-details/daily-details?number=${number}`
+				})
+			}
+			
 		}
 	}
 </script>

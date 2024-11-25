@@ -121,7 +121,7 @@
 				</view>
 
 				<view class="amount">
-					<text style="padding-bottom: 10px;">应收：￥{{ reqData.changeAmount }}</text>
+					<text>应收：￥{{ reqData.changeAmount }}</text>
 					<text v-if="type === 1" class="btns" @click="applyMoneyAroundDown">
 						{{showMo ? '取消抹零' : '抹零'}}
 					</text>
@@ -933,6 +933,7 @@
 		align-items: flex-end;
 		align-items: center;
 		justify-content: flex-end;
+		padding-bottom: 10px;
 
 		.btns {
 			width: 120rpx;

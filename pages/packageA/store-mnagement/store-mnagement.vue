@@ -25,6 +25,9 @@
 					url: `/pages/packageA/store-info-set/store-info-set?type=${type}`
 				})
 			}
+		},
+		onShow() {
+			uni.removeStorageSync('selectShop')
 		}
 	}
 </script>

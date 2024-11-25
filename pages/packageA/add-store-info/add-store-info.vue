@@ -27,7 +27,7 @@
 
 					<block v-if="item.type === 'select'">
 						<view class="flex flex-between" @click="handleClick(item)">
-							<text>{{ item.value || item.desc }}</text>
+							<text style="line-height: 1.5">{{ item.value || item.desc }}</text>
 							<u-icon name="arrow-right"></u-icon>
 						</view>
 					</block>
@@ -41,18 +41,19 @@
 				keyName="name"
 				:columns="roleList"
 			></u-picker>
-			<select-shop
-				@getAllId="getAllId"
-				:show="shopShow"
-				@cancel="shopShow = false"
-				@confirm="onSelectShop"
-			></select-shop>
 		</view>
 	</view>
 </template>
 
 <script>
-import { updateShopDataDeopt, addShopDataDeopt, updateUserData, addUserData, getRoleList, getUserByUserId } from '@/apis'
+import {
+	updateShopDataDeopt,
+	addShopDataDeopt,
+	updateUserData,
+	addUserData,
+	getRoleList,
+	getUserByUserId
+} from '@/apis'
 import SelectShop from '@/components/SelectShop/SelectShop.vue'
 export default {
 	components: {
@@ -106,7 +107,7 @@ export default {
 	async onLoad(options) {
 		console.log(options)
 		this.id = +options?.type || 1
-	
+
 		if (this.id === 1) {
 			if (options?.obj) {
 				this.isUpdate = true
@@ -121,18 +122,35 @@ export default {
 				this.updateId = curItem.id
 			}
 		}
-		
+
 		if (this.id === 2) {
-			await  this.getList()
-			const { data } = await getUserByUserId({ userId: options.userId })
-			console.log('员工', data)
-			this.curRole = this.roleList[0].filter(e => e.id === data.roleId)[0]
-			let newObj = this.objItem[this.id].data
-			newObj[0].value = data.userName
-			newObj[1].value = data.loginName
-			newObj[2].value = data.phone
-			newObj[3].value = this.curRole.name
-			newObj[4].value = '全部门店'
+			await this.getList()
+			if (options?.userId) {
+				const { data } = await getUserByUserId({ userId: options.userId })
+				console.log('员工', data)
+				this.curRole = this.roleList[0].filter((e) => e.id === data.roleId)[0]
+				let newObj = this.objItem[this.id].data
+				newObj[0].value = data.userName
+				newObj[1].value = data.loginName
+				newObj[2].value = data.phone
+				newObj[3].value = this.curRole.name
+				let name = data.depotList.map((item) => item.name).join('，')
+				newObj[4].value = name
+				this.allIdStr = data.depotList.map((item) => item.id).join(',')
+				uni.setStorageSync('selectShop',  data.depotList)
+			}
+		}
+	},
+	onShow() {
+		if (this.id === 2) {
+			const cacheShop = uni.getStorageSync('selectShop')
+			if (cacheShop) {
+				console.log('选择的店铺', cacheShop)
+				let name = cacheShop.map((item) => item.name).join('，')
+				let newObj = this.objItem[this.id].data
+				newObj[4].value = name
+				this.allIdStr = cacheShop.map((item) => item.id).join(',')
+			}
 		}
 	},
 	methods: {
@@ -237,7 +255,7 @@ export default {
 				return
 			}
 
-			if (!this.curShop.id && !this.allIdStr) {
+			if (!this.allIdStr) {
 				uni.showToast({
 					title: '请选择所属门店',
 					icon: 'none'
@@ -254,12 +272,12 @@ export default {
 
 			const Fn = this.isUpdate ? updateUserData : addUserData
 			const { data } = await Fn(reqObj)
-			
+
 			uni.showToast({
 				title: '操作成功',
 				icon: 'none'
 			})
-			
+
 			uni.navigateBack()
 		}
 	}

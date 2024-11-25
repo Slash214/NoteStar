@@ -71,6 +71,7 @@ export default {
 	},
 	onShow() {
 		this.$refs.paging.reload()
+		uni.removeStorageSync('selectShop')
 	},
 	methods: {
 		confirm(v) {

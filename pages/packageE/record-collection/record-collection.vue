@@ -36,11 +36,16 @@
 			<view class="box remark">
 				<u--text text="备注" margin="10px"></u--text>
 				<u--textarea border="none" v-model="remark" placeholder="请输入内容"></u--textarea>
+
+				<view class="">
+					<u-upload width="60" height="60" :fileList="fileList1" @afterRead="afterRead" @delete="deletePic"
+						name="1" multiple :maxCount="6"></u-upload>
+				</view>
 			</view>
 		</view>
 
 		<view class="fixed-bottom">
-			<view class="dailyInOut" @click="saveData">保存</view>
+			<view class="dailyInOut" @click="saveData">{{ isUpdate ? '更新' : '保存' }}</view>
 		</view>
 
 		<select-shop :all="false" :show="showStore" @cancel="showStore = false" @confirm="confirmStore"></select-shop>
@@ -57,12 +62,17 @@
 	import {
 		getUserByDepotId,
 		addinOutItem,
+		updateinOutItem,
 		genbuildNumber
 	} from '@/apis'
 	import {
 		timestampToDate,
 		formatTimestamp
 	} from '@/utils'
+	import {
+		UPLOAD_FILE_URL,
+		IMAGE_OSS_URL
+	} from '@/common/contanst.js'
 	import SelectTime from '@/components/SelectTime/SelectTime.vue';
 	import SelectShop from '@/components/SelectShop/SelectShop.vue';
 	export default {
@@ -76,6 +86,7 @@
 				currIndex: 1,
 				remark: '',
 				curTemp: '',
+				fileList1: [],
 
 				formList: [{
 						id: 1,
@@ -200,15 +211,27 @@
 				salesMan: 0,
 				typeName: "",
 				person: [],
-				createTime: Date.now()
+				createTime: Date.now(),
+				isUpdate: false,
+				updateData: {
+					number: '',
+					id: 0
+				}
 			}
 		},
-		onLoad() {
+		onLoad(options) {
+			this.token = uni.getStorageSync('token')
+			console.log(options)
 			const time = timestampToDate(Date.now())
-			console.log(time)
 			this.formList[3].value = time
 			this.formList[3].select = true
 			this.getData()
+
+			if (options?.isUpdate) {
+				console.log('更新状态')
+				this.isUpdate = true
+			}
+
 		},
 		computed: {
 			filteredList() {
@@ -222,6 +245,60 @@
 			}
 		},
 		methods: {
+			// 删除图片
+			deletePic(event) {
+				this[`fileList${event.name}`].splice(event.index, 1)
+			},
+			// 新增图片
+			async afterRead(event) {
+				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+				let lists = [].concat(event.file)
+				let fileListLen = this[`fileList${event.name}`].length
+				lists.map((item) => {
+					this[`fileList${event.name}`].push({
+						...item,
+						status: 'uploading',
+						message: '上传中'
+					})
+				})
+				for (let i = 0; i < lists.length; i++) {
+					const result = await this.uploadFilePromise(lists[i].url)
+					let item = this[`fileList${event.name}`][fileListLen]
+					this[`fileList${event.name}`].splice(
+						fileListLen,
+						1,
+						Object.assign(item, {
+							status: 'success',
+							message: '',
+							url: result
+						})
+					)
+					fileListLen++
+				}
+			},
+			uploadFilePromise(url) {
+				return new Promise((resolve, reject) => {
+					let a = uni.uploadFile({
+						url: UPLOAD_FILE_URL, // 仅为示例，非真实的接口地址
+						filePath: url,
+						header: {
+							'X-Access-Token': this.token,
+							'content-type': 'application/json'
+						},
+						name: 'file',
+						formData: {
+							user: 'test'
+						},
+						success: (res) => {
+							console.log('res', res.data)
+							const result = JSON.parse(res.data)
+							console.log('TP1', result.data)
+							let url = `${IMAGE_OSS_URL}/${result.data}`
+							resolve(url)
+						}
+					})
+				})
+			},
 			toggleIndex(index) {
 				this.currIndex = index
 
@@ -274,11 +351,42 @@
 				this.person = data
 				const user = uni.getStorageSync('userInfo')
 				let curItem = this.person.filter(item => item.userName === user.username)[0]
-				
 				this.formList[4].value = user.username
 				this.formList[4].select = true
 				this.salesMan = curItem.id
-				
+
+				if (this.isUpdate) {
+					const cache = uni.getStorageSync('recordCollectionData')
+
+					this.formList[4].value = cache.salesManStr
+					this.formList[4].select = true
+					this.salesMan = cache.salesMan
+					this.formList[0].value = cache.totalAmount
+					this.remark = cache.remark
+					this.typeName = cache.name
+					this.formList[2].value = cache.name
+					this.formList[2].select = true
+					this.curStore = {
+						name: cache.depotName,
+						id: cache.depotId
+					}
+					 this.currIndex  = cache.type === 'in' ? 1 : 2 
+					this.updateData = {
+						number: cache.number,
+						id: cache.id
+					}
+					if (cache.imgName) {
+						let imgArray = cache.imgName.split(',')
+						console.log(imgArray)
+
+						this.fileList1 = imgArray.map(e => ({
+							url: e
+						}))
+					}
+
+					console.log(cache)
+				}
+
 			},
 			handleClick(item) {
 				console.log(item)
@@ -327,21 +435,28 @@
 					this.toast('请选择业务员')
 					return
 				}
-				const result = await genbuildNumber({
-					type: 2
-				})
-				// console.log(result?.data.defaultNumber)
-				let number = result?.data.defaultNumber || ''
-				// 接口生成编号
+			
+			
+			    let number = ""
+				const FN = this.isUpdate ? updateinOutItem : addinOutItem
 				console.log(typeof this.formList[0].value)
-				const {
-					data
-				} = await addinOutItem({
+				let imgStrArr = this.fileList1.map(item => item.url).join(',') || ""
+				if (!this.isUpdate) {
+					// 接口生成编号
+					const result = await genbuildNumber({
+						type: 2
+					})
+					number = result?.data.defaultNumber || ''
+				} else {
+					number = this.updateData.number
+				}
+
+				let paramsData = {
 					type,
 					apiName: "inOutItem",
 					createTime: formatTimestamp(this.createTime, false),
 					depotId: this.curStore.id,
-					fileName: "",
+					imgName: imgStrArr,
 					name: this.typeName,
 					number,
 					remark: this.remark,
@@ -351,15 +466,31 @@
 						accountId: 1,
 						amount: this.formList[0].value
 					}]
-				})
+				}
+
+				if (this.isUpdate) {
+					paramsData['id'] = this.updateData.id
+				}
+
+				const {
+					data
+				} = await FN(paramsData)
 
 				console.log(data)
 				this.toast('操作成功')
 				// 返回
 				// uni.navigateBack()
-				setTimeout(() => {
-					uni.navigateBack()
-				}, 300)
+				
+				
+				if (this.isUpdate) {
+					uni.reLaunch({
+						url: '/pages/packageE/daily-summary/daily-summary'
+					})
+				} else {
+					setTimeout(() => {
+						uni.navigateBack()
+					}, 300)
+				}
 			},
 			formatMoney(value) {
 				const number = parseFloat(value);

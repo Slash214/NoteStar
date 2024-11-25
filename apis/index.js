@@ -242,6 +242,14 @@ export const addinOutItem = (data) => {
 	})
 }
 
+export const updateinOutItem = (data) => {
+	return request({
+		url: '/inOutItem/update',
+		data,
+		method: 'PUT'
+	})
+}
+
 
 export const getDetailByNumber = (data) => {
 	return request({

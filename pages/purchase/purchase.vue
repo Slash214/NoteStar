@@ -7,6 +7,7 @@
 			:placeholder="true"
 			autoBack="false"
 			@leftClick="modalVisible = true"
+			:use-cache="true" cache-key="PurchaseKey"
 		>
 			<!-- 中间内容 -->
 			<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">

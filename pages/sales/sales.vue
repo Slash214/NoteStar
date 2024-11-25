@@ -1,5 +1,5 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
+	<z-paging :use-cache="true" cache-key="SalesKey" ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<template slot="top">
 			<AppletHeader
 				:autoBack="false"

@@ -7,6 +7,7 @@
 		:auto="!isCache"
 		auto-show-back-to-top
 		safe-area-inset-bottom
+		:refresher-enabled="false"
 	>
 		<view slot="top">
 			<AppletHeader :title="type === 1 ? '销售' : '进货'" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>

@@ -351,14 +351,15 @@
 					salesTrends
 				} = data || {}
 
-				this.reportData[0].num = keyData.nowCapitalIncome || 0
-				this.reportData[0].value = keyData.preSalesRevenue || 0
+				this.reportData[0].num = keyData.preSalesRevenue || 0
+				this.reportData[0].value = keyData.preSalesCount || 0
 				this.reportData[1].num = keyData.nowSalesCount || 0
 				this.reportData[1].value = keyData.preSalesCount || 0
 				this.reportData[2].num = keyData.nowGrossProfit || 0
 				this.reportData[2].value = keyData.preGrossProfit || 0
-				this.reportData[3].num = keyData.nowSalesRevenue || 0
+				this.reportData[3].num = keyData.nowCapitalIncome || 0
 				this.reportData[3].value = keyData.preCapitalIncome || 0
+				
 				this.lastTime = keyData.lastCreateTime || formatTimestamp(Date.now())
 				console.log('data', data)
 

@@ -25,7 +25,19 @@
 			<!-- Table Header -->
 			<view class="table-header">
 				<view class="table-cell merge">员工</view>
-				<view class="table-cell">销量</view>
+				<view class="table-cell" @click="toggleAscending">
+					<view class="flex flex-items-center">
+						<text>销量</text>
+						<view class="flex-icon">
+							<u-icon name="arrow-up-fill" size="9" :color="isAscending ? '#2D6BCB' : '#CCCDCC'"></u-icon>
+							<u-icon
+								name="arrow-down-fill"
+								size="9"
+								:color="!isAscending ? '#2D6BCB' : '#CCCDCC'"
+							></u-icon>
+						</view>
+					</view>
+				</view>
 				<view class="table-cell">金额</view>
 				<view class="table-cell">利润</view>
 			</view>
@@ -69,6 +81,7 @@ export default {
 		return {
 			dataList: [],
 			sortType: 1,
+			// 1是降序  2是 升序
 			sortRule: 1,
 			show: false,
 			timeShow: false,
@@ -82,7 +95,10 @@ export default {
 				start: '',
 				end: ''
 			},
-			cacheTime: {}
+			cacheTime: {},
+
+			// 默认是升序
+			isAscending: true
 		}
 	},
 	onLoad() {
@@ -112,7 +128,10 @@ export default {
 			this.timeShow = false
 			this.$refs.paging.reload()
 		},
-
+		toggleAscending() {
+			this.isAscending = !this.isAscending
+			this.$refs.paging.reload()
+		},
 		confirm(e) {
 			console.log(e)
 			this.show = false
@@ -129,7 +148,8 @@ export default {
 					endTime: this.curTime.end || e,
 					depotId: this.curShop.id || '',
 					sortType: this.sortType,
-					sortRule: this.sortRule
+					sortRule: this.isAscending ? 2 : 1,
+					
 				})
 				let { employeePerformance } = data || {}
 				console.log('data', employeePerformance)
@@ -163,8 +183,16 @@ export default {
 .popup {
 	width: 100%;
 	padding: 20px;
-}	
-	
+}
+
+.flex-icon {
+	margin: 2px 0 0 5px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
 .select {
 	box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
 	border-top-left-radius: 40rpx;

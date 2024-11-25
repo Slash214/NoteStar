@@ -94,7 +94,7 @@
 								</view>
 								<view class="mt10 flex flex-items-center">
 									<u-line-progress height="8" :showText="false" style="flex: 1"
-										:percentage="item.progress" activeColor="#E5B840"></u-line-progress>
+										:percentage="item.progress" activeColor="#F7CD01"></u-line-progress>
 									<text class="progress-text ml5">{{ item.progress }}%</text>
 								</view>
 							</view>
@@ -465,7 +465,7 @@
 			&-item {
 				.price {
 					color: #fff;
-					font-size: 38rpx;
+					font-size: 48rpx;
 					font-weight: 600;
 					margin: 10rpx 0;
 				}

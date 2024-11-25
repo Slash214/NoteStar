@@ -20,18 +20,23 @@ export default {
 	},
 	data() {
 		return {
-			columns: []
+			columns: [],
+			array: [],
+			length: 0
 		}
 	},
 	methods: {
 		confirm(e) {
-			// console.log(e)
 			let item = e.value[0]
+			if (item.id === 0) {
+				let ids = this.array.map(item => item.id).join(',')
+				this.$emit('getAllId', ids)
+			}
+			
 			this.$emit('confirm', item)
 		},
 		cancel(e) {
 			this.$emit('cancel', true)
-			// console.log(e)
 		}
 	},
 	async created() {
@@ -41,6 +46,7 @@ export default {
 			id: item.id,
 			name: item.name
 		}))
+		this.array = JSON.parse(JSON.stringify(list))
 		if (this.all) {
 			list.unshift({ name: '全部门店', id: 0,})
 		}

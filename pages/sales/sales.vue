@@ -31,11 +31,13 @@
 					<u--text align="right" color="#000" size="18" bold mode="price" :text="item.totalPrice"></u--text>
 				</view>
 			</view>
+			
+			<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" >
+				<image @click="gotoSetForm" :src="staticImageUrl + '/sales/kaidan.png'" mode="widthFix"></image>
+			</view>
 		</view>
 
-		<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
-			<image :src="staticImageUrl + '/sales/kaidan.png'" mode="aspectFit"></image>
-		</view>
+	
 
 		<template slot="empty">
 			<view class="">
@@ -185,6 +187,7 @@ export default {
 	height: 90rpx;
 	border-radius: 50rpx;
 	box-shadow: 5px 5px 20px rgba(0, 201, 221, 0.5);
+	overflow: hidden;
 	image {
 		width: 120rpx;
 	}

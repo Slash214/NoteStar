@@ -10,7 +10,7 @@
 					<text style="padding: 0 5px;">|</text>
 					<text>修改次数：{{length}}</text>
 				</view>
-				<view class="card" v-for="item in list" :key="item.id">
+				<view class="card" v-for="item in list" :key="item.id" @click="gotoHistory(item)">
 					<u--text margin="0 0 10px 0" :text="formatTimestamp(item.changeTime)" bold size="16"></u--text>
 					<u--text :text="'操作人：' + item.modifierName" size="14"></u--text>
 				</view>
@@ -23,7 +23,9 @@
 	import {
 		getHistoryDetailByNumber
 	} from '@/apis'
-	import { formatTimestamp } from '@/utils'
+	import {
+		formatTimestamp
+	} from '@/utils'
 
 	export default {
 		data() {
@@ -49,6 +51,11 @@
 			this.getData()
 		},
 		methods: {
+			gotoHistory(item) {
+				uni.navigateTo({
+					url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}&type=${this.type}&h=1`
+				})
+			},
 			genTitle() {
 				let name = this.type === 1 ? '销售单' : '进货单'
 				return `${name}历史记录`

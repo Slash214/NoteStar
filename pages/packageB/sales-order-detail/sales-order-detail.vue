@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<AppletHeader :title="type === 1 ? '销售单详情' : '进货单详情'" :right-icon="isDelete ? ' ' : 'more-dot-fill'"
-			@rightClick="rightClick">
+		<AppletHeader :title="type === 1 ? isH ? '销售单历史记录详情' : '销售单详情' 
+		: isH ? '进货单历史记录详情' : '进货单详情'" :right-icon="isDelete || isH ? ' ' : 'more-dot-fill'" @rightClick="rightClick">
 		</AppletHeader>
 		<view class="container">
 			<view class="white box">
@@ -66,12 +66,14 @@
 				<u--text size="14" :text="remark"></u--text>
 			</view>
 
-			<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
-				<view class="fixed-bottom-button" @click="fixItems">
-					<u-icon size="24" name="edit-pen"></u-icon>
-					<text>修改</text>
+			<block v-if="!isH">
+				<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
+					<view class="fixed-bottom-button" @click="fixItems">
+						<u-icon size="24" name="edit-pen"></u-icon>
+						<text>修改</text>
+					</view>
 				</view>
-			</view>
+			</block>
 
 			<u-modal showCancelButton :show="modalShow" @confirm="onDelete" @cancel="modalShow = false" title="温馨提示"
 				content="确定作废当前单据吗？作废后不可恢复"></u-modal>
@@ -121,6 +123,8 @@
 				updateData: {},
 				total: 0,
 				totalOperNumber: 0,
+				// 是否是历史记录查看状态
+				isH: false,
 			}
 		},
 		onShow() {
@@ -133,6 +137,8 @@
 			console.log('是多少', options)
 			this.number = options?.number || ''
 			this.type = +options?.type || 1
+
+			this.isH = options?.h == 1 ? true : false
 			this.getData()
 		},
 		methods: {

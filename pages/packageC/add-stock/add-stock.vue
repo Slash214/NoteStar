@@ -44,6 +44,8 @@
 							:longPress="false"
 							:min="0"
 							integer
+							bgColor="#ffe0cc"
+							inputWidth="90"
 							@change="handleClick(item, $event)"
 							v-model="item.nums"
 						></u-number-box>

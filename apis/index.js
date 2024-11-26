@@ -365,3 +365,11 @@ export const getUserByUserId = (data) => {
 	})
 }
 
+// 删除门店
+export const deleteShopMang = (data) => {
+	return request({
+		url: '/depot/delete',
+		data,
+		method: 'GET'
+	})
+}

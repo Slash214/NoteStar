@@ -31,11 +31,17 @@
 		></u-action-sheet>
 
 		<SelectShop :show="shopShow" @cancel="shopShow = false" @confirm="confirm"></SelectShop>
+
+		<u-modal :show="delShow" @cancel="delShow = false" @confirm="onDeleteData" showCancelButton title="删除商品">
+			<view style="text-align: center;">
+				{{modalContent}}
+			</view>
+		</u-modal>
 	</z-paging>
 </template>
 
 <script>
-import { getDepotList, getUserByDepotId } from '@/apis'
+import { getDepotList, getUserByDepotId, deleteShopMang } from '@/apis'
 import { SelectShop } from '@/components/SelectShop/SelectShop.vue'
 export default {
 	components: {
@@ -43,6 +49,14 @@ export default {
 	},
 	data() {
 		return {
+			delShow: false,
+			modalContent: '',
+			params: {
+				province: true,
+				city: true,
+				area: true
+			},
+
 			// 1店铺  2员工
 			type: 1,
 			curShop: {
@@ -149,8 +163,43 @@ export default {
 						)}`
 					})
 				}
-				
 			}
+
+			if (e.name === '删除') {
+				this.delShow = true
+				if (this.type === 2) {
+					this.modalContent = '确定要删除该员工吗？'
+					// 员工
+				} else {
+					// 店铺
+					this.modalContent = '确定要删除该门店吗？'
+					// 
+				}
+			}
+		},
+		async onDeleteData() {
+			console.log('确认删除')
+			this.delShow = false
+			if (this.type === 1) {
+				await deleteShopMang({
+					apiName: 'depot',
+					id: this.curObj.id
+				})
+			} else {
+				uni.showToast({
+					title: '暂不支持删除员工',
+					icon: 'none'
+				})
+				
+				return
+			}
+			
+			uni.showToast({
+				title: '操作成功',
+				icon: 'none'
+			})
+			
+			this.$refs.paging.reload()
 		},
 		editorItem(item) {
 			console.log('编辑')

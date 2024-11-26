@@ -31,6 +31,10 @@
 							<u-icon name="arrow-right"></u-icon>
 						</view>
 					</block>
+					
+					<block v-if="item.type === 'location'">
+						<address-picker @select="getSelectAddress"></address-picker>
+					</block>
 				</u-form-item>
 			</u--form>
 
@@ -41,6 +45,8 @@
 				keyName="name"
 				:columns="roleList"
 			></u-picker>
+			
+			
 		</view>
 	</view>
 </template>
@@ -55,9 +61,11 @@ import {
 	getUserByUserId
 } from '@/apis'
 import SelectShop from '@/components/SelectShop/SelectShop.vue'
+import AddressPicker from '@/components/AddressPicker/AddressPicker.vue'
 export default {
 	components: {
-		SelectShop
+		SelectShop,
+		AddressPicker
 	},
 	data() {
 		return {
@@ -73,7 +81,7 @@ export default {
 							label: '所在地区',
 							desc: '请输入内容',
 							value: '四川省-成都市-双流区',
-							typeo: 'select',
+							type: 'location',
 							key: 'location'
 						},
 						{ id: 5, label: '详细地址', desc: '请输入内容', value: '', type: 'input', key: 'address' },
@@ -154,6 +162,14 @@ export default {
 		}
 	},
 	methods: {
+		getSelectAddress(e) {
+			console.log(e)
+			city: "成都市"
+			district: "双流区"
+			province: "四川省"
+			let newVal = this.objItem[this.id].data
+			newVal[3].value = `${e.province}-${e.city}-${e.district}`
+		},
 		handleClick(item) {
 			console.log(item)
 			if (this.id === 2) {

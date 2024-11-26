@@ -56,6 +56,26 @@
 				]
 			}
 		},
+		onLoad() {
+		   const obj = uni.getStorageSync('stockData') || null
+		   if (obj) {
+			   console.log(obj)
+			   
+			   if (obj.enabled) {
+				   this.list1[0].select = false
+				   this.list1[1].select = true
+			   } else {
+				   this.list1[1].select = false
+				   this.list1[0].select = true
+			   }
+			   
+			   
+			   this.list.forEach(e => {
+				   e.select = e.id === obj.sortRule
+			   })
+			   
+		   }
+		},
 		methods: {
 			onSelect(item) {
 				this.list.forEach(e => {
@@ -86,7 +106,7 @@
 				console.log(obj, obj2)
 				
 				let sortRule = obj.id === 1 ? 1 : 2 
-				let enabled = obj2.ida === 1 ? false : true
+				let enabled = obj2.id === 1 ? false : true
 				let i = { sortRule, enabled }
 				uni.setStorageSync('stockData', i)
 				uni.navigateBack()

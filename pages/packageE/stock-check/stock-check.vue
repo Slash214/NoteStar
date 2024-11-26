@@ -1,5 +1,5 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top :refresher-enabled="false">
+	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top :refresher-enabled="false">
 		<template slot="top">
 			<AppletHeader title="库存查询" rightIcon=" "></AppletHeader>
 			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="商品名称/条形码/简拼"></nav-search-bar>
@@ -69,10 +69,10 @@ export default {
 			visible: false,
 			dataList: [],
 			keywords: '',
-			sortRule: 1,
 			// sortType: 1,
 			total: 0,
-			enabled: false,
+			enabled: true,
+			sortRule: 1,
 			totalCostPrice: 0,
 			loading: true,
 			sortList: [
@@ -95,6 +95,7 @@ export default {
 		if (obj) {
 			this.enabled = obj.enabled
 			this.sortRule = obj.sortRule
+			this.$refs.paging.reload()
 		}
 	},
 	methods: {

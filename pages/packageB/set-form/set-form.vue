@@ -24,25 +24,53 @@
 				</view>
 			</view>
 
-			<u-picker :closeOnClickOverlay="true" :show="storeShow" @confirm="getSelectStore"
-				@cancel="storeShow = false" :columns="[storeList]" keyName="name" @close="storeShow = false"></u-picker>
+			<u-picker
+				:closeOnClickOverlay="true"
+				:show="storeShow"
+				@confirm="getSelectStore"
+				@cancel="storeShow = false"
+				:columns="[storeList]"
+				keyName="name"
+				@close="storeShow = false"
+			></u-picker>
 
-			<u-picker :show="salesShow" @cancel="salesShow = false" @confirm="getSelectSales" :columns="[salesList]"
-				keyName="name" :closeOnClickOverlay="true" @close="salesShow = false"></u-picker>
+			<u-picker
+				:show="salesShow"
+				@cancel="salesShow = false"
+				@confirm="getSelectSales"
+				:columns="[salesList]"
+				keyName="name"
+				:closeOnClickOverlay="true"
+				@close="salesShow = false"
+			></u-picker>
 
-			<u-datetime-picker ref="datetimePicker" :show="timeShow" v-model="selectedTime.temp" mode="date"
-				@confirm="confirmTime" @cancel="timeShow = false" :formatter="formatter" :closeOnClickOverlay="true"
-				@close="timeShow = false"></u-datetime-picker>
+			<u-datetime-picker
+				ref="datetimePicker"
+				:show="timeShow"
+				v-model="selectedTime.temp"
+				mode="date"
+				@confirm="confirmTime"
+				@cancel="timeShow = false"
+				:formatter="formatter"
+				:closeOnClickOverlay="true"
+				@close="timeShow = false"
+			></u-datetime-picker>
 
 			<view class="white box store mt10">
 				<view class="flex flex-items-center" @click="selectProduct">
-					<image mode="widthFix" style="width: 50rpx" :src="staticImageUrl + '/purchase/icon-select.png'">
-					</image>
+					<image
+						mode="widthFix"
+						style="width: 50rpx"
+						:src="staticImageUrl + '/purchase/icon-select.png'"
+					></image>
 					<text class="ml10">选择商品</text>
 				</view>
 				<view class="flex flex-items-center" @click="scanToAdd">
-					<image mode="widthFix" style="width: 50rpx" :src="staticImageUrl + '/purchase/icon-scan.png'">
-					</image>
+					<image
+						mode="widthFix"
+						style="width: 50rpx"
+						:src="staticImageUrl + '/purchase/icon-scan.png'"
+					></image>
 					<text class="ml10">扫码添加</text>
 				</view>
 			</view>
@@ -56,12 +84,23 @@
 
 				<view class="product-content">
 					<u-swipe-action>
-						<u-swipe-action-item :options="options" v-for="(item, index) of productList" :key="item.id"
-							:index="index" :name="item.name" ref="items" @click="handleClickAction">
+						<u-swipe-action-item
+							:options="options"
+							v-for="(item, index) of productList"
+							:key="item.id"
+							:index="index"
+							:name="item.name"
+							ref="items"
+							@click="handleClickAction"
+						>
 							<view class="swipe-action flex u-border-bottom" @click="handleClickItemSet(item)">
 								<view class="image-box">
-									<u--image width="60" mode="widthFix" :showLoading="true"
-										:src="item.cover"></u--image>
+									<u--image
+										width="60"
+										mode="widthFix"
+										:showLoading="true"
+										:src="item.cover"
+									></u--image>
 								</view>
 								<view class="ml10 swipe-action-content">
 									<u--text bold :text="item.name"></u--text>
@@ -85,7 +124,9 @@
 						<text>合计 已选{{ totalQuantity }}，</text>
 						<u--text bold mode="price" :text="totalPrice"></u--text>
 					</view>
-					<view v-if="type === 1" class="grossProfit flex flex-items-center">毛利润：￥{{ grossProfit }}</view>
+					<view v-if="type === 1" class="grossProfit flex flex-items-center">
+						毛利润：￥{{ grossProfit }}
+					</view>
 				</view>
 			</view>
 
@@ -93,42 +134,56 @@
 				<view class="box-item">
 					<view class="box-item-start">整单折扣</view>
 					<view class="box-item-mid">
-						<u--input placeholder="请输入" v-model="reqData.discount" @change="onPriceChange(1)"
-							border="none"></u--input>
+						<u--input
+							placeholder="请输入"
+							v-model="reqData.discount"
+							@change="onPriceChange(1)"
+							border="none"
+						></u--input>
 					</view>
 					<view class="box-item-end">%</view>
 				</view>
 				<view class="box-item">
 					<view class="box-item-start">优惠金额</view>
 					<view class="box-item-mid">
-						<u--input placeholder="请输入" v-model="reqData.discountMoney" @change="onPriceChange(2)"
-							border="none"></u--input>
+						<u--input
+							placeholder="请输入"
+							v-model="reqData.discountMoney"
+							@change="onPriceChange(2)"
+							border="none"
+						></u--input>
 					</view>
 				</view>
 				<view class="box-item">
 					<view class="box-item-start">折后金额</view>
 					<view class="box-item-mid">
-						<u--input placeholder="请输入" v-model="reqData.discountLastMoney" @change="onPriceChange(3)"
-							border="none"></u--input>
+						<u--input
+							placeholder="请输入"
+							v-model="reqData.discountLastMoney"
+							@change="onPriceChange(3)"
+							border="none"
+						></u--input>
 					</view>
 				</view>
 				<view class="box-item">
 					<view class="box-item-start">运费</view>
 					<view class="box-item-mid">
-						<u--input placeholder="请输入" v-model="reqData.otherMoney" @change="onPriceChange(4)"
-							border="none"></u--input>
+						<u--input
+							placeholder="请输入"
+							v-model="reqData.otherMoney"
+							@change="onPriceChange(4)"
+							border="none"
+						></u--input>
 					</view>
 				</view>
 
 				<view class="amount">
 					<text>应收：￥{{ reqData.changeAmount }}</text>
 					<text v-if="type === 1" class="btns" @click="applyMoneyAroundDown">
-						{{showMo ? '取消抹零' : '抹零'}}
+						{{ showMo ? '取消抹零' : '抹零' }}
 					</text>
 				</view>
-				<view class="moneyAroundDown" v-if="type === 1">
-					已抹零：{{reqData.moneyAroundDown}}
-				</view>
+				<view class="moneyAroundDown" v-if="type === 1">已抹零：{{ reqData.moneyAroundDown }}</view>
 			</view>
 
 			<view class="white box mt10" style="padding: 40rpx">
@@ -141,8 +196,12 @@
 				<view class="modals">
 					<view class="flex flex-items-center flex-between modal-header">
 						<view class="">
-							<u--image :showLoading="true" :src="curShopData.cover" width="60px"
-								height="60px"></u--image>
+							<u--image
+								:showLoading="true"
+								:src="curShopData.cover"
+								width="60px"
+								height="60px"
+							></u--image>
 						</view>
 						<view class="modal-content-box">
 							<u--text margin="0 0 15px 0" :text="curShopData.name" bold></u--text>
@@ -155,8 +214,12 @@
 					<view class="modal-card">
 						<view class="flex flex-items-center">
 							<text class="w16">单价</text>
-							<u--input border="none" v-model="curShopData.price" @change="onAlonePrice($event, 1)"
-								placeholder="请输入内容"></u--input>
+							<u--input
+								border="none"
+								v-model="curShopData.price"
+								@change="onAlonePrice($event, 1)"
+								placeholder="请输入内容"
+							></u--input>
 						</view>
 						<view class="flex flex-items-center">
 							<text class="w16">数量</text>
@@ -164,8 +227,12 @@
 						</view>
 						<view class="flex flex-items-center">
 							<text class="w16">总价</text>
-							<u--input border="none" v-model="curShopData.total" @change="onAlonePrice($event, 2)"
-								placeholder="请输入内容"></u--input>
+							<u--input
+								border="none"
+								v-model="curShopData.total"
+								@change="onAlonePrice($event, 2)"
+								placeholder="请输入内容"
+							></u--input>
 						</view>
 					</view>
 
@@ -186,7 +253,7 @@
 
 			<view class="bottom">
 				<view class="">
-					<view style="padding-bottom: 10px;">
+					<view style="padding-bottom: 10px">
 						<text>应收:</text>
 						<text style="color: #fa6400; font-size: 32rpx">￥{{ formatMoney(reqData.changeAmount) }}</text>
 					</view>
@@ -203,835 +270,767 @@
 </template>
 
 <script>
-	// type === 1 为销售， 2为进货
-	// 销售销售显示抹0 进货不显示
-	// 销售销售显示毛利润 进货不显示
-	import {
-		staticImageUrl
-	} from '@/common/contanst'
-	import Big from 'big.js'
-	import {
-		debounce,
-		timestampToDate,
-		formatTimestamp,
-		formatMoney
-	} from '@/utils'
-	import {
-		getDepotByUserId,
-		getUserByDepotId,
-		getAccountByDepotId,
-		addDepotHeadAndDetail,
-		genbuildNumber,
-		updateDepotHeadAndDetail
-	} from '@/apis'
+// type === 1 为销售， 2为进货
+// 销售销售显示抹0 进货不显示
+// 销售销售显示毛利润 进货不显示
+import { staticImageUrl } from '@/common/contanst'
+import Big from 'big.js'
+import { debounce, timestampToDate, formatTimestamp, formatMoney } from '@/utils'
+import {
+	getDepotByUserId,
+	getUserByDepotId,
+	getAccountByDepotId,
+	addDepotHeadAndDetail,
+	genbuildNumber,
+	updateDepotHeadAndDetail
+} from '@/apis'
 
-	export default {
-		data() {
-			return {
-				showMo: false,
-				staticImageUrl,
-				formatMoney,
-				// 是否是更新状态 默认不是
-				isUpdate: false,
-				type: 1,
-				orderNumber: '',
-				objItem: {
-					1: {
-						orderType: 1,
-						name: '销售单',
-						showAmount: true,
-						showgross: true,
-						color: '#5FCADD',
-						type: '出库',
-						subType: '零售'
-					},
-					2: {
-						orderType: 0,
-						name: '进货单',
-						showAmount: false,
-						showgross: false,
-						color: '#fa6400',
-						type: '入库',
-						subType: '采购'
-					}
+export default {
+	data() {
+		return {
+			showMo: false,
+			staticImageUrl,
+			formatMoney,
+			// 是否是更新状态 默认不是
+			isUpdate: false,
+			type: 1,
+			orderNumber: '',
+			objItem: {
+				1: {
+					orderType: 1,
+					name: '销售单',
+					showAmount: true,
+					showgross: true,
+					color: '#5FCADD',
+					type: '出库',
+					subType: '零售'
 				},
+				2: {
+					orderType: 0,
+					name: '进货单',
+					showAmount: false,
+					showgross: false,
+					color: '#fa6400',
+					type: '入库',
+					subType: '采购'
+				}
+			},
 
-				// 当前选择的门店
-				selectedStore: {},
-				// 当前选择的业务员
-				selectedSalesperson: {},
-				// 当前选择的时间
-				selectedTime: {
-					temp: Date.now(),
-					time: ''
+			// 当前选择的门店
+			selectedStore: {},
+			// 当前选择的业务员
+			selectedSalesperson: {},
+			// 当前选择的时间
+			selectedTime: {
+				temp: Date.now(),
+				time: ''
+			},
+			storeShow: false,
+			salesShow: false,
+			timeShow: false,
+			shopShow: false,
+			storeList: [],
+			salesList: [],
+
+			serviceList: [
+				{
+					id: 1,
+					title: '*客户',
+					value: '零售客户',
+					icon: ''
 				},
-				storeShow: false,
-				salesShow: false,
-				timeShow: false,
-				shopShow: false,
-				storeList: [],
-				salesList: [],
+				{
+					id: 2,
+					title: '时间',
+					value: '',
+					icon: 'arrow-down-fill'
+				},
+				{
+					id: 3,
+					title: '*业务员',
+					value: '',
+					icon: 'arrow-down-fill'
+				}
+			],
 
-				serviceList: [{
-						id: 1,
-						title: '*客户',
-						value: '零售客户',
-						icon: ''
-					},
-					{
-						id: 2,
-						title: '时间',
-						value: '',
-						icon: 'arrow-down-fill'
-					},
-					{
-						id: 3,
-						title: '*业务员',
-						value: '',
-						icon: 'arrow-down-fill'
-					}
-				],
+			// 商品
+			loadIndex: 0,
+			batchSize: 20,
+			productList: [],
 
-				// 商品
-				loadIndex: 0,
-				batchSize: 20,
-				productList: [],
-
-				options: [{
+			options: [
+				{
 					text: '删除',
 					style: {
 						backgroundColor: '#f56c6c'
 					}
-				}],
+				}
+			],
 
-				reqData: {
-					remark: '',
-					discount: 100, // 整单折扣
-					discountMoney: 0, // 优惠金额
-					discountLastMoney: 0, // 折后金额
-					otherMoney: 0, // 运费,
-					moneyAroundDown: 0, // 摸0金额
-					changeAmount: 0 // 实付
-				},
-				
-				originalAmount: 0,
-
-				// 更新的
-				goodsUpdate: {},
-				// 当前商品
-				curShopData: {}
-			}
-		},
-		onReady() {
-			this.$refs.datetimePicker.setFormatter(this.formatter)
-		},
-		onLoad(options) {
-			// 获取type 类型
-			this.type = +options?.type || 1
-			this.getData()
-
-			if (options?.isUpdate === '1') {
-				this.isUpdate = true
-				let obj = uni.getStorageSync('goodsUpdate')
-				console.log('更新状态', obj)
-				this.goodsUpdate = obj
-				this.orderNumber = obj.number
-				this.selectedTime.temp = obj.operTime
-
-				this.reqData.remark = obj.remark
-				this.reqData.discount = obj.discount
-				this.reqData.discountLastMoney = obj.discountLastMoney
-				this.reqData.discountMoney = obj.discountMoney
-				this.reqData.moneyAroundDown = obj.moneyAroundDown
-				this.reqData.otherMoney = obj.otherMoney
-				this.reqData.changeAmount = obj.changeAmount
-			}
-		},
-		onShow() {
-			// 加载缓存的列表数据
-			this.loadIndex = 0
-			this.productList = []
-
-			let cacheData = uni.getStorageSync('selectList')
-			if (cacheData) {
-				console.log('cacheData', cacheData)
-				let list = cacheData.map((item) => {
-					let price = this.type === 1 ?
-						item.commodityDecimal !== "0" ? item.commodityDecimal : item.costPrice :
-						item.purchaseDecimal
-					let bPrice = new Big(price)
-					let bNums = new Big(item.nums)
-					let total = bPrice.times(bNums).toFixed(2) // 计算 total，并保留两位小数
-					return {
-						...item,
-						price,
-						bPrice,
-						bNums,
-						total
-					}
-				})
-				this.loadBatchData(list)
-				console.log('this', this.productList)
-
-				this.$nextTick(() => {
-					const totalPrice = new Big(this.totalPrice || 0)
-					const discountRate = new Big(this.reqData.discount || 0).div(100)
-
-					// 计算折后金额和优惠金额
-					this.reqData.discountLastMoney = totalPrice.times(discountRate).toFixed(2) // 折后金额
-					this.reqData.discountMoney = totalPrice.minus(this.reqData.discountLastMoney).toFixed(
-						2) // 优惠金额
-
-					// 计算应收金额
-					this.reqData.changeAmount = new Big(this.reqData.discountLastMoney)
-						.plus(new Big(this.reqData.otherMoney || 0))
-						.toFixed(2)
-				})
-			}
-		},
-		computed: {
-			// 商品总数量
-			totalQuantity() {
-				return this.productList
-					.reduce((accumulator, currentItem) => {
-						return accumulator.plus(currentItem.bNums)
-					}, new Big(0))
-					.toFixed(0)
+			reqData: {
+				remark: '',
+				discount: 100, // 整单折扣
+				discountMoney: 0, // 优惠金额
+				discountLastMoney: 0, // 折后金额
+				otherMoney: 0, // 运费,
+				moneyAroundDown: 0, // 摸0金额
+				changeAmount: 0 // 实付
 			},
-			totalPrice() {
-				return this.productList
-					.reduce((accumulator, currentItem) => {
-						return accumulator.plus(new Big(currentItem.total))
-					}, new Big(0))
-					.toFixed(2)
-			},
-			// 计算毛利润
-			grossProfit() {
-				return this.productList
-					.reduce((accumulator, currentItem) => {
-						const bCommodityDecimal = currentItem.bPrice // 已经是 Big 对象
-						const bCostPrice = new Big(currentItem.costPrice) // 需要创建 Big 对象
-						const bNums = currentItem.bNums // 已经是 Big 对象
-						const itemProfit = bCommodityDecimal.minus(bCostPrice).times(bNums)
-						return accumulator.plus(itemProfit)
-					}, new Big(0))
-					.toFixed(2)
-			}
-		},
-		methods: {
-			// 删除商品
-			handleClickAction(e) {
-				console.log('删除商品', e)
-				this.productList = this.productList.filter((item) => item.name !== e.name)
 
-				this.$refs.items.forEach((item) => item.closeHandler(true))
-				this.onPriceChange(0)
-			},
-			onPriceChange(fieldType) {
-				// fieldType: 0 - totalPrice 变化，1 - 整单折扣，2 - 优惠金额，3 - 折后金额，4 - 运费
+			originalAmount: 0,
 
-				const totalPrice = new Big(this.totalPrice || 0)
+			// 更新的
+			goodsUpdate: {},
+			// 当前商品
+			curShopData: {}
+		}
+	},
+	onReady() {
+		this.$refs.datetimePicker.setFormatter(this.formatter)
+	},
+	onLoad(options) {
+		// 获取type 类型
+		this.type = +options?.type || 1
+		this.getData()
 
-				if (totalPrice.eq(0)) {
-					// 如果 totalPrice 为 0，不进行计算
-					this.reqData.discountMoney = '0.00'
-					this.reqData.discountLastMoney = '0.00'
-					this.reqData.changeAmount = '0.00'
-					return
-				}
+		if (options?.isUpdate === '1') {
+			this.isUpdate = true
+			let obj = uni.getStorageSync('goodsUpdate')
+			console.log('更新状态', obj)
+			this.goodsUpdate = obj
+			this.orderNumber = obj.number
+			this.selectedTime.temp = obj.operTime
 
-				// 将输入值转换为非负数
-				if (fieldType === 1) {
-					this.reqData.discount = Math.max(0, parseFloat(this.reqData.discount) || 0)
-				} else if (fieldType === 2) {
-					this.reqData.discountMoney = Math.max(0, parseFloat(this.reqData.discountMoney) || 0)
-				} else if (fieldType === 3) {
-					this.reqData.discountLastMoney = Math.max(0, parseFloat(this.reqData.discountLastMoney) || 0)
-				} else if (fieldType === 4) {
-					this.reqData.otherMoney = Math.max(0, parseFloat(this.reqData.otherMoney) || 0)
-				}
-
-				if (fieldType === 1 || fieldType === 0) {
-					// 整单折扣改变
-					const discountRate = new Big(this.reqData.discount).div(100)
-					const discountLastMoney = totalPrice.times(discountRate)
-					const discountMoney = totalPrice.minus(discountLastMoney)
-
-					this.reqData.discountMoney = discountMoney.toFixed(2)
-					this.reqData.discountLastMoney = discountLastMoney.toFixed(2)
-				} else if (fieldType === 2) {
-					// 优惠金额改变
-					const discountMoney = new Big(this.reqData.discountMoney)
-					const discountLastMoney = totalPrice.minus(discountMoney)
-					const discountRate = discountLastMoney.div(totalPrice).times(100)
-
-					this.reqData.discount = discountRate.toFixed(2)
-					this.reqData.discountLastMoney = discountLastMoney.toFixed(2)
-				} else if (fieldType === 3) {
-					// 折后金额改变
-					const discountLastMoney = new Big(this.reqData.discountLastMoney)
-					const discountMoney = totalPrice.minus(discountLastMoney)
-					const discountRate = discountLastMoney.div(totalPrice).times(100)
-
-					this.reqData.discount = discountRate.toFixed(2)
-					this.reqData.discountMoney = discountMoney.toFixed(2)
-				} else if (fieldType === 4) {
-					// 运费改变，不需要更新其他字段
-				}
-
-				// 最终计算应收金额
-				const otherMoney = new Big(this.reqData.otherMoney || 0)
-				const discountLastMoney = new Big(this.reqData.discountLastMoney || 0)
-				const changeAmount = discountLastMoney.plus(otherMoney)
-
-				this.reqData.changeAmount = changeAmount.toFixed(2)
-			},
-			applyMoneyAroundDown() {
-				// if (this.showMo) {
-				// 	console.log('取消模0')
-
-				// } else {
-				// 	const changeAmount = new Big(this.reqData.changeAmount || 0)
-				// 	const roundedAmount = changeAmount.round(0, 0) // 向下取整
-				// 	const moneyAroundDown = changeAmount.minus(roundedAmount)
-
-				// 	this.reqData.moneyAroundDown = moneyAroundDown.toFixed(2) // 记录抹零金额
-				// 	this.reqData.changeAmount = roundedAmount.toFixed(2) // 更新应收金额为整数
-				// }
-				// uni.showToast({
-				// 	title: this.showMo ? '取消抹零' : '已抹零',
-				// 	icon: 'none'
-				// })
-
-				// this.showMo = !this.showMo
-				if (!this.originalAmount) {
-					// 存储原始金额（未抹零状态下的金额）
-					this.originalAmount = this.reqData.changeAmount || '0';
-				}
-
-				if (this.showMo) {
-					// 取消抹零，恢复原始金额
-					this.reqData.changeAmount = this.originalAmount; // 恢复原始金额
-					this.reqData.moneyAroundDown = '0.00'; // 清空抹零金额
-					uni.showToast({
-						title: '取消抹零',
-						icon: 'none'
-					});
-				} else {
-					// 执行抹零操作
-					const changeAmount = new Big(this.reqData.changeAmount || 0);
-					const roundedAmount = changeAmount.round(0, 0); // 向下取整
-					const moneyAroundDown = changeAmount.minus(roundedAmount);
-
-					// 更新抹零后的金额数据
-					this.reqData.moneyAroundDown = moneyAroundDown.toFixed(2); // 记录抹零金额
-					this.reqData.changeAmount = roundedAmount.toFixed(2); // 更新应收金额为整数
-
-					uni.showToast({
-						title: '已抹零',
-						icon: 'none'
-					});
-				}
-
-				// 切换抹零状态
-				this.showMo = !this.showMo;
-			},
-			loadBatchData(list) {
-				const start = this.loadIndex * this.batchSize
-				const end = start + this.batchSize
-				const batchData = list.slice(start, end)
-				// 合并数据
-				this.productList = this.productList.concat(batchData)
-				this.length = this.productList.length
-				// 判断是否还有更多数据需要加载
-				if (end < list.length) {
-					this.loadIndex++
-					// 每隔一秒加载下一批数据
-					setTimeout(() => {
-						this.loadBatchData(list)
-					}, 1000)
-				}
-			},
-			formatter(type, value) {
-				if (type === 'year') {
-					return `${value}年`
-				}
-				if (type === 'month') {
-					return `${value}月`
-				}
-				if (type === 'day') {
-					return `${value}日`
-				}
-				return value
-			},
-			// 获取请求接口数据
-			async getData() {
-				const user = uni.getStorageSync('userInfo')
-				const [r1, r2, r3] = await Promise.all([
-					getDepotByUserId({
-						userId: user.id
-					}),
-					getUserByDepotId({
-						depotId: 1
-					}),
-					getAccountByDepotId({
-						depotId: 1
-					})
-				])
-				console.log('请求的数据', r1, r2, r3)
-
-				this.storeList = r1.data.map((item) => ({
-					id: item.id,
-					name: item.name,
-					location: item.location
-				}))
-
-				this.salesList = r2.data.map((item) => ({
+			this.reqData.remark = obj.remark
+			this.reqData.discount = obj.discount
+			this.reqData.discountLastMoney = obj.discountLastMoney
+			this.reqData.discountMoney = obj.discountMoney
+			this.reqData.moneyAroundDown = obj.moneyAroundDown
+			this.reqData.otherMoney = obj.otherMoney
+			this.reqData.changeAmount = obj.changeAmount
+		}
+	},
+	onShow() {
+		// 加载缓存的列表数据
+		this.loadIndex = 0
+		this.productList = []
+		// !== "0" ? item.commodityDecimal : item.costPrice
+		let cacheData = uni.getStorageSync('selectList')
+		if (cacheData) {
+			console.log('cacheData', cacheData)
+			let list = cacheData.map((item) => {
+				let price = this.type === 1 ? item.commodityDecimal : item.purchaseDecimal
+				let bPrice = new Big(price)
+				let bNums = new Big(item.nums)
+				let total = bPrice.times(bNums).toFixed(2) // 计算 total，并保留两位小数
+				return {
 					...item,
-					name: item.userName
-				}))
-
-				this.selectedSalesperson = this.salesList[0]
-				this.selectedStore = this.storeList[0]
-
-				this.serviceList[1].value = timestampToDate(this.selectedTime.temp)
-				this.selectedTime.time = this.serviceList[1].value
-				this.serviceList[2].value = this.selectedSalesperson.name
-			},
-
-			// 获取当前选择的店铺
-			getSelectStore(e) {
-				console.log(e)
-				let obj = e.value[0]
-				this.storeShow = false
-				this.selectedStore = obj
-			},
-			// 获取当前选择的业务员
-			getSelectSales(e) {
-				let obj = e.value[0]
-				this.salesShow = false
-				this.selectedSalesperson = obj
-				this.serviceList[2].value = obj.name
-			},
-
-			// 选择时间
-			confirmTime(e) {
-				// console.log(e)
-				this.timeShow = false
-				this.selectedTime.temp = e.value
-				this.serviceList[1].value = timestampToDate(e.value)
-				this.selectedTime.time = this.serviceList[1].value
-			},
-
-			serviceClick(item) {
-				console.log(item)
-				if (item.id === 3) {
-					this.salesShow = true
+					price,
+					bPrice,
+					bNums,
+					total
 				}
-				if (item.id === 2) {
-					this.timeShow = true
-				}
-			},
+			})
+			this.loadBatchData(list)
+			console.log('this', this.productList)
+		}
 
-			async saveData() {
-				if (!this.selectedTime.time) {
-					uni.showToast({
-						title: '请选择时间',
-						icon: 'none'
-					})
+		// this.$nextTick(() => {
+		// 	const totalPrice = new Big(this.totalPrice || 0)
+		// 	const discountRate = new Big(this.reqData.discount || 0).div(100)
+		// 	console.error('价格', totalPrice)
+		// 	console.error('价格', discountRate)
 
-					return
-				}
+		// 	// 计算折后金额和优惠金额
+		// 	this.reqData.discountLastMoney = totalPrice.times(discountRate).toFixed(2) // 折后金额
+		// 	this.reqData.discountMoney = totalPrice.minus(this.reqData.discountLastMoney).toFixed(2) // 优惠金额
 
-				if (!this.productList.length) {
-					uni.showToast({
-						title: '商品不能为空',
-						icon: 'none'
-					})
-					return
-				}
+		// 	// 计算应收金额
+		// 	this.reqData.changeAmount = new Big(this.reqData.discountLastMoney)
+		// 		.plus(new Big(this.reqData.otherMoney || 0))
+		// 		.toFixed(2)
+		// })
+	},
+	computed: {
+		// 商品总数量
+		totalQuantity() {
+			return this.productList
+				.reduce((accumulator, currentItem) => {
+					return accumulator.plus(currentItem.bNums)
+				}, new Big(0))
+				.toFixed(0)
+		},
+		totalPrice() {
+			return this.productList
+				.reduce((accumulator, currentItem) => {
+					return accumulator.plus(new Big(currentItem.total))
+				}, new Big(0))
+				.toFixed(2)
+		},
+		// 计算毛利润
+		grossProfit() {
+			return this.productList
+				.reduce((accumulator, currentItem) => {
+					const bCommodityDecimal = currentItem.bPrice // 已经是 Big 对象
+					const bCostPrice = new Big(currentItem.costPrice) // 需要创建 Big 对象
+					const bNums = currentItem.bNums // 已经是 Big 对象
+					const itemProfit = bCommodityDecimal.minus(bCostPrice).times(bNums)
+					return accumulator.plus(itemProfit)
+				}, new Big(0))
+				.toFixed(2)
+		}
+	},
+	methods: {
+		calculateAmounts() {
+			const totalPrice = new Big(this.totalPrice || 0)
+			const discountRate = new Big(this.reqData.discount || 0).div(100)
 
-				if (!this.isUpdate) {
-					const result = await genbuildNumber({
-						type: this.objItem[this.type].orderType
-					})
-					this.orderNumber = result?.data?.defaultNumber || null
-				}
+			// 计算折后金额和优惠金额
+			this.reqData.discountLastMoney = totalPrice.times(discountRate).toFixed(2) // 折后金额
+			this.reqData.discountMoney = totalPrice.minus(this.reqData.discountLastMoney).toFixed(2) // 优惠金额
 
-				uni.showLoading({
-					title: '正在保存中...'
+			// 计算应收金额
+			this.reqData.changeAmount = new Big(this.reqData.discountLastMoney)
+				.plus(new Big(this.reqData.otherMoney || 0))
+				.toFixed(2)
+
+			// 如果需要更新抹零金额
+			// if (this.showMo) {
+			// 	this.applyMoneyAroundDown()
+			// }
+		},
+
+		// 删除商品
+		handleClickAction(e) {
+			console.log('删除商品', e)
+			this.productList = this.productList.filter((item) => item.name !== e.name)
+
+			this.$refs.items.forEach((item) => item.closeHandler(true))
+			this.onPriceChange(0)
+		},
+		onPriceChange(fieldType) {
+			// fieldType: 0 - totalPrice 变化，1 - 整单折扣，2 - 优惠金额，3 - 折后金额，4 - 运费
+
+			const totalPrice = new Big(this.totalPrice || 0)
+
+			if (totalPrice.eq(0)) {
+				// 如果 totalPrice 为 0，不进行计算
+				this.reqData.discountMoney = '0.00'
+				this.reqData.discountLastMoney = '0.00'
+				this.reqData.changeAmount = '0.00'
+				return
+			}
+
+			// 将输入值转换为非负数
+			if (fieldType === 1) {
+				this.reqData.discount = Math.max(0, parseFloat(this.reqData.discount) || 0)
+			} else if (fieldType === 2) {
+				this.reqData.discountMoney = Math.max(0, parseFloat(this.reqData.discountMoney) || 0)
+			} else if (fieldType === 3) {
+				this.reqData.discountLastMoney = Math.max(0, parseFloat(this.reqData.discountLastMoney) || 0)
+			} else if (fieldType === 4) {
+				this.reqData.otherMoney = Math.max(0, parseFloat(this.reqData.otherMoney) || 0)
+			}
+
+			if (fieldType === 1 || fieldType === 0) {
+				// 整单折扣改变
+				const discountRate = new Big(this.reqData.discount).div(100)
+				const discountLastMoney = totalPrice.times(discountRate)
+				const discountMoney = totalPrice.minus(discountLastMoney)
+
+				this.reqData.discountMoney = discountMoney.toFixed(2)
+				this.reqData.discountLastMoney = discountLastMoney.toFixed(2)
+			} else if (fieldType === 2) {
+				// 优惠金额改变
+				const discountMoney = new Big(this.reqData.discountMoney)
+				const discountLastMoney = totalPrice.minus(discountMoney)
+				const discountRate = discountLastMoney.div(totalPrice).times(100)
+
+				this.reqData.discount = discountRate.toFixed(2)
+				this.reqData.discountLastMoney = discountLastMoney.toFixed(2)
+			} else if (fieldType === 3) {
+				// 折后金额改变
+				const discountLastMoney = new Big(this.reqData.discountLastMoney)
+				const discountMoney = totalPrice.minus(discountLastMoney)
+				const discountRate = discountLastMoney.div(totalPrice).times(100)
+
+				this.reqData.discount = discountRate.toFixed(2)
+				this.reqData.discountMoney = discountMoney.toFixed(2)
+			} else if (fieldType === 4) {
+				// 运费改变，不需要更新其他字段
+			}
+
+			// 最终计算应收金额
+			const otherMoney = new Big(this.reqData.otherMoney || 0)
+			const discountLastMoney = new Big(this.reqData.discountLastMoney || 0)
+			const changeAmount = discountLastMoney.plus(otherMoney)
+
+			this.reqData.changeAmount = changeAmount.toFixed(2)
+		},
+		applyMoneyAroundDown() {
+			if (!this.originalAmount) {
+				// 存储原始金额（未抹零状态下的金额）
+				this.originalAmount = this.reqData.changeAmount || '0'
+			}
+
+			if (this.showMo) {
+				// 取消抹零，恢复原始金额
+				this.reqData.changeAmount = this.originalAmount // 恢复原始金额
+				this.reqData.moneyAroundDown = '0.00' // 清空抹零金额
+				uni.showToast({
+					title: '取消抹零',
+					icon: 'none'
 				})
-				console.log('商品列表', this.productList)
+			} else {
+				// 执行抹零操作
+				const changeAmount = new Big(this.reqData.changeAmount || 0)
+				const roundedAmount = changeAmount.round(0, 0) // 向下取整
+				const moneyAroundDown = changeAmount.minus(roundedAmount)
 
-				const newFrom = {
-					...this.reqData
-				}
-				let originalTotalPrice = this.totalPrice
-				if (this.type === 2) {
-					delete newFrom.moneyAroundDown
-				} else {
-					newFrom['grossProfit'] = this.grossProfit
-				}
-
-				let params = {
-					type: this.objItem[this.type].type,
-					subType: this.objItem[this.type].subType,
-					depotId: this.selectedStore.id,
-					organId: 60, // 客户id，写死
-					operTime: formatTimestamp(this.selectedTime.temp, false),
-					salesMan: this.selectedSalesperson.id,
-					number: this.orderNumber,
-					defaultNumber: this.orderNumber,
-					fileName: null,
-					...newFrom,
-					totalPrice: this.reqData.changeAmount,
-					accountId: 1,
-					originalTotalPrice
-				}
-
-				if (this.isUpdate) {
-					params['id'] = this.goodsUpdate.id
-				}
-
-				const shopCartInfoList = this.productList.map((item) => {
-					return {
-						depotId: this.selectedStore.id,
-						id: item.id,
-						name: item.name,
-						standard: null,
-						stock: item.stock,
-						unit: item.unit || '',
-						barCode: item.mbarCode,
-						operNumber: item.nums,
-						unitPrice: item.price,
-						allPrice: item.total,
-						remark: item.remark || ''
-					}
-				})
-
-				const FN = !this.isUpdate ? addDepotHeadAndDetail : updateDepotHeadAndDetail
-				const {
-					data,
-					message,
-					code
-				} = await FN({
-					...params,
-					shopCartInfoList
-				})
+				// 更新抹零后的金额数据
+				this.reqData.moneyAroundDown = moneyAroundDown.toFixed(2) // 记录抹零金额
+				this.reqData.changeAmount = roundedAmount.toFixed(2) // 更新应收金额为整数
 
 				uni.showToast({
-					title: '操作成功',
+					title: '已抹零',
+					icon: 'none'
+				})
+			}
+
+			// 切换抹零状态
+			this.showMo = !this.showMo
+		},
+		loadBatchData(list) {
+			const start = this.loadIndex * this.batchSize
+			const end = start + this.batchSize
+			const batchData = list.slice(start, end)
+			// 合并数据
+			this.productList = this.productList.concat(batchData)
+			this.length = this.productList.length
+			// 判断是否还有更多数据需要加载
+			if (end < list.length) {
+				this.loadIndex++
+				// 每隔一秒加载下一批数据
+				setTimeout(() => {
+					this.loadBatchData(list)
+				}, 1000)
+			} else {
+				this.calculateAmounts();
+			}
+		},
+		formatter(type, value) {
+			if (type === 'year') {
+				return `${value}年`
+			}
+			if (type === 'month') {
+				return `${value}月`
+			}
+			if (type === 'day') {
+				return `${value}日`
+			}
+			return value
+		},
+		// 获取请求接口数据
+		async getData() {
+			const user = uni.getStorageSync('userInfo')
+			const [r1, r2, r3] = await Promise.all([
+				getDepotByUserId({
+					userId: user.id
+				}),
+				getUserByDepotId({
+					depotId: 1
+				}),
+				getAccountByDepotId({
+					depotId: 1
+				})
+			])
+			console.log('请求的数据', r1, r2, r3)
+
+			this.storeList = r1.data.map((item) => ({
+				id: item.id,
+				name: item.name,
+				location: item.location
+			}))
+
+			this.salesList = r2.data.map((item) => ({
+				...item,
+				name: item.userName
+			}))
+
+			this.selectedSalesperson = this.salesList[0]
+			this.selectedStore = this.storeList[0]
+
+			this.serviceList[1].value = timestampToDate(this.selectedTime.temp)
+			this.selectedTime.time = this.serviceList[1].value
+			this.serviceList[2].value = this.selectedSalesperson.name
+		},
+
+		// 获取当前选择的店铺
+		getSelectStore(e) {
+			console.log(e)
+			let obj = e.value[0]
+			this.storeShow = false
+			this.selectedStore = obj
+		},
+		// 获取当前选择的业务员
+		getSelectSales(e) {
+			let obj = e.value[0]
+			this.salesShow = false
+			this.selectedSalesperson = obj
+			this.serviceList[2].value = obj.name
+		},
+
+		// 选择时间
+		confirmTime(e) {
+			// console.log(e)
+			this.timeShow = false
+			this.selectedTime.temp = e.value
+			this.serviceList[1].value = timestampToDate(e.value)
+			this.selectedTime.time = this.serviceList[1].value
+		},
+
+		serviceClick(item) {
+			console.log(item)
+			if (item.id === 3) {
+				this.salesShow = true
+			}
+			if (item.id === 2) {
+				this.timeShow = true
+			}
+		},
+
+		async saveData() {
+			if (!this.selectedTime.time) {
+				uni.showToast({
+					title: '请选择时间',
 					icon: 'none'
 				})
 
-				if (code === 0) {
-					uni.showToast({
-						title: message,
-						icon: 'none'
-					})
+				return
+			}
 
-					uni.removeStorageSync('selectList')
-					uni.removeStorageSync('goodsUpdate')
-
-					uni.reLaunch({
-						url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}`
-					})
-				}
-			},
-
-			handleClickItemSet(item) {
-				console.log('点击出现商品详情', item)
-				// 深拷贝对象
-				this.curShopData = {
-					...item
-				}
-				this.shopShow = true
-			},
-
-			// 单个商品数量改变
-			shopDataChange(e) {
-				const value = e.value
-				this.curShopData.nums = value.toString()
-				try {
-					this.curShopData.bNums = new Big(value || '0');
-					// 重新计算总价
-					const total = this.curShopData.bPrice.times(this.curShopData.bNums);
-					this.curShopData.total = total.toFixed(2);
-				} catch (error) {
-					console.error('数量输入错误:', error);
-					this.curShopData.total = '0.00';
-				}
-			},
-
-			onAlonePrice(e, type) {
-				console.log(e, type)
-
-				if (type === 1) {
-					this.curShopData.bPrice = new Big(e || '0')
-					// 重新计算总价
-					const total = this.curShopData.bPrice.times(this.curShopData.bNums)
-					this.curShopData.total = total.toFixed(2)
-				}
-
-				if (type === 2) {
-					const bTotal = new Big(e || '0')
-					// 计算新的单价
-					if (!this.curShopData.bNums.eq(0)) {
-						this.curShopData.bPrice = bTotal.div(this.curShopData.bNums)
-						this.curShopData.price = this.curShopData.bPrice.toFixed(2)
-					} else {
-						this.curShopData.price = '0.00'
-					}
-				}
-			},
-
-			fixOneShopData() {
-				console.log('修改单个商品')
-				// this.productList
-				const index = this.productList.findIndex(item => item.id === this.curShopData.id);
-				if (index !== -1) {
-					this.productList.splice(index, 1, this.curShopData);
-				}
-				this.shopShow = false
-				this.onPriceChange(0)
-			},
-
-			// 选择商品
-			selectProduct() {
-				uni.navigateTo({
-					url: `/pages/packageC/add-stock/add-stock?type=${this.type}`
+			if (!this.productList.length) {
+				uni.showToast({
+					title: '商品不能为空',
+					icon: 'none'
 				})
-			},
-			// 扫码添加
-			scanToAdd() {
-				uni.scanCode({
-					scanType: ['barCode'],
-					enableFlash: true,
-					success: async (res) => {
-						console.log(res)
-					},
-					fail: (err) => {
-						console.error('err', err)
-					}
+				return
+			}
+
+			if (!this.isUpdate) {
+				const result = await genbuildNumber({
+					type: this.objItem[this.type].orderType
+				})
+				this.orderNumber = result?.data?.defaultNumber || null
+			}
+
+			uni.showLoading({
+				title: '正在保存中...'
+			})
+			console.log('商品列表', this.productList)
+
+			const newFrom = {
+				...this.reqData
+			}
+			let originalTotalPrice = this.totalPrice
+			if (this.type === 2) {
+				delete newFrom.moneyAroundDown
+			} else {
+				newFrom['grossProfit'] = this.grossProfit
+			}
+
+			let params = {
+				type: this.objItem[this.type].type,
+				subType: this.objItem[this.type].subType,
+				depotId: this.selectedStore.id,
+				organId: 60, // 客户id，写死
+				operTime: formatTimestamp(this.selectedTime.temp, false),
+				salesMan: this.selectedSalesperson.id,
+				number: this.orderNumber,
+				defaultNumber: this.orderNumber,
+				fileName: null,
+				...newFrom,
+				totalPrice: this.reqData.changeAmount,
+				accountId: 1,
+				originalTotalPrice
+			}
+
+			if (this.isUpdate) {
+				params['id'] = this.goodsUpdate.id
+			}
+
+			const shopCartInfoList = this.productList.map((item) => {
+				return {
+					depotId: this.selectedStore.id,
+					id: item.id,
+					name: item.name,
+					standard: null,
+					stock: item.stock,
+					unit: item.unit || '',
+					barCode: item.mbarCode,
+					operNumber: item.nums,
+					unitPrice: item.price,
+					allPrice: item.total,
+					remark: item.remark || ''
+				}
+			})
+
+			const FN = !this.isUpdate ? addDepotHeadAndDetail : updateDepotHeadAndDetail
+			const { data, message, code } = await FN({
+				...params,
+				shopCartInfoList
+			})
+
+			uni.showToast({
+				title: '操作成功',
+				icon: 'none'
+			})
+
+			if (code === 0) {
+				uni.showToast({
+					title: message,
+					icon: 'none'
+				})
+
+				uni.removeStorageSync('selectList')
+				uni.removeStorageSync('goodsUpdate')
+
+				uni.reLaunch({
+					url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}`
 				})
 			}
+		},
+
+		handleClickItemSet(item) {
+			console.log('点击出现商品详情', item)
+			// 深拷贝对象
+			this.curShopData = {
+				...item
+			}
+			this.shopShow = true
+		},
+
+		// 单个商品数量改变
+		shopDataChange(e) {
+			const value = e.value
+			this.curShopData.nums = value.toString()
+			try {
+				this.curShopData.bNums = new Big(value || '0')
+				// 重新计算总价
+				const total = this.curShopData.bPrice.times(this.curShopData.bNums)
+				this.curShopData.total = total.toFixed(2)
+			} catch (error) {
+				console.error('数量输入错误:', error)
+				this.curShopData.total = '0.00'
+			}
+		},
+
+		onAlonePrice(e, type) {
+			console.log(e, type)
+
+			if (type === 1) {
+				this.curShopData.bPrice = new Big(e || '0')
+				// 重新计算总价
+				const total = this.curShopData.bPrice.times(this.curShopData.bNums)
+				this.curShopData.total = total.toFixed(2)
+			}
+
+			if (type === 2) {
+				const bTotal = new Big(e || '0')
+				// 计算新的单价
+				if (!this.curShopData.bNums.eq(0)) {
+					this.curShopData.bPrice = bTotal.div(this.curShopData.bNums)
+					this.curShopData.price = this.curShopData.bPrice.toFixed(2)
+				} else {
+					this.curShopData.price = '0.00'
+				}
+			}
+		},
+
+		fixOneShopData() {
+			console.log('修改单个商品')
+			// this.productList
+			const index = this.productList.findIndex((item) => item.id === this.curShopData.id)
+			if (index !== -1) {
+				this.productList.splice(index, 1, this.curShopData)
+			}
+			this.shopShow = false
+			this.onPriceChange(0)
+		},
+
+		// 选择商品
+		selectProduct() {
+			uni.navigateTo({
+				url: `/pages/packageC/add-stock/add-stock?type=${this.type}`
+			})
+		},
+		// 扫码添加
+		scanToAdd() {
+			uni.scanCode({
+				scanType: ['barCode'],
+				enableFlash: true,
+				success: async (res) => {
+					console.log(res)
+				},
+				fail: (err) => {
+					console.error('err', err)
+				}
+			})
 		}
 	}
+}
 </script>
 
 <style scoped lang="scss">
-	.no-scroll {
-		overflow: hidden;
-		height: 50vh;
-	}
+.no-scroll {
+	overflow: hidden;
+	height: 50vh;
+}
 
-	.main {
-		padding-bottom: 120px;
-	}
+.main {
+	padding-bottom: 120px;
+}
 
-	.white {
-		background-color: #fff;
-		border-radius: 20rpx;
-	}
+.white {
+	background-color: #fff;
+	border-radius: 20rpx;
+}
 
-	.box {
-		padding: 0 40rpx;
-		width: 100%;
-		font-size: 28rpx;
+.box {
+	padding: 0 40rpx;
+	width: 100%;
+	font-size: 28rpx;
 
-		&-item {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			height: 100rpx;
-			padding: 20rpx 0;
-			font-size: 28rpx;
-			color: #303133;
-
-			&-start {
-				width: 100px;
-			}
-
-			&-mid {
-				flex: 1;
-			}
-
-			&-end {}
-		}
-	}
-
-	.store {
-		height: 100rpx;
+	&-item {
 		display: flex;
 		align-items: center;
-		justify-content: space-around;
-		position: relative;
-		font-weight: 600;
+		justify-content: space-between;
+		height: 100rpx;
+		padding: 20rpx 0;
+		font-size: 28rpx;
+		color: #303133;
 
-		&::after {
-			position: absolute;
-			content: ' ';
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 1rpx;
-			height: 30rpx;
-			background-color: #ccc;
-		}
-	}
-
-	.product {
-		padding: 40rpx !important;
-
-		&-title {
-			font-weight: 700;
-			font-size: 30rpx;
-			display: flex;
-			align-items: center;
-
-			.slash {
-				width: 6rpx;
-				height: 30rpx;
-				display: block;
-				background-color: #fa6400;
-				margin-right: 15rpx;
-			}
+		&-start {
+			width: 100px;
 		}
 
-		&-content {
-			.swipe-action {
-				padding: 40rpx 0;
-
-				.image-box {
-					width: 60px;
-					height: 60px;
-					overflow: hidden;
-					background-color: #cdd7dc;
-					border-radius: 10rpx;
-
-					image {
-						width: 100%;
-					}
-				}
-
-				&-content {
-					flex: 1;
-				}
-			}
+		&-mid {
+			flex: 1;
 		}
 
 		&-end {
-			display: flex;
-			justify-content: flex-end;
-			flex-direction: column;
-			align-items: flex-end;
 		}
 	}
+}
 
-	.amount {
-		display: flex;
-		align-items: flex-end;
-		align-items: center;
-		justify-content: flex-end;
-		padding-bottom: 10px;
+.store {
+	height: 100rpx;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	position: relative;
+	font-weight: 600;
 
-		.btns {
-			width: 120rpx;
-			margin-left: 20rpx;
-			border: 1px solid #5fcadd;
-			color: #5fcadd;
-			border-radius: 20rpx;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
+	&::after {
+		position: absolute;
+		content: ' ';
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 1rpx;
+		height: 30rpx;
+		background-color: #ccc;
 	}
+}
 
-	.moneyAroundDown {
-		text-align: right;
-		color: #737373;
-		padding: 15px 0;
-	}
+.product {
+	padding: 40rpx !important;
 
-	.grossProfit {
-		margin-top: 10px;
+	&-title {
+		font-weight: 700;
 		font-size: 30rpx;
-		color: #9d9ea0;
-		font-weight: 600;
-	}
+		display: flex;
+		align-items: center;
 
-	.modals {
-		padding: 30rpx 30rpx 0 30rpx;
-		height: 70vh;
-		width: 100%;
-		position: relative;
-
-		.abs-button {
-			position: absolute;
-			z-index: 1000;
-			background-color: #fff;
-			bottom: 0;
-			left: 0;
-			width: 100%;
-			height: 200rpx;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 25rpx;
-			box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
-
-			.money {
-				color: #fa6400;
-				font-weight: 700;
-				font-size: 36rpx;
-				margin-bottom: 15px;
-			}
-
-			.btn {
-				width: 180rpx;
-				height: 90rpx;
-				background: linear-gradient(to right, #fa6400, #f79151);
-				border-radius: 20rpx;
-				color: #fff;
-				font-weight: 700;
-			}
-		}
-
-		.modal-card {
-			border-radius: 20rpx;
-			background: #fff;
-			padding: 40rpx 40rpx 20rpx 40rpx;
-			margin-bottom: 17rpx;
-
-			view {
-				margin-bottom: 20px;
-			}
-
-			.w16 {
-				width: 140rpx;
-			}
-		}
-
-		.modal-header {
-			width: 100%;
-			margin-bottom: 17rpx;
-		}
-
-		.modal-content-box {
-			flex: 1;
-			margin: 0 10px;
-		}
-
-		.stock {
-			color: #9d9ea0;
-			display: flex;
-			align-items: flex-end;
-			height: 55px;
+		.slash {
+			width: 6rpx;
+			height: 30rpx;
+			display: block;
+			background-color: #fa6400;
+			margin-right: 15rpx;
 		}
 	}
 
-	.bottom {
-		position: fixed;
+	&-content {
+		.swipe-action {
+			padding: 40rpx 0;
+
+			.image-box {
+				width: 60px;
+				height: 60px;
+				overflow: hidden;
+				background-color: #cdd7dc;
+				border-radius: 10rpx;
+
+				image {
+					width: 100%;
+				}
+			}
+
+			&-content {
+				flex: 1;
+			}
+		}
+	}
+
+	&-end {
+		display: flex;
+		justify-content: flex-end;
+		flex-direction: column;
+		align-items: flex-end;
+	}
+}
+
+.amount {
+	display: flex;
+	align-items: flex-end;
+	align-items: center;
+	justify-content: flex-end;
+	padding-bottom: 10px;
+
+	.btns {
+		width: 120rpx;
+		margin-left: 20rpx;
+		border: 1px solid #5fcadd;
+		color: #5fcadd;
+		border-radius: 20rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+}
+
+.moneyAroundDown {
+	text-align: right;
+	color: #737373;
+	padding: 15px 0;
+}
+
+.grossProfit {
+	margin-top: 10px;
+	font-size: 30rpx;
+	color: #9d9ea0;
+	font-weight: 600;
+}
+
+.modals {
+	padding: 30rpx 30rpx 0 30rpx;
+	height: 70vh;
+	width: 100%;
+	position: relative;
+
+	.abs-button {
+		position: absolute;
 		z-index: 1000;
 		background-color: #fff;
 		bottom: 0;
@@ -1039,20 +1038,84 @@
 		width: 100%;
 		height: 200rpx;
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
 		padding: 25rpx;
 		box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
 
-		.btns {
+		.money {
+			color: #fa6400;
+			font-weight: 700;
+			font-size: 36rpx;
+			margin-bottom: 15px;
+		}
+
+		.btn {
 			width: 180rpx;
 			height: 90rpx;
-			// background: linear-gradient(to right, #5FCADD, #6ADAE8);
+			background: linear-gradient(to right, #fa6400, #f79151);
 			border-radius: 20rpx;
-			display: flex;
-			justify-content: center;
-			align-items: center;
 			color: #fff;
 			font-weight: 700;
 		}
 	}
+
+	.modal-card {
+		border-radius: 20rpx;
+		background: #fff;
+		padding: 40rpx 40rpx 20rpx 40rpx;
+		margin-bottom: 17rpx;
+
+		view {
+			margin-bottom: 20px;
+		}
+
+		.w16 {
+			width: 140rpx;
+		}
+	}
+
+	.modal-header {
+		width: 100%;
+		margin-bottom: 17rpx;
+	}
+
+	.modal-content-box {
+		flex: 1;
+		margin: 0 10px;
+	}
+
+	.stock {
+		color: #9d9ea0;
+		display: flex;
+		align-items: flex-end;
+		height: 55px;
+	}
+}
+
+.bottom {
+	position: fixed;
+	z-index: 1000;
+	background-color: #fff;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 200rpx;
+	display: flex;
+	justify-content: space-between;
+	padding: 25rpx;
+	box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+
+	.btns {
+		width: 180rpx;
+		height: 90rpx;
+		// background: linear-gradient(to right, #5FCADD, #6ADAE8);
+		border-radius: 20rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: #fff;
+		font-weight: 700;
+	}
+}
 </style>

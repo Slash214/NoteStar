@@ -1,5 +1,16 @@
 {
-  "dependencies": {
-    "big.js": "^6.2.2"
-  }
+    "id": "sun-calendarTime",
+    "name": "时间选择弹窗",
+    "displayName": "时间选择弹窗",
+    "version": "1.0.0",
+    "description": "可选择年月时间的弹出框，本插件使用uview的部分组件进行开发，使用前请先确定项目中是否引入了uview，或下载下来后自行修改",
+    "keywords": [
+        "时间选择器"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
 }

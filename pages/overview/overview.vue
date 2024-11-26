@@ -46,13 +46,13 @@
 					</view>
 					<view class="chart-container">
 						<!-- timeType = 3 是按月查询   1是按日期yyyy-mm-dd 查询 -->
-						<block v-if="timeType === 1">
-							<qiun-data-charts type="area" :opts="areaOptions" :ontouch="true" :onmovetip="true"
+						<block v-show="timeType === 1">
+							<qiun-data-charts type="area" :canvas2d="true" :opts="areaOptions" :ontouch="true" :onmovetip="true"
 								:tooltipShow="true" :chartData="chartData" />
 						</block>
 
-						<block v-if="timeType === 3">
-							<qiun-data-charts type="line" :opts="lineOptions" :chartData="monthChartData" />
+						<block v-show="timeType === 3">
+							<qiun-data-charts type="line" loadingType="0" :canvas2d="true"  :opts="lineOptions" :chartData="monthChartData" />
 						</block>
 					</view>
 				</view>
@@ -473,30 +473,9 @@
 		}
 	}
 
-	// .modal {
-	// 	padding: 200rpx 30rpx;
-	// 	width: 580rpx;
-	// 	&-content {
-	// 		background-color: #fff;
-	// 		border-radius: 10rpx;
-	// 		margin-top: 40px;
-	// 		.item {
-	// 			color: #606266;
-	// 			padding: 26rpx 32rpx;
-	// 			display: flex;
-	// 			align-items: center;
-	// 			line-height: 2;
-	// 			justify-content: space-between;
-	// 			.icon-text {
-	// 				font-size: 26rpx;
-	// 				color: #ccc;
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	.main {
-		margin-top: -160rpx;
+		margin-top: -120rpx;
 		padding: 25rpx;
 		position: relative;
 		z-index: 1;

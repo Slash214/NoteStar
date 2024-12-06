@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<u-popup :show="visible" bgColor="#F1F5F8" mode="left" width="90%" @close="close" @open="open">
+		<u-popup :show="visible" :zIndex="9999999" bgColor="#F1F5F8" mode="left" width="90%" @close="close" @open="open">
 			<view class="modal">
 				<view class="flex flex-items-center" @click="gotoUserSet">
 					<u-avatar size="46" :text="userInfo.username.charAt(0) || ''"></u-avatar>
@@ -83,6 +83,7 @@ export default {
 			})
 		},
 		gotoUserSet() {
+			this.close()
 			uni.navigateTo({
 				url: '/pages/packageA/user-setting/user-setting'
 			})
@@ -95,6 +96,9 @@ export default {
 			console.log('打开')
 		},
 		handleClick(item) {
+			
+			this.close()
+			
 			if (item.id === 1) {
 				uni.navigateTo({
 					url: '/pages/packageA/store-mnagement/store-mnagement'

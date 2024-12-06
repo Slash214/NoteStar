@@ -1,5 +1,5 @@
 <template>
-	<u-navbar bgColor="#F1F5F8" :leftIcon="leftIcon" :placeholder="true" :autoBack="autoBack" @leftClick="leftClick">
+	<u-navbar bgColor="#F1F5F8" :leftIconSize="leftIconSize" :leftIcon="leftIcon" :placeholder="true" :autoBack="autoBack" @leftClick="leftClick">
 		<!-- 中间内容 -->
 		<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
 			<text class="title">{{ title }}</text>
@@ -29,6 +29,10 @@ export default {
 		rightIconSize: {
 			type: Number,
 			default: 18
+		},
+		leftIconSize: {
+			type: Number,
+			default: 20
 		},
 		rightIconBold: {
 			type: Boolean,

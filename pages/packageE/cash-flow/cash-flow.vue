@@ -106,7 +106,7 @@ export default {
 			this.depotId = e.id
 			this.$refs.paging.reload()
 		},
-		selectTime() {
+		selectTime(e) {
 			if (e.mode === 'date') {
 				this.time = timestampToDate(e.value)
 				this.timeType = 1

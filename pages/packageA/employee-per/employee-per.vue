@@ -38,8 +38,32 @@
 						</view>
 					</view>
 				</view>
-				<view class="table-cell">金额</view>
-				<view class="table-cell">利润</view>
+				<view class="table-cell" @click="toggleisAmountAscending">
+					<view class="flex flex-items-center">
+						<text>金额</text>
+						<view class="flex-icon">
+							<u-icon name="arrow-up-fill" size="9" :color="isAmountAscending ? '#2D6BCB' : '#CCCDCC'"></u-icon>
+							<u-icon
+								name="arrow-down-fill"
+								size="9"
+								:color="!isAmountAscending ? '#2D6BCB' : '#CCCDCC'"
+							></u-icon>
+						</view>
+					</view>
+				</view>
+				<view class="table-cell">
+					<view class="flex flex-items-center" @click="toggleisprofitAscending">
+						<text>利润</text>
+						<view class="flex-icon">
+							<u-icon name="arrow-up-fill" size="9" :color="isprofitAscending ? '#2D6BCB' : '#CCCDCC'"></u-icon>
+							<u-icon
+								name="arrow-down-fill"
+								size="9"
+								:color="!isprofitAscending ? '#2D6BCB' : '#CCCDCC'"
+							></u-icon>
+						</view>
+					</view>
+				</view>
 			</view>
 			<!-- Table Rows -->
 			<view class="table-row" v-for="(item, index) in dataList" :key="index">
@@ -82,7 +106,7 @@ export default {
 			dataList: [],
 			sortType: 1,
 			// 1是降序  2是 升序
-			sortRule: 1,
+			sortRule: false,
 			show: false,
 			timeShow: false,
 			curShop: {
@@ -98,7 +122,14 @@ export default {
 			cacheTime: {},
 
 			// 默认是升序
-			isAscending: true
+			isAscending: true,
+			
+			
+			//金额 默认升序
+			isAmountAscending: true,
+			
+			//利润 默认升序
+			isprofitAscending: true
 		}
 	},
 	onLoad() {
@@ -128,8 +159,25 @@ export default {
 			this.timeShow = false
 			this.$refs.paging.reload()
 		},
+		
+		toggleisAmountAscending() {
+			this.sortType = 2 
+			this.isAmountAscending = !this.isAmountAscending
+			this.sortRule = this.isAmountAscending
+			this.$refs.paging.reload()
+		},
+		
+		toggleisprofitAscending() {
+			this.sortType = 3
+			this.isprofitAscending = !this.isprofitAscending
+			this.sortRule = this.isprofitAscending
+			this.$refs.paging.reload()
+		},
+		
 		toggleAscending() {
+			this.sortType = 1
 			this.isAscending = !this.isAscending
+			this.sortRule = this.isAscending
 			this.$refs.paging.reload()
 		},
 		confirm(e) {
@@ -148,7 +196,7 @@ export default {
 					endTime: this.curTime.end || e,
 					depotId: this.curShop.id || '',
 					sortType: this.sortType,
-					sortRule: this.isAscending ? 2 : 1,
+					sortRule: this.sortRule ? 1 : 2,
 					
 				})
 				let { employeePerformance } = data || {}

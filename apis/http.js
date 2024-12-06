@@ -1,4 +1,6 @@
-import { BASE_URL } from '@/common/contanst.js'
+import {
+	BASE_URL
+} from '@/common/contanst.js'
 const request = (options) => {
 	return new Promise((resolve, reject) => {
 		const token = uni.getStorageSync('token') || ''
@@ -36,14 +38,20 @@ const request = (options) => {
 					} else {
 						// 可以根据需要在这里处理业务错误
 						reject(res.data);
+
+						if (res.data?.message === 'token过期') {
+							uni.clearStorageSync()
+							uni.reLaunch({
+								url: '/pages/login/login'
+							})
+							return
+						}
+
 						uni.showToast({
 							title: res.data?.message || '服务错误',
 							icon: 'none'
 						})
-						// uni.clearStorageSync()
-						// uni.reLaunch({
-						// 	url: '/pages/login/login'	
-						// })
+
 					}
 				} else {
 					// 处理 HTTP 状态码错误

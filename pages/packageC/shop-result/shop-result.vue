@@ -40,7 +40,7 @@ export default {
 	methods: {
 		handleClick() {
 			console.log('再来一单')
-			uni.redirectTo({
+			uni.navigateTo({
 				url: `/pages/packageB/set-form/set-form?type=${this.type}`
 			})
 		},

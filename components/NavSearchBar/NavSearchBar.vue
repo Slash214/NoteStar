@@ -2,7 +2,8 @@
 	<u-sticky :offset-top="stickyOffset">
 		<view class="search">
 			<u-search @change="debouncedGetKeyword" @search="handleClickSearch" :showAction="false" searchIcon="search"
-				@custom="handleClickSearch" bgColor="#fff" :placeholder="desc" v-model="keyword" :clearabled="false"></u-search>
+				@custom="handleClickSearch" bgColor="#fff" :placeholder="desc" v-model="keyword"
+				:clearabled="false"></u-search>
 			<view v-if="showRight" class="ml15" @click="screening">
 				<image class="images" mode="widthFix"
 					src="https://haoxianhui.com//hxh/2024/11/19/5e093d14b79a4cc2ad6766a456adc410.png"></image>
@@ -10,13 +11,11 @@
 			<view class="scan" @click="handleClickLeft">
 				<u-icon name="scan" size="20"></u-icon>
 			</view>
-			<!-- 二维码:@clickIcon="handleClickLeft" -->
 		</view>
 	</u-sticky>
 </template>
 
 <script>
-	// import debounce from 'lodash/debounce'
 	import {
 		debounce
 	} from '@/utils'
@@ -105,6 +104,7 @@
 		align-items: center;
 		flex: 1;
 		position: relative;
+
 		.scan {
 			position: absolute;
 			right: 170rpx;

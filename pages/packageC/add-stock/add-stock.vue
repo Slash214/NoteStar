@@ -108,6 +108,7 @@ export default {
 	async onLoad(options) {
 		console.log(options)
 		this.type = +options?.type || 1
+		this.depotId = +options?.storeId || 1
 		const storedList = uni.getStorageSync('selectList')
 		if (storedList) {
 			this.isCache = true
@@ -222,13 +223,20 @@ export default {
 			this.cachePage = pageNo
 			try {
 				// this.cachePage ? pageNo + this.cachePage - 1 : pageNo
+				
+				let ordertype = this.type === 1 ? '销售' : '进货'
+				
+				let search = {
+					materialParam: this.keyword,
+					depotId: this.depotId,
+					ordertype
+				}
+				
+				console.error('请求参数', search)
 				const { data } = await getMaterialList({
 					currentPage: pageNo,
 					pageSize,
-					search: {
-						materialParam: this.keyword,
-						depotId: this.depotId
-					}
+					search
 				})
 				let { rows, totalStockCount, total } = data || {}
 				let array = this.formatData(rows)

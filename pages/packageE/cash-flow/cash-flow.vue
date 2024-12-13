@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { timestampToDate, formatDateToChinese, formatMoney } from '@/utils'
+import { timestampToDate, formatDateToChinese, formatMoney, getStartAndEndTimes, getMonthStartAndEnd } from '@/utils'
 import { getCapitalFlow } from '@/apis'
 import CustomDropdown from '@/components/CustomDropdown/CustomDropdown.vue'
 
@@ -80,8 +80,12 @@ export default {
 		}
 	},
 	onLoad() {
-		this.beginTime = timestampToDate(Date.now())
-		this.endTime = this.beginTime
+		// 默认按月查询
+		// this.beginTime = timestampToDate(Date.now())
+		// this.endTime = this.beginTime
+		let { start_time, end_time } = getStartAndEndTimes()
+		this.beginTime = start_time
+		this.endTime = end_time
 	},
 	onShow() {
 		const obj = uni.getStorageSync('flowScreenData')
@@ -107,11 +111,20 @@ export default {
 			this.$refs.paging.reload()
 		},
 		selectTime(e) {
+			// 1是日期   3是月份 
 			if (e.mode === 'date') {
 				this.time = timestampToDate(e.value)
+				console.log(this.time)
+				let { start_time, end_time } = getStartAndEndTimes(this.time)
+				this.beginTime = start_time
+				this.endTime = end_time
 				this.timeType = 1
 			} else {
-				this.time = timestampToDate(e.value, 2)
+				this.time = timestampToDate(e.value)
+				let { start_time, end_time } = getMonthStartAndEnd(this.time)
+				
+				this.beginTime = start_time
+				this.endTime = end_time
 				this.timeType = 3
 			}
 			this.$refs.paging.reload()
@@ -140,9 +153,8 @@ export default {
 					pageSize: pageNo,
 					...params
 				})
-
-				const keys = Object.keys(data.data)
-				let firstKey = keys[0]
+				// const keys = Object.keys(data.data)
+				// let firstKey = keys[0]
 				let { totalInCount, totalInPrice, totalOutCount, totalOutPrice } = data
 				this.navData = {
 					totalInCount: totalInCount || 0,
@@ -151,14 +163,11 @@ export default {
 					totalOutPrice
 				}
 				let array = []
-
-				console.error('this.navData', this.navData)
-				if (data.data[firstKey]) {
-					this.isShow = true
-					array = [data.data[firstKey]]
+				
+				for (let item in data.data) {
+					array.push(data.data[item])
 				}
-				console.log('array', array)
-
+				// console.error('this.navData', this.navData)
 				this.$refs.paging.complete(array)
 				this.loading = false
 			} catch (e) {
@@ -191,7 +200,7 @@ export default {
 		background-color: #ffaf38;
 		-webkit-clip-path: ellipse(100% 68% at 50% 30%);
 		clip-path: ellipse(100% 68% at 50% 30%);
-		padding: 40rpx 80rpx;
+		padding: 40rpx;
 	}
 }
 

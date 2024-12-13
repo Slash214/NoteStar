@@ -223,3 +223,28 @@ export function formatDateTime(date) {
 
 
 
+export const getStartAndEndTimes = (endTime) => {
+    // 如果没有传入 endTime，则使用当前时间
+    const end_time = endTime ? new Date(endTime) : new Date();
+    // 根据结束时间计算所在月份的1号
+    const start_time = new Date(end_time.getFullYear(), end_time.getMonth(), 1, 0, 0, 0);
+	
+	// console.log('格式化', timestampToDate(start_time))
+	// console.log('格式化', timestampToDate(end_time))
+    return { start_time: timestampToDate(start_time), end_time: timestampToDate(end_time) };
+}
+
+
+export const getMonthStartAndEnd = (startTime) => {
+    const start_date = new Date(startTime);
+    const year = start_date.getFullYear();
+    const month = start_date.getMonth();
+    // 该月1号 0点0分0秒
+    const firstDay = new Date(year, month, 1, 0, 0, 0);
+    // 下个月的0号(即上个月的最后一天) 23:59:59
+    const lastDay = new Date(year, month + 1, 0, 23, 59, 59);
+    return {
+        start_time: timestampToDate(firstDay),
+        end_time: timestampToDate(lastDay)
+    };
+};

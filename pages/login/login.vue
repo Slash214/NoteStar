@@ -253,7 +253,7 @@
 			width: 100%;
 			padding: 0 40px;
 			flex: 1;
-			margin-top: 40px;
+			margin-top: 80px;
 
 			.tab {
 				border-radius: 30rpx 30rpx 0 0;

@@ -1,6 +1,7 @@
 <template>
 	<view>
-		<AppletHeader :autoBack="false" @leftClick="rightClick" title="开单成功" right-icon="完成" @rightClick="rightClick" right-icon-size="14"></AppletHeader>
+		<AppletHeader :autoBack="false" @leftClick="rightClick" title="开单成功" right-icon="完成" @rightClick="rightClick"
+			:right-icon-size="16"></AppletHeader>
 		<view class="container">
 			<view class="box">
 				<view class="top">
@@ -22,83 +23,84 @@
 </template>
 
 <script>
-export default {
-	data() {
-		return {
-			// 1 销售单  2 进货单
-			type: 1,
-			orderNumber: "",
-			total: 0
-		}
-	},
-	onLoad(options) {
-		console.log(options)
-		this.type = +options?.type || 1
-		this.orderNumber = options.orderNum
-		this.total = options.total || 0
-	},
-	methods: {
-		handleClick() {
-			console.log('再来一单')
-			uni.navigateTo({
-				url: `/pages/packageB/set-form/set-form?type=${this.type}`
-			})
+	export default {
+		data() {
+			return {
+				// 1 销售单  2 进货单
+				type: 1,
+				orderNumber: "",
+				total: 0
+			}
 		},
-		lookDetails() {
-			console.log('查看详情')
+		onLoad(options) {
+			console.log(options)
+			this.type = +options?.type || 1
+			this.orderNumber = options.orderNum
+			this.total = options.total || 0
 		},
-		rightClick() {
-			console.log('完成')
-			
-			let url = this.type === 1 ? '/pages/sales/sales' : '/pages/purchase/purchase'
-			uni.switchTab({
-				url
-			})
+		methods: {
+			handleClick() {
+				console.log('再来一单')
+				uni.navigateTo({
+					url: `/pages/packageB/set-form/set-form?type=${this.type}`
+				})
+			},
+			lookDetails() {
+				console.log('查看详情')
+			},
+			rightClick() {
+				console.log('完成')
+
+				let url = this.type === 1 ? '/pages/sales/sales' : '/pages/purchase/purchase'
+				uni.switchTab({
+					url
+				})
+			}
 		}
 	}
-}
 </script>
 
 <style scoped lang="scss">
-.flex {
-	display: flex;
-	align-items: center;
-}
-.box {
-	border-radius: 20rpx;
-	background: #fff;
-	padding: 25rpx;
-	margin-bottom: 60rpx;
-	font-size: 32rpx;
-
-	.top {
-		align-items: center;
+	.flex {
 		display: flex;
+		align-items: center;
 	}
 
-	.middle {
-		margin: 30rpx 0;
-	}
-
-	.btns {
-		height: 90rpx;
-
+	.box {
 		border-radius: 20rpx;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		color: #fff;
-		font-weight: 700;
-		width: 156px;
-		margin: 30rpx auto auto auto;
-	}
+		background: #fff;
+		padding: 25rpx;
+		margin-bottom: 60rpx;
+		font-size: 32rpx;
 
-	.xs {
-		background: linear-gradient(to right, #5fcadd, #6adae8);
-	}
+		.top {
+			align-items: center;
+			display: flex;
+		}
 
-	.jh {
-		background: linear-gradient(to right, #fa6400, #f79151);
+		.middle {
+			margin: 30rpx 0;
+		}
+
+		.btns {
+			height: 90rpx;
+
+			border-radius: 20rpx;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: #fff;
+			font-weight: 700;
+			width: 156px;
+			margin: 30rpx auto auto auto;
+		}
+
+		.xs {
+			background: linear-gradient(to right, #5fcadd, #6adae8);
+		}
+
+		.jh {
+			background: linear-gradient(to right, #fa6400, #f79151);
+		}
 	}
-}
 </style>

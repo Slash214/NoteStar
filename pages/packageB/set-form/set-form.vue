@@ -610,6 +610,8 @@
 				this.selectedTime.temp = e.value
 				this.serviceList[1].value = timestampToDate(e.value)
 				this.selectedTime.time = this.serviceList[1].value
+				
+				console.error('选择的时间', this.selectedTime)
 			},
 
 			serviceClick(item) {
@@ -811,7 +813,7 @@
 			// 选择商品
 			selectProduct() {
 				uni.navigateTo({
-					url: `/pages/packageC/add-stock/add-stock?type=${this.type}`
+					url: `/pages/packageC/add-stock/add-stock?type=${this.type}&storeId=${this.selectedStore.id}`
 				})
 			},
 			// 扫码添加

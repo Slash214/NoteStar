@@ -48,7 +48,7 @@
 			<view class="dailyInOut" @click="saveData">{{ isUpdate ? '更新' : '保存' }}</view>
 		</view>
 
-		<select-shop :all="false" :show="showStore" @cancel="showStore = false" @confirm="confirmStore"></select-shop>
+		<select-shop @onCreated="onCreated" :all="false" :show="showStore" @cancel="showStore = false" @confirm="confirmStore"></select-shop>
 
 		<u-picker :show="showPerson" @cancel="showPerson = false" @confirm="confirmPerson" keyName="userName"
 			:columns="[person]"></u-picker>
@@ -245,6 +245,10 @@
 			}
 		},
 		methods: {
+			onCreated(item) {
+				console.log('获取的第一个', item)
+				this.curStore = item
+			},
 			// 删除图片
 			deletePic(event) {
 				this[`fileList${event.name}`].splice(event.index, 1)

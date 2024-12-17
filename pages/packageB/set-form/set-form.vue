@@ -15,7 +15,8 @@
 			<!-- 业务员列表选择 -->
 			<!-- 时间选择 -->
 			<view class="white box mt10">
-				<view :class="item.id <= 2 ? 'box-item u-border-bottom' : 'box-item'" v-for="item in serviceList" :key="item.id">
+				<view :class="item.id <= 2 ? 'box-item u-border-bottom' : 'box-item'" v-for="item in serviceList"
+					:key="item.id">
 					<view class="box-item-start">{{ item.title }}</view>
 					<view class="box-item-mid" @click="serviceClick(item)">{{ item.value }}</view>
 					<view class="box-item-end" @click="serviceClick(item)">
@@ -199,6 +200,25 @@
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
 			</view>
 		</view>
+
+
+		<u-popup :show="scanModal" @close="toggleScanModal" mode="center" round="15">
+			<view class="scan-main">
+				<view class="scan-header">
+					<u--text text="未查询到商品" size="16" margin="0 0 8px 0" align="center" bold color="#111"></u--text>
+					<u--text text="是否新增该商品?" size="14" align="center" color="#898989"></u--text>
+				</view>
+
+				<view class="scan-code">
+					{{scanCode}}
+				</view>
+
+				<view class="scan-group">
+					<view @click="toggleScanModal">取消</view>
+					<view class="confirm" @click="addNewProduct">新增该商品</view>
+				</view>
+			</view>
+		</u-popup>
 	</view>
 </template>
 
@@ -214,7 +234,8 @@
 		debounce,
 		timestampToDate,
 		formatTimestamp,
-		formatMoney
+		formatMoney,
+		formatProductData
 	} from '@/utils'
 	import {
 		getDepotByUserId,
@@ -222,12 +243,15 @@
 		getAccountByDepotId,
 		addDepotHeadAndDetail,
 		genbuildNumber,
-		updateDepotHeadAndDetail
+		updateDepotHeadAndDetail,
+		getMaterialList
 	} from '@/apis'
 
 	export default {
 		data() {
 			return {
+				scanModal: false,
+				scanCode: '',
 				showMo: false,
 				staticImageUrl,
 				formatMoney,
@@ -353,7 +377,6 @@
 			// 加载缓存的列表数据
 			this.loadIndex = 0
 			this.productList = []
-			// !== "0" ? item.commodityDecimal : item.costPrice
 			let cacheData = uni.getStorageSync('selectList')
 			if (cacheData) {
 				console.log('cacheData', cacheData)
@@ -372,6 +395,13 @@
 				})
 				this.loadBatchData(list)
 				console.log('this', this.productList)
+			}
+
+
+			const scanDataStatus = uni.setStorageSync('scanData') || null
+			if (scanDataStatus) {
+				this.selectDataAndPush()
+				uni.removeStorageSync('scanDataStatus')
 			}
 		},
 		computed: {
@@ -404,6 +434,15 @@
 			}
 		},
 		methods: {
+			addNewProduct() {
+				let code = this.scanCode
+				uni.navigateTo({
+					url: `/pages/packageD/set-product/set-product?code=${code}`
+				})
+			},
+			toggleScanModal() {
+				this.scanModal = !this.scanModal
+			},
 			calculateAmounts() {
 				const totalPrice = new Big(this.totalPrice || 0)
 				const discountRate = new Big(this.reqData.discount || 0).div(100)
@@ -430,6 +469,8 @@
 
 				this.$refs.items.forEach((item) => item.closeHandler(true))
 				this.onPriceChange(0)
+
+				uni.setStorageSync('selectList', this.productList)
 			},
 			onPriceChange(fieldType) {
 				// fieldType: 0 - totalPrice 变化，1 - 整单折扣，2 - 优惠金额，3 - 折后金额，4 - 运费
@@ -610,7 +651,7 @@
 				this.selectedTime.temp = e.value
 				this.serviceList[1].value = timestampToDate(e.value)
 				this.selectedTime.time = this.serviceList[1].value
-				
+
 				console.error('选择的时间', this.selectedTime)
 			},
 
@@ -816,6 +857,78 @@
 					url: `/pages/packageC/add-stock/add-stock?type=${this.type}&storeId=${this.selectedStore.id}`
 				})
 			},
+			async selectDataAndPush() {
+				uni.showLoading({
+					title: '查询中'
+				})
+				const {
+					data
+				} = await getMaterialList({
+					currentPage: 1,
+					pageSize: 100,
+					search: {
+						materialParam: this.scanCode
+					}
+				})
+
+				let {
+					rows,
+					total = 0
+				} = data || {}
+
+				if (!total) {
+					// this.scanCode = res.result
+					this.toggleScanModal()
+				} else {
+					// 存在就去添加到商品的缓存里面
+					console.error(rows)
+
+					let array = this.productList.filter(item => item.mbarCode === this.scanCode)
+
+					if (array.length) {
+						this.productList.forEach(item => {
+							if (item.mbarCode === this.scanCode) {
+								console.error(item)
+								const currentNums = parseInt(item.nums, 10);
+								item.bNums = item.bNums.plus(1);
+								item.nums = (currentNums + 1).toString()
+								item.total = item.bPrice.times(item.bNums).toFixed(2)
+							}
+						})
+						console.log('this.productList', this.productList)
+						this.onPriceChange(0)
+					} else {
+						const useCommodity = this.type === 1
+						this.productList.push(...rows.map(item => {
+							const imgName = item.imgName || '';
+							const imgList = imgName.split(',');
+							const cover = imgList[0] || '';
+							let price = useCommodity ? item.commodityDecimal : item
+								.purchaseDecimal
+							const bPrice = new Big(price || 0)
+							const bNums = new Big(1)
+							const total = bPrice.times(bNums).toFixed(2)
+							return {
+								...item,
+								bPrice,
+								bNums,
+								total,
+								price,
+								imgList,
+								cover,
+								nums: 1
+							}
+
+						}))
+						this.onPriceChange(0)
+						console.error(this.productList)
+					}
+					uni.setStorageSync('selectList', this.productList)
+				}
+
+
+				uni.hideLoading()
+			},
 			// 扫码添加
 			scanToAdd() {
 				uni.scanCode({
@@ -823,10 +936,18 @@
 					enableFlash: true,
 					success: async (res) => {
 						console.log(res)
+						// 去数据库查询商品
+						this.scanCode = res.result
+						this.selectDataAndPush()
 					},
 					fail: (err) => {
-						console.error('err', err)
-					}
+						console.error('err不存在商品', err)
+						uni.showToast({
+							title: '识别不到商品',
+							icon: 'none'
+						})
+					},
+
 				})
 			}
 		}
@@ -834,6 +955,38 @@
 </script>
 
 <style scoped lang="scss">
+	.scan-main {
+		width: 300px;
+		padding: 30rpx;
+
+		.scan-code {
+			background-color: #F1F4F9;
+			width: 100%;
+			color: #999CA1;
+			border-radius: 18rpx;
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+			margin: 10px 0;
+		}
+
+		.scan-group {
+			display: flex;
+			align-items: center;
+			height: 40px;
+
+			view {
+				width: 50%;
+				text-align: center;
+				color: #5fcadd;
+			}
+
+			.confirm {
+				color: #111;
+			}
+		}
+	}
+
 	.no-scroll {
 		overflow: hidden;
 		height: 50vh;
@@ -1061,7 +1214,6 @@
 		.btns {
 			width: 180rpx;
 			height: 90rpx;
-			// background: linear-gradient(to right, #5FCADD, #6ADAE8);
 			border-radius: 20rpx;
 			display: flex;
 			justify-content: center;

@@ -175,7 +175,6 @@ export default {
 		},
 		formatData(data) {
 			return data.map(item => {
-				
 				const imgList = item?.imgName?.split(',') || [] 
 				const cover = imgList[0] || '' 
 				return {

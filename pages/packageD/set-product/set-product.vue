@@ -34,7 +34,7 @@
 								<view class="flex">
 									<text v-if="!marCode" @click="genCode">自动生成</text>
 									<u-line direction="col"></u-line>
-									<u-icon @click="scanQRcode" size="20" color="#4F96E6" name="scan"></u-icon>
+									<u-icon @click="scanCode" size="20" color="#4F96E6" name="scan"></u-icon>
 								</view>
 							</template>
 						</u-input>
@@ -110,14 +110,24 @@
 				},
 				updateInfo: {},
 				token: '',
-				progressList: []
+				progressList: [],
+				codeProduct: false
 			}
 		},
 		onLoad(options) {
-			if (options.isUpdate === 'true') {
+			let { isUpdate, code } = options || {}
+			
+			if (isUpdate === 'true') {
 				this.isUpdate = true
 				this.genEditData()
 			}
+			
+			if (code) {
+				this.marCode = code
+				this.codeProduct = true
+			}
+			
+			
 			this.token = uni.getStorageSync('token')
 		},
 		onUnload() {
@@ -222,9 +232,6 @@
 				}))
 				this.remark = remark
 			},
-			scanQRcode() {
-				console.log('扫码')
-			},
 			async genCode() {
 				console.log('生成code')
 				const {
@@ -316,10 +323,21 @@
 					title: '操作成功',
 					icon: 'none'
 				})
+				
+				// console.error(data)
+				// 缓存单独扫码添加的商品
+				// uni.setStorageSync('scanData', data)
+				// return
 				setTimeout(() => {
-					uni.switchTab({
-						url: '/pages/products/products'
-					})
+					
+					if (this.codeProduct) {
+						uni.setStorageSync('addScanData', 1)
+						uni.navigateBack()
+					} else {
+						uni.switchTab({
+							url: '/pages/products/products'
+						})
+					}
 				}, 500)
 			}
 		}

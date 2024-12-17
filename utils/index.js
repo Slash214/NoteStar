@@ -248,3 +248,26 @@ export const getMonthStartAndEnd = (startTime) => {
         end_time: timestampToDate(lastDay)
     };
 };
+
+/**
+ * 格式化商品数据
+ */
+export const  formatProductData = (data) => {
+	return data.map(item => {
+		const imgList = item?.imgName?.split(',') || [] 
+		const cover = imgList[0] || '' 
+		return {
+			nums: new Big(0),
+			id: item.id,
+			name: item.name,
+			imgList,
+			cover,
+			purchaseDecimal: new Big(item.purchaseDecimal),
+			stock: item.stock,
+			mbarCode: item.mbarCode,
+			meId: item.meId,
+			commodityDecimal: new Big(item.commodityDecimal),
+			costPrice: item.costPrice
+		}
+	})
+}

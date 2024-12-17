@@ -13,20 +13,20 @@
 			<view class="from">
 				<block v-if="currIndex === 1">
 					<u--input :placeholderStyle="{ color: '#303133' }"
-						:customStyle="{ fontSize: '32rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入登录账号"
+						:customStyle="{ fontSize: '36rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入登录账号"
 						border="bottom" v-model="username" clearable @change="changeUserName"></u--input>
 					<u--input :placeholderStyle="{ color: '#303133' }"
-						:customStyle="{ fontSize: '32rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入密码"
+						:customStyle="{ fontSize: '36rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入密码"
 						password suffixIcon="eye" :border="false" v-model="password"
 						@change="changePassword"></u--input>
 				</block>
 
 				<block v-else>
 					<u--input :placeholderStyle="{ color: '#303133' }"
-						:customStyle="{ fontSize: '32rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入手机号"
+						:customStyle="{ fontSize: '36rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入手机号"
 						border="bottom" v-model="mobile" clearable @change="getMobile"></u--input>
 					<u-input :placeholderStyle="{ color: '#303133' }"
-						:customStyle="{ fontSize: '32rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入验证码"
+						:customStyle="{ fontSize: '36rpx', marginLeft: '10px', height: '54px' }" placeholder="请输入验证码"
 						:border="false" v-model="code" @change="getCode">
 						<template slot="suffix">
 							<u-code ref="uCode" @change="codeChange" seconds="20" changeText="X秒重新获"></u-code>
@@ -36,8 +36,13 @@
 				</block>
 			</view>
 
-			<u-button v-if="currIndex === 1" color="rgba(90, 198, 218, 0.6)" text="登录" @tap="userpwdLogin"></u-button>
-			<u-button v-else color="rgba(90, 198, 218, 0.6)" text="登录" @tap="userTelLogin"></u-button>
+			<!-- <u-button  color="" text="登录" </u-button> -->
+			<view  class="userpwd-button" v-if="currIndex === 1" @tap="userpwdLogin">
+				登录
+			</view>
+			<view v-else class="userpwd-button" @tap="userTelLogin">
+				登录
+			</view>
 			<view class="flex flex-center flex-items-center pwd">
 				<u-icon :name="remberMe ? 'checkmark-circle-fill' : 'checkmark-circle'" color="#5AC6DA" size="18"
 					@click="remberMe = !remberMe"></u-icon>
@@ -239,6 +244,17 @@
 		height: 100vh;
 		overflow: hidden;
 		background: linear-gradient(to bottom right, #68cab7, #3577cd);
+		
+		.userpwd-button {
+			background-color: rgba(90, 198, 218, 0.6);
+			height: 80rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 40rpx;
+			border-radius: 15rpx;
+		}
 
 		&-header {
 			margin-top: 300rpx;

@@ -1,22 +1,27 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
-		<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true" autoBack="false"
-			@leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
-			<!-- 中间内容 -->
-			<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
-				<view class="flex flex-center">
-					<text :class="status === item.id ? 'tab-text ml15 active' : ' tab-text ml15'"
-						v-for="item of statusArray" :key="item.id" @click="handleClickTab(item)">
-						{{ item.name }}
-					</text>
-				</view>
-				<view class="slot-right" @click="handleClickRight">
-					<u-icon name=" "></u-icon>
-				</view>
-			</view>
-		</u-navbar>
 
-		<nav-search-bar desc="单号/客户/商品/备注" @rightClick="rightClick" @search="getKeyWords"></nav-search-bar>
+		<template slot="top">
+			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true"
+				autoBack="false" @leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
+				<!-- 中间内容 -->
+				<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
+					<view class="flex flex-center">
+						<text :class="status === item.id ? 'tab-text ml15 active' : ' tab-text ml15'"
+							v-for="item of statusArray" :key="item.id" @click="handleClickTab(item)">
+							{{ item.name }}
+						</text>
+					</view>
+					<view class="slot-right" @click="handleClickRight">
+						<u-icon name=" "></u-icon>
+					</view>
+				</view>
+			</u-navbar>
+
+			<nav-search-bar desc="单号/客户/商品/备注" @rightClick="rightClick" @search="getKeyWords"></nav-search-bar>
+		</template>
+
+
 
 		<view class="container">
 			<horizontal-card title="共" :titlePrice="total" subtitle="合计" :subtitlePrice="totalPrice"></horizontal-card>

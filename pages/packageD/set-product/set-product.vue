@@ -67,7 +67,7 @@
 			</view>
 		</view>
 
-		<select-shop :all="false" :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
+		<select-shop @onCreated="getFirstStore" :all="false" :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
 	</view>
 </template>
 
@@ -134,6 +134,10 @@
 			uni.removeStorageSync('editData')
 		},
 		methods: {
+			getFirstStore(item) {
+				this.baseForm.store = item.name
+				this.curStore = item
+			},
 			// 删除图片
 			deletePic(event) {
 				this[`fileList${event.name}`].splice(event.index, 1)
@@ -324,14 +328,15 @@
 					icon: 'none'
 				})
 				
-				// console.error(data)
+				const obj = data.product
+				delete obj.stockInfoList
+				console.error('添加成功的商品', obj)
 				// 缓存单独扫码添加的商品
-				// uni.setStorageSync('scanData', data)
+				// uni.setStorageSync('addScanData', obj)
 				// return
 				setTimeout(() => {
-					
 					if (this.codeProduct) {
-						uni.setStorageSync('addScanData', 1)
+						uni.setStorageSync('addScanData', obj)
 						uni.navigateBack()
 					} else {
 						uni.switchTab({

@@ -199,26 +199,27 @@
 
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
 			</view>
+			
+			
+			<u-popup :safeAreaInsetBottom="false" :show="scanModal" @close="toggleScanModal" mode="center" round="15">
+				<view class="scan-main">
+					<view class="scan-header">
+						<u--text text="未查询到商品" size="16" margin="0 0 8px 0" align="center" bold color="#111"></u--text>
+						<u--text text="是否新增该商品?" size="14" align="center" color="#898989"></u--text>
+					</view>
+			
+					<view class="scan-code">
+						{{scanCode}}
+					</view>
+			
+					<view class="scan-group">
+						<view class="cancel" @click="toggleScanModal">取消</view>
+						<view @click="addNewProduct">新增该商品</view>
+					</view>
+				</view>
+			</u-popup>
 		</view>
 
-
-		<u-popup :show="scanModal" @close="toggleScanModal" mode="center" round="15">
-			<view class="scan-main">
-				<view class="scan-header">
-					<u--text text="未查询到商品" size="16" margin="0 0 8px 0" align="center" bold color="#111"></u--text>
-					<u--text text="是否新增该商品?" size="14" align="center" color="#898989"></u--text>
-				</view>
-
-				<view class="scan-code">
-					{{scanCode}}
-				</view>
-
-				<view class="scan-group">
-					<view @click="toggleScanModal">取消</view>
-					<view class="confirm" @click="addNewProduct">新增该商品</view>
-				</view>
-			</view>
-		</u-popup>
 	</view>
 </template>
 
@@ -398,10 +399,15 @@
 			}
 
 
-			const scanDataStatus = uni.setStorageSync('scanData') || null
-			if (scanDataStatus) {
-				this.selectDataAndPush()
-				uni.removeStorageSync('scanDataStatus')
+			const scanData = uni.getStorageSync('addScanData') || null
+			if (scanData) {
+				console.log('scanData', scanData)
+				this.updateProductAlone([scanData])
+				uni.setStorageSync('selectList', this.productList)
+				
+				setTimeout(() => {
+					uni.removeStorageSync('addScanData')
+				}, 500)
 			}
 		},
 		computed: {
@@ -436,6 +442,7 @@
 		methods: {
 			addNewProduct() {
 				let code = this.scanCode
+				this.toggleScanModal()
 				uni.navigateTo({
 					url: `/pages/packageD/set-product/set-product?code=${code}`
 				})
@@ -898,36 +905,39 @@
 						console.log('this.productList', this.productList)
 						this.onPriceChange(0)
 					} else {
-						const useCommodity = this.type === 1
-						this.productList.push(...rows.map(item => {
-							const imgName = item.imgName || '';
-							const imgList = imgName.split(',');
-							const cover = imgList[0] || '';
-							let price = useCommodity ? item.commodityDecimal : item
-								.purchaseDecimal
-							const bPrice = new Big(price || 0)
-							const bNums = new Big(1)
-							const total = bPrice.times(bNums).toFixed(2)
-							return {
-								...item,
-								bPrice,
-								bNums,
-								total,
-								price,
-								imgList,
-								cover,
-								nums: 1
-							}
-
-						}))
-						this.onPriceChange(0)
-						console.error(this.productList)
+						this.updateProductAlone(rows)
 					}
 					uni.setStorageSync('selectList', this.productList)
 				}
 
 
 				uni.hideLoading()
+			},
+			updateProductAlone(rows) {
+				const useCommodity = this.type === 1
+				this.productList.push(...rows.map(item => {
+					const imgName = item.imgName || '';
+					const imgList = imgName.split(',');
+					const cover = imgList[0] || '';
+					let price = useCommodity ? item.commodityDecimal : item
+						.purchaseDecimal
+					const bPrice = new Big(price || 0)
+					const bNums = new Big(1)
+					const total = bPrice.times(bNums).toFixed(2)
+					return {
+						...item,
+						bPrice,
+						bNums,
+						total,
+						price,
+						imgList,
+						cover,
+						nums: 1
+					}
+				
+				}))
+				this.onPriceChange(0)
+				console.error(this.productList)
 			},
 			// 扫码添加
 			scanToAdd() {
@@ -974,15 +984,15 @@
 			display: flex;
 			align-items: center;
 			height: 40px;
+			
+			.cancel {
+				color: #111;
+			}
 
 			view {
 				width: 50%;
 				text-align: center;
 				color: #5fcadd;
-			}
-
-			.confirm {
-				color: #111;
 			}
 		}
 	}

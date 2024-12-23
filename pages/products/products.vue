@@ -4,7 +4,7 @@
 		<template slot="top">
 			<AppletHeader title="商品" @leftClick="leftClick" :left-icon-size="24" :right-icon-size="20" :autoBack="false" left-icon="account" right-icon="plus"
 				left-icon-bold="true" @rightClick="addProduct"></AppletHeader>
-			<nav-search-bar @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
+			<nav-search-bar right="50rpx" @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 		</template>
 
 		<view class="container">

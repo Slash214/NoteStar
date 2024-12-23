@@ -196,9 +196,9 @@ export const getStockList = (data) => {
 
 
 // 开单接口
-export const addDepotHeadAndDetail = (data) => {
+export const addDepotHeadAndDetail = (data, url = '/depotHead/addDepotHeadAndDetail') => {
 	return request({
-		url: '/depotHead/addDepotHeadAndDetail',
+		url,
 		data,
 		method: 'POST'
 	})
@@ -371,5 +371,14 @@ export const deleteShopMang = (data) => {
 		url: '/depot/delete',
 		data,
 		method: 'GET'
+	})
+}
+
+
+export const conversionData = (data) => {
+	return request({
+		url: '/depotHead/transferOrder',
+		data,
+		method: 'POST'
 	})
 }

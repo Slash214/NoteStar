@@ -11,7 +11,7 @@
 	>
 		<view slot="top">
 			<AppletHeader :title="type === 1 ? '销售' : '进货'" left-icon="arrow-left" right-icon="plus" @rightClick="rightClick"></AppletHeader>
-			<nav-search-bar @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
+			<nav-search-bar right="50rpx" @search="getSearchValue" desc="单号/客户/商品/备注" :showRight="false"></nav-search-bar>
 		</view>
 
 		<view class="main">

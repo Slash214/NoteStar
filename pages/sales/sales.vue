@@ -2,8 +2,25 @@
 	<z-paging :use-cache="true" cache-key="SalesKey" ref="paging" v-model="dataList" @query="queryList"
 		auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader :autoBack="false" @leftClick="modalVisible = true" title="销售" left-icon="account"
-				right-icon=" " :left-icon-size="24"></AppletHeader>
+			<!-- <AppletHeader :autoBack="false" @leftClick="modalVisible = true" title="销售" left-icon="account"
+				right-icon=" " :left-icon-size="24"></AppletHeader> -->
+
+			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true"
+				autoBack="false" @leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
+				<!-- 中间内容 -->
+				<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">
+					<view class="flex flex-center">
+						<text :class="status === item.id ? 'tab-text ml15 active' : ' tab-text ml15'"
+							v-for="item of statusArray" :key="item.id" @click="handleClickTab(item)">
+							{{ item.name }}
+						</text>
+					</view>
+					<view class="slot-right" @click="handleClickRight">
+						<u-icon name=" "></u-icon>
+					</view>
+				</view>
+			</u-navbar>
+
 			<nav-search-bar @rightClick="rightClick" @search="getKeyWords" desc="单号/客户/商品/备注"></nav-search-bar>
 		</template>
 
@@ -24,15 +41,26 @@
 						</view>
 						<view class="number">{{ item.number }}</view>
 					</view>
-					<u--text align="right" color="#000" size="18" bold mode="price" :text="item.totalPrice"></u--text>
+
+					<view class="info">
+						<view class="money">
+							￥{{ formatMoney(item.totalPrice) }}
+						</view>
+						<view class="name">
+							{{saleStatusName[item.saleStatus] || ""}}
+						</view>
+					</view>
+					
 				</view>
 			</view>
 
 		</view>
 
 		<template slot="right">
-			<view v-if="!loading" class="fix-icon flex flex-items-center flex-center">
-				<image @click="gotoSetForm" :src="staticImageUrl + '/sales/kaidan.png'" mode="widthFix"></image>
+			<view v-if="!loading" @click="gotoSetForm" class="fix-icon flex flex-items-center flex-center">
+				<image src="https://haoxianhui.com/hxh/2024/12/23/33b839bf56da4b90b5f711722566b399.png" mode="widthFix">
+				</image>
+				<text class="text">{{statusArray[status - 1].name}}</text>
 			</view>
 		</template>
 
@@ -54,11 +82,13 @@
 	} from '@/apis'
 	import {
 		formatDateToChinese,
-		timestampToDate
+		timestampToDate,
+		formatMoney
 	} from '@/utils'
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 	import {
-		staticImageUrl
+		staticImageUrl,
+		IMAGE_OSS_URL
 	} from '@/common/contanst'
 	import UserPopup from '@/components/UserPopup/UserPopup.vue'
 	import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
@@ -71,8 +101,10 @@
 		},
 		data() {
 			return {
+				formatMoney,
 				modalVisible: false,
 				staticImageUrl,
+				IMAGE_OSS_URL,
 				loading: true,
 				dataList: [],
 				total: '',
@@ -85,11 +117,41 @@
 					creator: '',
 					beginTime: '',
 					endTime: ''
-				}
+				},
+				saleStatusName: {
+					0: '未转销售',
+					1: '部分转销售',
+					2: '已完成',
+					3: '已关闭',
+				},
+				status: 1,
+				width: 0,
+				statusArray: [{
+
+						id: 1,
+						name: '销售'
+					},
+					{
+						id: 2,
+						name: '预订'
+					},
+					{
+						id: 3,
+						name: '退货'
+					},
+				]
 			}
 		},
 		onLoad() {
 			this.reqObj.beginTime = timestampToDate(Date.now())
+
+
+			uni.removeStorageSync('selectList')
+			uni.removeStorageSync('currPage')
+
+			const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
+			console.log('信息', menuButtonInfo)
+			this.width = menuButtonInfo.width
 		},
 		onShow() {
 			uni.removeStorageSync('t2screenData')
@@ -118,8 +180,15 @@
 			uni.removeStorageSync('currPage')
 			uni.removeStorageSync('goodsInfo')
 			uni.removeStorageSync('goodsUpdate')
+			uni.removeStorageSync('transferOrderList')
 		},
 		methods: {
+			handleClickTab(item) {
+				console.log(item)
+				this.status = item.id
+
+				this.$refs.paging.reload()
+			},
 			rightClick() {
 				console.log('点击右边的')
 				uni.navigateTo({
@@ -128,7 +197,7 @@
 			},
 			handleClick(item) {
 				uni.navigateTo({
-					url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}&type=1`
+					url: `/pages/packageB/sales-order-detail/sales-order-detail?number=${item.number}&type=1&status=${this.status}&id=${this.status === 2 ? item.id : ''}`
 				})
 			},
 			getKeyWords(v) {
@@ -139,11 +208,29 @@
 			gotoSetForm() {
 				console.log('销售开单的')
 				uni.navigateTo({
-					url: '/pages/packageB/set-form/set-form?type=1'
+					url: `/pages/packageB/set-form/set-form?type=1&status=${this.status}`
 				})
 			},
 			async queryList(pageNo, pageSize) {
 				try {
+
+					const statusType = {
+						1: {
+							type: '出库',
+							subType: '零售'
+						},
+						2: {
+							type: '出库',
+							subType: '销售预订'
+						},
+						3: {
+							type: '出库',
+							subType: '退货'
+						},
+					}
+
+					let typeObj = statusType[this.status]
+
 					const {
 						data
 					} = await getDepotHeadList({
@@ -151,8 +238,7 @@
 						currentPage: pageNo,
 						pageSize: pageSize,
 						search: {
-							type: '出库',
-							subType: '零售',
+							...typeObj,
 							fuzzyQueryParam: this.keyword,
 							...this.reqObj
 						}
@@ -181,6 +267,57 @@
 </script>
 
 <style lang="scss" scoped>
+	.slot-content {
+		flex: 1;
+		text-align: center;
+		position: relative;
+		margin-left: 45px;
+
+		.slot-right {
+			position: absolute;
+			top: 50%;
+			right: 15px;
+			transform: translateY(-50%);
+		}
+
+		.tab-text {
+			font-size: 32rpx;
+			color: #111;
+			display: block;
+		}
+
+		.active {
+			font-size: 36rpx;
+			position: relative;
+			font-weight: 600;
+
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: -3rpx;
+				left: 5rpx;
+				width: 85%;
+				height: 8rpx;
+				border-radius: 40rpx;
+				background: linear-gradient(to right, #5fcadd, #e5f0f6);
+				border-top-left-radius: 20px;
+				border-top-right-radius: 20px;
+				border-bottom-right-radius: 20px;
+				border-bottom-left-radius: 20px;
+				background-image: linear-gradient(to right, rgb(95, 202, 221), rgb(229, 240, 246));
+				background-position-x: initial;
+				background-position-y: initial;
+				background-size: initial;
+				background-repeat-x: initial;
+				background-repeat-y: initial;
+				background-attachment: initial;
+				background-origin: initial;
+				background-clip: initial;
+				background-color: initial;
+			}
+		}
+	}
+
 	.title {
 		width: 100%;
 		height: 75rpx;
@@ -203,8 +340,15 @@
 		box-shadow: 5px 5px 20px rgba(0, 201, 221, 0.5);
 		overflow: hidden;
 
+		.text {
+			font-size: 32rpx;
+			padding-left: 10rpx;
+			color: #fff;
+			font-weight: 500;
+		}
+
 		image {
-			width: 120rpx;
+			width: 40rpx;
 		}
 	}
 
@@ -221,6 +365,20 @@
 			padding: 25rpx;
 			border-radius: 20rpx;
 			align-items: flex-start;
+
+			.info {
+				.money {
+					font-weight: 700;
+					color: #111;
+					font-size: 34rpx;
+				}
+
+				.name {
+					color: #f3660c;
+					text-align: center;
+					margin-top: 16rpx;
+				}
+			}
 
 			.organName {
 				color: #000;

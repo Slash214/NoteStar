@@ -448,6 +448,8 @@
 					)
 					this.monthChartData = monthChartData
 				}
+				
+				this.isFix = false
 			},
 			leftClick() {
 				console.log('点击我的')

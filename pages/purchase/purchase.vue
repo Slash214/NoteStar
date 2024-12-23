@@ -39,15 +39,24 @@
 						</view>
 						<view class="number">{{ item.number }}</view>
 					</view>
-					<text class="price">￥{{ item.money }}</text>
+					
+					<view class="">
+						<view class="price">￥{{ item.money }}</view>
+						<view class="name">
+							{{saleStatusName[item.purchaseStatus] || ""}}
+						</view>
+					</view>
 				</view>
 			</view>
 		</view>
 
 
 		<template slot="right">
+			
+			<!-- /hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png -->
 			<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
-				<image :src="staticImageUrl + '/purchase/purchase.png'" mode="widthFix"></image>
+				<image :src="IMAGE_OSS_URL + '/hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png'" mode="widthFix"></image>
+				<text class="text">{{statusArray[status - 1].name}}</text>
 			</view>
 		</template>
 
@@ -72,6 +81,7 @@
 		formatMoney
 	} from '@/utils'
 	import {
+		IMAGE_OSS_URL,
 		staticImageUrl
 	} from '@/common/contanst'
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
@@ -87,6 +97,7 @@
 			return {
 				modalVisible: false,
 				staticImageUrl,
+				IMAGE_OSS_URL,
 				loading: true,
 				dataList: [],
 				total: '',
@@ -108,12 +119,19 @@
 						name: '退货'
 					}
 				],
+				saleStatusName: {
+					0: '未转进货',
+					1: '部分转进货',
+					2: '已完成',
+					3: '已关闭',
+				},
 				width: 0
 			}
 		},
 		onLoad() {
 			uni.removeStorageSync('selectList')
 			uni.removeStorageSync('currPage')
+			uni.removeStorageSync('transferOrderList')
 
 			const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
 			console.log('信息', menuButtonInfo)
@@ -145,6 +163,8 @@
 			handleClickTab(item) {
 				console.log(item)
 				this.status = item.id
+				
+				this.$refs.paging.reload()
 			},
 			rightClick() {
 				console.log('点击右边的')
@@ -167,8 +187,12 @@
 			},
 			gotoSetForm() {
 				console.log('进货的')
+				// 获取现在的类型  
+				// const obj = this.statusArray.filter(item => item.id === this.status)[0]
+				// console.error(obj)
+				// return				
 				uni.navigateTo({
-					url: '/pages/packageB/set-form/set-form?type=2'
+					url: `/pages/packageB/set-form/set-form?type=2&status=${this.status}`
 				})
 			},
 			handleClickSearch(v) {
@@ -179,24 +203,32 @@
 				console.log(item)
 				let number = item.number
 				uni.navigateTo({
-					url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}`
+					url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}&status=${this.status}&id=${this.status === 2 ? item.id : ''}`
 				})
 			},
 			async queryList(pageNo, pageSize) {
 				let obj = {}
-
-				let statusType = {}
-				if (this.status !== 1) {
-					statusType = {
-						type: '入库',
-						subType: '采购'
-					}
-				} else {
-					statusType = {
-						type: '进货',
-						subType: '预定'
-					}
+				
+				const statusType = {
+					1: { type: '入库', subType: '采购' },
+					2: { type: '入库', subType: '进货预订' },
+					3: { type: '入库', subType: '退货' },
 				}
+
+				// let statusType = {}
+				// if (this.status !== 1) {
+				// 	statusType = {
+				// 		type: '入库',
+				// 		subType: '采购'
+				// 	}
+				// } else {
+				// 	statusType = {
+				// 		type: '进货',
+				// 		subType: '预定'
+				// 	}
+				// }
+				
+				let typeObj = statusType[this.status]
 
 				try {
 					const {
@@ -206,8 +238,7 @@
 						currentPage: pageNo,
 						pageSize: pageSize,
 						search: {
-							type: '入库',
-							subType: '采购',
+							...typeObj,
 							// 搜索关键词
 							fuzzyQueryParam: this.keyword,
 							...this.reqObj
@@ -311,9 +342,15 @@
 		border-radius: 50rpx;
 		box-shadow: 5px 5px 20px rgba(250, 100, 0, 0.5);
 		overflow: hidden;
-
+		
+		.text {
+			font-size: 32rpx;
+			padding-left: 10rpx;
+			color: #fff;
+			font-weight: 500;
+		}
 		image {
-			width: 120rpx;
+			width: 40rpx;
 		}
 	}
 
@@ -353,6 +390,12 @@
 				color: #000;
 				font-weight: 600;
 				font-size: 34rpx;
+			}
+			
+			.name {
+				text-align: center;
+				margin-top: 16rpx;
+				color: #f3660c;
 			}
 		}
 	}

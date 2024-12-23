@@ -1,8 +1,15 @@
 <template>
-	<CustomView ref="pagIng" :getData="getAccountByDepotId" :transformData="transformData" :params="{ depotId: this.depotId }">
+	<CustomView ref="pagIng" :getData="getAccountByDepotId" :transformData="transformData" :params="{ depotId: this.curSelShop.id }">
 		<template v-slot:top>
 			<AppletHeader title="普通账户" right-icon="plus" @rightClick="rightClick"></AppletHeader>
 		</template>
+		
+		<view class="address" @click="addresShow = true">
+			<text>{{curSelShop.name}}</text>
+			<u-icon name="arrow-down-fill" size="16" color="#9d9ea0"></u-icon>
+		</view>
+		
+		<SelectShop :show="addresShow" @confirm="getSelAddress" @cancel="addresShow = false"></SelectShop>
 
 		<template v-slot:content="{ dataList }">
 			<view class="container">
@@ -24,6 +31,8 @@
 			</view>
 		</template>
 		
+		<SelectShop></SelectShop>
+		
 		<u-modal @cancel="modalShow = false" @confirm="onDelConfirm" :show="modalShow" showCancelButton title="删除" content='确定要删除吗？'></u-modal>
 		<u-action-sheet :actions="list" cancelText="取消" @select="onSheetSelect" @close="show = false" :title="title" :show="show"></u-action-sheet>
 	</CustomView>
@@ -31,16 +40,18 @@
 
 <script>
 import CustomView from '@/components/CustomView/CustomView.vue'
+import SelectShop from '@/components/SelectShop/SelectShop.vue'
 import { getAccountByDepotId, deleteAccountItem } from '@/apis'
 export default {
 	components: {
-		CustomView
+		CustomView,
+		SelectShop
 	},
 	data() {
 		return {
+			addresShow: false, 
 			getAccountByDepotId,
 			total: 0,
-			depotId: 0,
 			show: false,
 			list: [
 				{ name: "编辑", id: 1 },
@@ -49,6 +60,11 @@ export default {
 			modalShow: false,
 			curSelObj: {},
 			pagIng: null,
+			
+			curSelShop: {
+				id: 0,
+				name: '全部门店'
+			}
 		}
 	},
 	onLoad() {
@@ -58,6 +74,12 @@ export default {
 		this.$refs.pagIng.reload()
 	},
 	methods: {
+		getSelAddress(item) {
+
+			this.curSelShop = item
+			this.addresShow = false
+			this.$refs.pagIng.reload()
+		},
 		showMore(item) {
 			console.log(item)
 			this.curSelObj = item
@@ -108,6 +130,17 @@ export default {
 	border-radius: 10rpx;
 	padding: 0 30rpx;
 	color: #9d9ea0;
+}
+
+.address {
+	padding: 30rpx 30rpx 0 30rpx;
+	font-size: 30rpx;
+	color: #9d9ea0;
+	display: flex;
+	align-items: center;
+	text {
+		padding-right: 10rpx;
+	}
 }
 
 .list {

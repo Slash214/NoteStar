@@ -1,6 +1,7 @@
 <template>
 	<view class="main">
-		<AppletHeader :title="objItem[type].name" right-icon=" "></AppletHeader>
+		<!-- objItem[type].name -->
+		<AppletHeader :title="objItem[type].statusArray[statusType].name" right-icon=" "></AppletHeader>
 		<view :class="shopShow ? 'no-scroll container' : 'container'">
 			<view class="white box">
 				<!-- 门店列表选择 -->
@@ -125,11 +126,12 @@
 
 				<view class="amount">
 					<text>应收：￥{{ reqData.changeAmount }}</text>
-					<text v-if="type === 1" class="btns" @click="applyMoneyAroundDown">
+					<text v-if="type === 1 && statusType === 1" class="btns" @click="applyMoneyAroundDown">
 						{{ showMo ? '取消抹零' : '抹零' }}
 					</text>
 				</view>
-				<view class="moneyAroundDown" v-if="type === 1">已抹零：{{ reqData.moneyAroundDown }}</view>
+				<view class="moneyAroundDown" v-if="type === 1 && statusType === 1">已抹零：{{ reqData.moneyAroundDown }}
+				</view>
 			</view>
 
 			<view class="white box mt10" style="padding: 40rpx">
@@ -197,28 +199,59 @@
 					</view>
 				</view>
 
+				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType > 1">
+					{{ type === 1 ? '收订金' : '付订金'}}
+				</view>
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
 			</view>
-			
-			
+
+
 			<u-popup :safeAreaInsetBottom="false" :show="scanModal" @close="toggleScanModal" mode="center" round="15">
 				<view class="scan-main">
 					<view class="scan-header">
 						<u--text text="未查询到商品" size="16" margin="0 0 8px 0" align="center" bold color="#111"></u--text>
 						<u--text text="是否新增该商品?" size="14" align="center" color="#898989"></u--text>
 					</view>
-			
+
 					<view class="scan-code">
 						{{scanCode}}
 					</view>
-			
+
 					<view class="scan-group">
 						<view class="cancel" @click="toggleScanModal">取消</view>
 						<view @click="addNewProduct">新增该商品</view>
 					</view>
 				</view>
 			</u-popup>
+
+
+
+			<u-popup :show="depositShow" @close="depositShow = false;" :closeOnClickOverlay="true">
+				<view class="deposit">
+					<view class="title">
+						￥{{ formatMoney(reqData.changeAmount) }}
+					</view>
+					<view class="subtitle">
+						订单总金额
+					</view>
+
+					<view class="inputs">
+						<u--text text="订金收款(￥)"></u--text>
+						<u--input placeholder="0.00" border="bottom" v-model="curDepositValue"
+							:customStyle="{fontSize: '40rpx'}" :placeholderStyle="{fontSize: '40rpx'}"></u--input>
+					</view>
+
+					<image @click="handleClickDeposit" class="money" mode="aspectFit"
+						src="https://haoxianhui.com/hxh/2024/12/23/e64722f1608e48feabcf8687cb5df31c.png"></image>
+					<view class="" @click="handleClickDeposit">
+						现金收款
+					</view>
+				</view>
+			</u-popup>
 		</view>
+
+
+
 
 	</view>
 </template>
@@ -228,7 +261,8 @@
 	// 销售销售显示抹0 进货不显示
 	// 销售销售显示毛利润 进货不显示
 	import {
-		staticImageUrl
+		staticImageUrl,
+		IMAGE_OSS_URL
 	} from '@/common/contanst'
 	import Big from 'big.js'
 	import {
@@ -245,12 +279,16 @@
 		addDepotHeadAndDetail,
 		genbuildNumber,
 		updateDepotHeadAndDetail,
-		getMaterialList
+		getMaterialList,
+		conversionData
 	} from '@/apis'
 
 	export default {
 		data() {
 			return {
+				IMAGE_OSS_URL,
+				curDepositValue: "",
+				depositShow: false,
 				scanModal: false,
 				scanCode: '',
 				showMo: false,
@@ -264,6 +302,23 @@
 					1: {
 						orderType: 1,
 						name: '销售单',
+						statusArray: {
+							1: {
+								name: '销售单',
+								type: '出库',
+								subType: '零售'
+							},
+							2: {
+								name: '预订单',
+								type: '出库',
+								subType: '销售预订'
+							},
+							3: {
+								name: '退货单',
+								type: '出库',
+								subType: '零售'
+							},
+						},
 						showAmount: true,
 						showgross: true,
 						color: '#5FCADD',
@@ -273,13 +328,34 @@
 					2: {
 						orderType: 0,
 						name: '进货单',
+						statusArray: {
+							1: {
+								name: '进货单',
+								type: '入库',
+								subType: '采购'
+							},
+							2: {
+								name: '预订单',
+								type: '入库',
+								subType: '进货预订'
+							},
+							3: {
+								name: '退货单',
+								type: '入库',
+								subType: '采购'
+							},
+						},
 						showAmount: false,
 						showgross: false,
 						color: '#fa6400',
 						type: '入库',
-						subType: '采购'
-					}
+						subType: '采购',
+					},
 				},
+
+
+				// 当前的类型
+				statusType: 1,
 
 				// 当前选择的门店
 				selectedStore: {},
@@ -347,6 +423,12 @@
 				curShopData: {},
 
 				isServerLoading: false,
+
+				statusName: '',
+
+				transferOrderId: 0,
+				transferOrderShopCartList: [],
+				canFirst: true
 			}
 		},
 		onReady() {
@@ -355,16 +437,18 @@
 		onLoad(options) {
 			// 获取type 类型
 			this.type = +options?.type || 1
+			this.statusType = +options?.status || 1
 			this.getData()
 
 			if (options?.isUpdate === '1') {
 				this.isUpdate = true
+				this.transferOrderId = +options?.id
 				let obj = uni.getStorageSync('goodsUpdate')
 				console.log('更新状态', obj)
 				this.goodsUpdate = obj
 				this.orderNumber = obj.number
-				this.selectedTime.temp = obj.operTime
-
+				this.selectedTime.temp = new Date(obj.operTime).getTime()
+				this.selectedTime.time = obj.operTime
 				this.reqData.remark = obj.remark
 				this.reqData.discount = obj.discount
 				this.reqData.discountLastMoney = obj.discountLastMoney
@@ -372,6 +456,7 @@
 				this.reqData.moneyAroundDown = obj.moneyAroundDown
 				this.reqData.otherMoney = obj.otherMoney
 				this.reqData.changeAmount = obj.changeAmount
+			    
 			}
 		},
 		onShow() {
@@ -396,6 +481,31 @@
 				})
 				this.loadBatchData(list)
 				console.log('this', this.productList)
+
+
+			}
+
+			// 是否翻译
+			const transData = uni.getStorageSync('transferOrderList')
+			if (transData) {
+				console.log('分钟', transData)
+				this.transferOrderShopCartList = transData.map(item => {
+					let price = this.type === 1 ? item.commodityDecimal : item.purchaseDecimal
+					let bPrice = new Big(price)
+					let bNums = new Big(item.nums)
+					let total = bPrice.times(bNums).toFixed(2) // 计算 total，并保留两位小数
+					return {
+						depotId: item.depotId,
+						id: item.id,
+						barCode: item.mbarCode,
+						operNumber: item.nums,
+						unitPrice: price,
+						allPrice: total,
+						pendingTransferCount: item.nums //未交易的数量（预订使用）
+					}
+				})
+
+				console.error('transferOrderShopCartList', this.transferOrderShopCartList)
 			}
 
 
@@ -404,7 +514,7 @@
 				console.log('scanData', scanData)
 				this.updateProductAlone([scanData])
 				uni.setStorageSync('selectList', this.productList)
-				
+
 				setTimeout(() => {
 					uni.removeStorageSync('addScanData')
 				}, 500)
@@ -440,6 +550,27 @@
 			}
 		},
 		methods: {
+			onDeposit() {
+				console.log('商品没有选择')
+
+				if (!this.productList.length) {
+					uni.showToast({
+						title: '还没有选择商品',
+						icon: 'none'
+					})
+					return
+				}
+
+				this.depositShow = true
+			},
+			handleClickDeposit() {
+				console.log('现金支付')
+
+				// 触发保存的
+				this.depositShow = false
+
+				this.saveData()
+			},
 			addNewProduct() {
 				let code = this.scanCode
 				this.toggleScanModal()
@@ -700,6 +831,10 @@
 					});
 
 					// 如果是新增操作，生成订单号
+					
+			
+					
+					
 					if (!this.isUpdate) {
 						const result = await genbuildNumber({
 							type: this.objItem[this.type].orderType,
@@ -720,9 +855,13 @@
 						newForm.grossProfit = this.grossProfit;
 					}
 
+
+					let type = this.objItem[this.type].statusArray[this.statusType].type
+					let subType = this.objItem[this.type].statusArray[this.statusType].subType
+
 					const params = {
-						type: this.objItem[this.type].type,
-						subType: this.objItem[this.type].subType,
+						type,
+						subType,
 						depotId: this.selectedStore.id,
 						organId: 60, // 客户id，写死
 						operTime: formatTimestamp(this.selectedTime.temp, false),
@@ -735,6 +874,10 @@
 						accountId: 1,
 						originalTotalPrice,
 					};
+
+					if (this.statusType > 1) {
+						params['depositPaid'] = this.curDepositValue || 0
+					}
 
 					if (this.isUpdate) {
 						params.id = this.goodsUpdate.id;
@@ -754,18 +897,60 @@
 						remark: item.remark || '',
 					}));
 
-					const FN = !this.isUpdate ?
-						addDepotHeadAndDetail :
-						updateDepotHeadAndDetail;
+
+
+
+
+
+
+					let FN = '',
+						result = {}
+					if (this.transferOrderId) {
+						FN = conversionData
+						
+						const result = await genbuildNumber({
+							type: 4,
+						});
+						
+						let orderNumber = result?.data?.defaultNumber || null;
+
+						let orderInfo = {
+							...params,
+							shopCartInfoList,
+							depositDeducted: this.goodsUpdate.depositDeducted || 0,
+							number: orderNumber,
+							defaultNumber: orderNumber,
+						}
+
+						let newList = this.transferOrderShopCartList.map(item => ({
+							...item,
+							depotId: this.selectedStore.id
+						}))
+
+						result = await conversionData({
+							orderInfo,
+							transferOrderId: this.transferOrderId,
+							transferOrderShopCartList: newList
+						})
+
+					} else {
+						FN = !this.isUpdate ?
+							addDepotHeadAndDetail :
+							updateDepotHeadAndDetail;
+
+						result = await FN({
+								...params,
+								shopCartInfoList,
+							}, this.statusType > 1 ? '/depotHead/addAdvanceOrder' :
+							'/depotHead/addDepotHeadAndDetail');
+					}
+
 
 					const {
 						data,
 						message,
 						code
-					} = await FN({
-						...params,
-						shopCartInfoList,
-					});
+					} = result
 
 					if (code === 0) {
 						uni.showToast({
@@ -779,7 +964,7 @@
 
 						// 跳转到结果页面
 						uni.reLaunch({
-							url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}`,
+							url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}&status=${this.statusType}`,
 						});
 					} else {
 						// 服务器返回错误处理
@@ -934,7 +1119,7 @@
 						cover,
 						nums: 1
 					}
-				
+
 				}))
 				this.onPriceChange(0)
 				console.error(this.productList)
@@ -965,6 +1150,43 @@
 </script>
 
 <style scoped lang="scss">
+	.deposit {
+		height: 600rpx;
+		width: 100%;
+		padding: 40rpx;
+		background-color: #F1F4F9;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+
+		.title {
+			color: #7C7775;
+			font-size: 44rpx;
+			font-weight: 700;
+		}
+
+		.subtitle {
+			margin-top: 30rpx;
+			color: #827D7A;
+			font-size: 30rpx;
+		}
+
+		.inputs {
+			width: 100%;
+			height: 80px;
+			border-radius: 10rpx;
+			background-color: #fff;
+			padding: 20rpx;
+			margin-top: 20px;
+		}
+
+		.money {
+			display: block;
+			margin: 20px 0 8px 0;
+			width: 200rpx;
+		}
+	}
+
 	.scan-main {
 		width: 300px;
 		padding: 30rpx;
@@ -984,7 +1206,7 @@
 			display: flex;
 			align-items: center;
 			height: 40px;
-			
+
 			.cancel {
 				color: #111;
 			}
@@ -1230,6 +1452,18 @@
 			align-items: center;
 			color: #fff;
 			font-weight: 700;
+		}
+
+		.dj {
+			margin-right: -30px;
+			border: 1rpx solid #fa6400;
+			color: #fa6400;
+		}
+
+		.xs {
+			margin-right: -30px;
+			border: 1rpx solid #5FCADD;
+			color: #5FCADD;
 		}
 	}
 </style>

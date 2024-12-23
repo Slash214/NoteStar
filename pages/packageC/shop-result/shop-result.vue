@@ -16,7 +16,14 @@
 					<text>合计金额：</text>
 					<u--text mode="price" :text="total"></u--text>
 				</view>
-				<view :class="type === 1 ? 'xs btns' : 'jh btns'" @click="handleClick">再来一单</view>
+
+				<view class="group-button">
+					<view :class="type === 1 ? 'xs-b btns' : 'jh-b btns'" v-if="statusType > 1" @click="handleClickDep">
+						{{ type === 1 ? '转销售' : '转进货'}}
+					</view>
+					<view :class="type === 1 ? 'xs btns' : 'jh btns'" @click="handleClick">再来一单</view>
+				</view>
+
 			</view>
 		</view>
 	</view>
@@ -29,7 +36,8 @@
 				// 1 销售单  2 进货单
 				type: 1,
 				orderNumber: "",
-				total: 0
+				total: 0,
+				statusType: 1
 			}
 		},
 		onLoad(options) {
@@ -37,6 +45,7 @@
 			this.type = +options?.type || 1
 			this.orderNumber = options.orderNum
 			this.total = options.total || 0
+			this.statusType = +options.status || 1
 		},
 		methods: {
 			handleClick() {
@@ -47,6 +56,9 @@
 			},
 			lookDetails() {
 				console.log('查看详情')
+				uni.navigateTo({
+					url: `/pages/packageB/sales-order-detail/sales-order-detail?type=${this.type}&number=${this.orderNumber}&status=${this.statusType}`
+				})
 			},
 			rightClick() {
 				console.log('完成')
@@ -55,7 +67,14 @@
 				uni.switchTab({
 					url
 				})
-			}
+			},
+			handleClickDep() {
+				console.log('转进货')
+				
+				uni.navigateTo({
+					url: ''
+				})
+			},
 		}
 	}
 </script>
@@ -64,6 +83,12 @@
 	.flex {
 		display: flex;
 		align-items: center;
+	}
+
+	.group-button {
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
 	}
 
 	.box {
@@ -84,14 +109,13 @@
 
 		.btns {
 			height: 90rpx;
-
 			border-radius: 20rpx;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			color: #fff;
 			font-weight: 700;
-			width: 156px;
+			width: 280rpx;
 			margin: 30rpx auto auto auto;
 		}
 
@@ -101,6 +125,18 @@
 
 		.jh {
 			background: linear-gradient(to right, #fa6400, #f79151);
+		}
+		
+		.xs-b {
+			background-color: #fff;
+			color: #5fcadd;
+			border: 1rpx solid #5fcadd;
+		}
+		
+		.jh-b {
+			background-color: #fff;
+			color: #fa6400;
+			border: 1rpx solid #fa6400;
 		}
 	}
 </style>

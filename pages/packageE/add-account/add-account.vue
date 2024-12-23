@@ -29,10 +29,10 @@
 			</u--form>
 		</view>
 
-		<u-popup :show="show" @close="close" height="50%">
-			<view class="main">
-				<u-button text="确定" type="primary" @click="onClickSelect"></u-button>
-				<view style="margin-bottom: 20px"></view>
+		<u-popup :show="show" @close="close">
+			<scroll-view scroll-y="scroll" class="main">
+				<u-button text="确定" shape="circle" type="primary" @click="onClickSelect"></u-button>
+				<view style="margin-bottom: 30px"></view>
 				<u-checkbox-group v-model="checkboxValue1" placement="column" @change="checkboxChange">
 					<u-checkbox
 						:customStyle="{ marginBottom: '20px' }"
@@ -42,7 +42,7 @@
 						:name="item.id"
 					></u-checkbox>
 				</u-checkbox-group>
-			</view>
+			</scroll-view>
 		</u-popup>
 	</view>
 </template>
@@ -164,5 +164,7 @@ export default {
 
 .main {
 	padding: 20rpx;
+	box-sizing: border-box;
+	height: 80vh;
 }
 </style>

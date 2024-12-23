@@ -1,5 +1,5 @@
 <template>
-	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
+	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top :refresher-enabled="false">
 		<template slot="top">
 			<slot name="top"></slot>
 		</template>

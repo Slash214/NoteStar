@@ -52,7 +52,7 @@
 						</view>
 					</block>
 					<block v-else>
-						<view class="flows" v-for="item in stockFlowsVoList" :key="item.materialId">
+						<view class="flows" v-for="item in stockFlowsVoList" :key="item.materialId" @click="handleClickDetails(item)">
 							<u--text
 								color="#9D9EA0"
 								:text="formatDateToChinese(item.createTime)"
@@ -143,6 +143,13 @@ export default {
 		console.log('加载更多')
 	},
 	methods: {
+		handleClickDetails(item) {
+			console.log(item)
+			let number = item.number
+			uni.navigateTo({
+				url: `/pages/packageB/sales-order-detail/sales-order-detail?type=2&number=${number}&status=1&id=""`
+			})
+		},
 		onConfirm(e) {
 			console.log(e)
 			this.curStore = e

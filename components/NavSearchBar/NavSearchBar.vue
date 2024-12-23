@@ -8,7 +8,7 @@
 				<image class="images" mode="widthFix"
 					src="https://haoxianhui.com//hxh/2024/11/19/5e093d14b79a4cc2ad6766a456adc410.png"></image>
 			</view>
-			<view class="scan" @click="handleClickLeft">
+			<view class="scan" :style="{right: right }" @click="handleClickLeft">
 				<u-icon name="scan" size="20"></u-icon>
 			</view>
 		</view>
@@ -29,6 +29,10 @@
 			showRight: {
 				type: Boolean,
 				default: true
+			},
+			right: {
+				type: String,
+				default: '170rpx'
 			}
 		},
 		data() {
@@ -107,7 +111,8 @@
 
 		.scan {
 			position: absolute;
-			right: 170rpx;
+			// right: 170rpx;
+			// right: 50rpx;
 			top: 50%;
 			transform: translateY(-50%);
 			z-index: 4;

@@ -7,8 +7,11 @@
 			<view class="white box">
 				<view class="flex flex-between flex-items-center">
 					<view class="flex flex-items-center">
-						<view class="fix" v-if="isDelete || deleteFlag == 1">已作废</view>
 						<view class="name">{{ name }}</view>
+						<view class="fix" v-if="isDelete || deleteFlag == 1">已作废</view>
+						<view class="status" v-if="statusType === 2">
+							{{statusObj[type].status[genStatus()]}}
+						</view>
 					</view>
 					<view>{{ time }}</view>
 				</view>
@@ -62,7 +65,7 @@
 				<u--text size="14" :text="remark"></u--text>
 			</view>
 
-			<block v-if="!isH">
+			<block v-if="!isH && genStatus() !== '2'">
 				<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
 					<view class="fixed-bottom-button" @click="fixItems">
 						<u-icon size="24" name="edit-pen"></u-icon>
@@ -130,16 +133,29 @@
 				currentPage: 1,
 				pageSize: 20,
 				totalPages: 1, // 总页数，根据数据量计算
-				transferOrderId: 0
-				// typeObj: {
-				// 	1: { 
-				// 		type: '销售', 
-				// 		statusObj: {
-				// 			1: '销售单'
-				// 		},
-				// 	},
-				// 	2: { type: '进货',}
-				// }
+				transferOrderId: 0,
+				
+				
+				statusObj: {
+					1: {
+						name: '销售',
+						status: {
+							0: '未转销售',
+							1: '部分转销售',
+							2: '已完成',
+							3: '已关闭',
+						}
+					},
+					2: {
+						name: '进货',
+						status: {
+							0: '未转进货',
+							1: '部分转进货',
+							2: '已完成',
+							3: '已关闭',
+						}
+					}
+				}
 			}
 		},
 		onShow() {
@@ -195,6 +211,13 @@
 				console.error(this.statusType)
 				// 5. 拼接结果
 				return `${prefix}${orderText}${suffix}`;
+			},
+			
+			genStatus() {
+				let status = this.type === 1 ? this.updateData.saleStatus : this.updateData.purchaseStatus 
+				console.error('status', status)
+				
+				return status
 			},
 			autoLoadMore() {
 				if (this.currentPage < this.totalPages) {
@@ -276,7 +299,7 @@
 				
 				// return
 				uni.navigateTo({
-					url: `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&id=${this.transferOrderId}`
+					url: `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&id=${this.transferOrderId}&status=${this.statusType}`
 				})
 			},
 
@@ -334,7 +357,8 @@
 						status,
 						id,
 						deleteFlag,
-						
+						purchaseStatus,
+						saleStatus,
 						// 预订
 						depositDeducted,
 						depositPaid,
@@ -362,6 +386,8 @@
 						remark,
 						grossProfit,
 						status,
+						purchaseStatus,
+						saleStatus,
 						id
 					}
 					this.deleteFlag = deleteFlag
@@ -544,15 +570,31 @@
 			}
 
 			.fix {
+				font-size: 28rpx;
+				height: 50rpx;
+				width: 140rpx;
+				line-height: 50rpx;
+				text-align: center;
+				border-radius: 8rpx;
 				color: #5b6066;
 				font-weight: normal;
-				height: 32rpx;
-				line-height: 32rpx;
-				padding: 0 10rpx;
-				font-size: 26rpx;
 				background: #eff4f8;
-				margin-right: 10rpx;
+				margin-left: 20rpx;
+				display: block;
+			}
+			
+			.status {
+				font-size: 28rpx;
+				height: 50rpx;
+			    width: 140rpx;
+				line-height: 50rpx;
+				text-align: center;
 				border-radius: 8rpx;
+				color: #5b6066;
+				font-weight: normal;
+				background: #eff4f8;
+				margin-left: 20rpx;
+				display: block;
 			}
 
 			.name {

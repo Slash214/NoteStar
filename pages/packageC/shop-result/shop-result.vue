@@ -70,10 +70,13 @@
 			},
 			handleClickDep() {
 				console.log('转进货')
-				
-				uni.navigateTo({
-					url: ''
+				uni.showToast({
+					title: '接口对接中',
+					icon: 'none'
 				})
+				// uni.navigateTo({
+				// 	url: ''
+				// })
 			},
 		}
 	}

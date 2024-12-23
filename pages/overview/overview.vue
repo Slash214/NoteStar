@@ -72,7 +72,7 @@
 						<view class="hot-item mb20 flex flex-items-center flex-between" v-for="(item, index) of hotList"
 							:key="index">
 							<text class="index">{{ index + 1 }}</text>
-							<u--image :showLoading="true" :src="item.imgName" width="60px" height="60px"></u--image>
+							<u--image :showLoading="true" :src="item.imgUrl" width="60px" height="60px"></u--image>
 							<u--text margin="0 5px 0 10px" :text="item.materialName"></u--text>
 							<text class="sum">{{ item.sum }}</text>
 						</view>
@@ -125,6 +125,7 @@
 		formatTimestamp,
 		timestampToDate
 	} from '@/utils/index.js'
+	import { DEFAULT_IMAGE } from '@/common/contanst.js'
 	export default {
 		components: {
 			CustomDropdown,
@@ -132,6 +133,7 @@
 		},
 		data() {
 			return {
+
 				calendarTimeShow: true,
 				eyeOpenIcon: 'https://haoxianhui.com/hxh/2024/11/22/acb0e5cdaa8643f58d8ecc8c1f452036.png',
 				eyeCloseIcon: 'https://haoxianhui.com/hxh/2024/11/22/be34236133d44cb28f58a828d5659408.png',
@@ -383,7 +385,10 @@
 					...item,
 					progress: Math.floor(item.salesProportion * 100)
 				}))
-				this.hotList = hotSellingGoods
+				this.hotList = hotSellingGoods.map(item => ({
+					...item,
+					imgUrl: item.imgName.includes('null') ? DEFAULT_IMAGE : item.imgName
+				}))
 
 				// salesTrends
 				//  = []

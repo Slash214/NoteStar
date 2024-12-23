@@ -300,23 +300,26 @@
 				orderNumber: '',
 				objItem: {
 					1: {
-						orderType: 1,
+						
 						name: '销售单',
 						statusArray: {
 							1: {
 								name: '销售单',
 								type: '出库',
-								subType: '零售'
+								subType: '零售',
+								orderType: 1,
 							},
 							2: {
 								name: '预订单',
 								type: '出库',
-								subType: '销售预订'
+								subType: '销售预订',
+								orderType: 4,
 							},
 							3: {
 								name: '退货单',
 								type: '出库',
-								subType: '零售'
+								subType: '零售',
+								orderType: 1,
 							},
 						},
 						showAmount: true,
@@ -326,23 +329,26 @@
 						subType: '零售'
 					},
 					2: {
-						orderType: 0,
+						
 						name: '进货单',
 						statusArray: {
 							1: {
 								name: '进货单',
 								type: '入库',
-								subType: '采购'
+								subType: '采购',
+								orderType: 0,
 							},
 							2: {
 								name: '预订单',
 								type: '入库',
-								subType: '进货预订'
+								subType: '进货预订',
+								orderType: 4,
 							},
 							3: {
 								name: '退货单',
 								type: '入库',
-								subType: '采购'
+								subType: '采购',
+								orderType: 0,
 							},
 						},
 						showAmount: false,
@@ -831,15 +837,13 @@
 					});
 
 					// 如果是新增操作，生成订单号
-					
-			
-					
+
 					
 					if (!this.isUpdate) {
-						const result = await genbuildNumber({
-							type: this.objItem[this.type].orderType,
+						const resNumData = await genbuildNumber({
+							type: this.objItem[this.type].statusArray[this.statusType].orderType,
 						});
-						this.orderNumber = result?.data?.defaultNumber || null;
+						this.orderNumber = resNumData?.data?.defaultNumber || null;
 					}
 
 					console.log('商品列表', this.productList);
@@ -877,6 +881,7 @@
 
 					if (this.statusType > 1) {
 						params['depositPaid'] = this.curDepositValue || 0
+						
 					}
 
 					if (this.isUpdate) {
@@ -898,29 +903,34 @@
 					}));
 
 
-
-
-
-
-
 					let FN = '',
 						result = {}
+						
 					if (this.transferOrderId) {
 						FN = conversionData
 						
-						const result = await genbuildNumber({
+						const res = await genbuildNumber({
 							type: 4,
 						});
 						
-						let orderNumber = result?.data?.defaultNumber || null;
+						let orderNumber = res?.data?.defaultNumber || null;
+                        
+					
+						const newShopCartInfoList= shopCartInfoList.filter(shopItem => {
+						  // 如果在 transferOrderShopCartList 找到了相同 id，则过滤掉
+						  return !this.transferOrderShopCartList.some(transferItem => transferItem.id === shopItem.id);
+						});
+
 
 						let orderInfo = {
 							...params,
-							shopCartInfoList,
+							shopCartInfoList: newShopCartInfoList,
 							depositDeducted: this.goodsUpdate.depositDeducted || 0,
 							number: orderNumber,
 							defaultNumber: orderNumber,
 						}
+						
+						
 
 						let newList = this.transferOrderShopCartList.map(item => ({
 							...item,
@@ -961,6 +971,7 @@
 						// 清理缓存数据
 						uni.removeStorageSync('selectList');
 						uni.removeStorageSync('goodsUpdate');
+						uni.removeStorageSync('transferOrderList')
 
 						// 跳转到结果页面
 						uni.reLaunch({

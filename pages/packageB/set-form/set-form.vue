@@ -199,7 +199,7 @@
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 1">
+				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 2">
 					{{ type === 1 ? '收订金' : '付订金'}}
 				</view>
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
@@ -609,11 +609,21 @@
 			handleClickAction(e) {
 				console.log('删除商品', e)
 				this.productList = this.productList.filter((item) => item.name !== e.name)
+				
+				const obj = this.productList.filter((item) => item.name === e.name)[0]
+				
+				// 同时删除缓存可能去转换的
+				if (this.statusType === 2 && this.transferOrderId) {
+					this.transferOrderShopCartList = this.transferOrderShopCartList.filter((item) => item.id !== obj.id)
+					console.error('删除', this.transferOrderShopCartList)
+					uni.setStorageSync('transferOrderList', this.transferOrderShopCartList)
+				}
 
 				this.$refs.items.forEach((item) => item.closeHandler(true))
 				this.onPriceChange(0)
 
 				uni.setStorageSync('selectList', this.productList)
+				
 			},
 			onPriceChange(fieldType) {
 				// fieldType: 0 - totalPrice 变化，1 - 整单折扣，2 - 优惠金额，3 - 折后金额，4 - 运费

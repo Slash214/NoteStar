@@ -224,8 +224,8 @@
 							subType: '销售预订'
 						},
 						3: {
-							type: '出库',
-							subType: '退货'
+							type: '入库',
+							subType: '销售退货'
 						},
 					}
 
@@ -281,13 +281,13 @@
 		}
 
 		.tab-text {
-			font-size: 32rpx;
+			font-size: 34rpx;
 			color: #111;
 			display: block;
 		}
 
 		.active {
-			font-size: 36rpx;
+			font-size: 40rpx;
 			position: relative;
 			font-weight: 600;
 
@@ -375,7 +375,7 @@
 
 				.name {
 					color: #f3660c;
-					text-align: center;
+					text-align: right;
 					margin-top: 16rpx;
 				}
 			}

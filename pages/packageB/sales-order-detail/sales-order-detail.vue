@@ -10,7 +10,7 @@
 						<view class="name">{{ name }}</view>
 						<view class="fix" v-if="isDelete || deleteFlag == 1">已作废</view>
 						<view class="status" v-if="statusType === 2">
-							{{statusObj[type].status[genStatus()]}}
+							{{statusObj[type].status[curStatus]}}
 						</view>
 					</view>
 					<view>{{ time }}</view>
@@ -65,7 +65,7 @@
 				<u--text size="14" :text="remark"></u--text>
 			</view>
 
-			<block v-if="!isH && genStatus() !== '2'">
+			<block v-if="!isH && curStatus < 2">
 				<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
 					<view class="fixed-bottom-button" @click="fixItems">
 						<u-icon size="24" name="edit-pen"></u-icon>
@@ -94,7 +94,9 @@
 	} from '@/utils'
 	import {
 		getDetailByNumbe,
-		deleteDepotHead
+		deleteDepotHead,
+		closeTransfer,
+		openTransfer
 	} from '@/apis'
 	import Big from 'big.js'
 	export default {
@@ -134,6 +136,10 @@
 				pageSize: 20,
 				totalPages: 1, // 总页数，根据数据量计算
 				transferOrderId: 0,
+				
+				
+				// 0 1 2已完成 3已关闭
+				curStatus: 0,
 				
 				
 				statusObj: {
@@ -199,7 +205,6 @@
 			genTitle() {
 				// 1. 根据 type 决定是「销售」还是「进货」
 				const prefix = this.type === 1 ? '销售' : '进货';
-
 				// 2. 如果是退单，直接返回
 				if (this.statusType === 3) {
 					return `${prefix}退单`;
@@ -208,17 +213,17 @@
 				const orderText = this.statusType === 2 ? '预订单' : '单';
 				// 4. 判断是否需要显示「历史记录详情」
 				const suffix = this.isH ? '历史记录详情' : '详情';
-				console.error(this.statusType)
+				// console.error(this.statusType)
 				// 5. 拼接结果
 				return `${prefix}${orderText}${suffix}`;
 			},
 			
-			genStatus() {
-				let status = this.type === 1 ? this.updateData.saleStatus : this.updateData.purchaseStatus 
-				console.error('status', status)
+			// genStatus() {
+			// 	let status = this.type === 1 ? this.updateData.saleStatus : this.updateData.purchaseStatus 
+			// 	console.error('status', status)
 				
-				return status
-			},
+			// 	return status
+			// },
 			autoLoadMore() {
 				if (this.currentPage < this.totalPages) {
 					// 延迟加载下一页数据
@@ -240,12 +245,40 @@
 			updateTotalOperNumber() {
 				this.totalOperNumber = this.displayedProductList.reduce((sum, item) => sum + item.operNumber, 0)
 			},
-			onSelect(e) {
+			async onSelect(e) {
 				console.log(e)
 				if (e.id === 2) {
 					// 作废
 					this.modalShow = true
 				} else {
+					
+					if (this.statusType === 2) {
+						// 关闭和确用预订单
+						console.log('关闭', this.curStatus)
+						const FN = this.curStatus === 3 ? openTransfer : closeTransfer  
+						const { data } = await FN({ headerId: this.updateData.id })
+						
+						
+						let prefix = this.curStatus === 3 ? '开启' : '关闭'
+						uni.showToast({
+							title:  prefix + '成功',
+							icon: 'none'
+						})
+						
+						// 关闭成功就为历史状态
+						if (this.curStatus === 3) {
+							this.isH = false
+							// this.curStatus = 3
+							this.getData()
+						} else {
+							this.isH = true
+							this.curStatus = 3
+							this.getData()
+						}
+						return
+					}
+					
+					
 					uni.navigateTo({
 						url: `/pages/packageD/history/history?type=${this.type}&number=${this.number}`
 					})
@@ -457,6 +490,12 @@
 					this.$nextTick(() => {
 						this.autoLoadMore()
 					})
+					
+					
+					if (this.statusType === 2) {
+						this.curStatus = this.type === 1 ? +saleStatus || 0 : +purchaseStatus || 0
+						this.actionsList[0] = { id: 1, name: this.curStatus === 3 ? '开启' : '关闭'}
+					}
 
 					uni.hideLoading()
 				} catch (error) {

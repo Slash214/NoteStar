@@ -199,7 +199,7 @@
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType > 1">
+				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 1">
 					{{ type === 1 ? '收订金' : '付订金'}}
 				</view>
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
@@ -300,7 +300,6 @@
 				orderNumber: '',
 				objItem: {
 					1: {
-						
 						name: '销售单',
 						statusArray: {
 							1: {
@@ -310,15 +309,15 @@
 								orderType: 1,
 							},
 							2: {
-								name: '预订单',
+								name: '销售预订单',
 								type: '出库',
 								subType: '销售预订',
-								orderType: 4,
+								orderType: 5,
 							},
 							3: {
-								name: '退货单',
-								type: '出库',
-								subType: '零售',
+								name: '销售退货单',
+								type: '入库',
+								subType: '销售退货',
 								orderType: 1,
 							},
 						},
@@ -326,11 +325,12 @@
 						showgross: true,
 						color: '#5FCADD',
 						type: '出库',
-						subType: '零售'
+						subType: '零售',
+						orderType: 1,
 					},
 					2: {
-						
 						name: '进货单',
+						orderType: 0,
 						statusArray: {
 							1: {
 								name: '进货单',
@@ -339,15 +339,15 @@
 								orderType: 0,
 							},
 							2: {
-								name: '预订单',
+								name: '进货预订单',
 								type: '入库',
 								subType: '进货预订',
 								orderType: 4,
 							},
 							3: {
-								name: '退货单',
-								type: '入库',
-								subType: '采购',
+								name: '进货退货单',
+								type: '出库',
+								subType: '进货退货',
 								orderType: 0,
 							},
 						},
@@ -459,10 +459,9 @@
 				this.reqData.discount = obj.discount
 				this.reqData.discountLastMoney = obj.discountLastMoney
 				this.reqData.discountMoney = obj.discountMoney
-				this.reqData.moneyAroundDown = obj.moneyAroundDown
+				this.reqData.moneyAroundDown = obj.moneyAroundDown || 0
 				this.reqData.otherMoney = obj.otherMoney
 				this.reqData.changeAmount = obj.changeAmount
-			    
 			}
 		},
 		onShow() {
@@ -491,7 +490,7 @@
 
 			}
 
-			// 是否翻译
+			// 是否转换
 			const transData = uni.getStorageSync('transferOrderList')
 			if (transData) {
 				console.log('分钟', transData)
@@ -838,11 +837,23 @@
 
 					// 如果是新增操作，生成订单号
 
-					
+
 					if (!this.isUpdate) {
+
+						let reqType = this.objItem[this.type].orderType
+						if (this.statusType === 2) {
+							reqType = this.type === 1 ? 5 : 4
+						}
+						
+						if (this.statusType === 3) {
+							reqType = this.type === 1 ? 1 : 0
+						}
+
 						const resNumData = await genbuildNumber({
-							type: this.objItem[this.type].statusArray[this.statusType].orderType,
+							type: reqType,
 						});
+
+
 						this.orderNumber = resNumData?.data?.defaultNumber || null;
 					}
 
@@ -858,6 +869,7 @@
 					} else {
 						newForm.grossProfit = this.grossProfit;
 					}
+
 
 
 					let type = this.objItem[this.type].statusArray[this.statusType].type
@@ -879,9 +891,9 @@
 						originalTotalPrice,
 					};
 
-					if (this.statusType > 1) {
+					if (this.statusType === 2) {
 						params['depositPaid'] = this.curDepositValue || 0
-						
+
 					}
 
 					if (this.isUpdate) {
@@ -905,32 +917,43 @@
 
 					let FN = '',
 						result = {}
-						
+
 					if (this.transferOrderId) {
 						FN = conversionData
-						
+
 						const res = await genbuildNumber({
-							type: 4,
+							type: this.objItem[this.type].orderType,
 						});
-						
+
 						let orderNumber = res?.data?.defaultNumber || null;
-                        
-					
-						const newShopCartInfoList= shopCartInfoList.filter(shopItem => {
-						  // 如果在 transferOrderShopCartList 找到了相同 id，则过滤掉
-						  return !this.transferOrderShopCartList.some(transferItem => transferItem.id === shopItem.id);
+						const newShopCartInfoList = shopCartInfoList.filter(shopItem => {
+							// 如果在 transferOrderShopCartList 找到了相同 id，则过滤掉
+							return !this.transferOrderShopCartList.some(transferItem => transferItem.id ===
+								shopItem.id);
 						});
+
+						let type = this.objItem[this.type].statusArray[1].type
+						let subType = this.objItem[this.type].statusArray[1].subType
 
 
 						let orderInfo = {
 							...params,
+							...newForm,
+							type,
+							subType,
 							shopCartInfoList: newShopCartInfoList,
 							depositDeducted: this.goodsUpdate.depositDeducted || 0,
 							number: orderNumber,
 							defaultNumber: orderNumber,
 						}
-						
-						
+
+						if (this.type === 2) {
+							delete orderInfo.moneyAroundDown;
+						} else {
+							orderInfo.grossProfit = this.grossProfit;
+						}
+
+
 
 						let newList = this.transferOrderShopCartList.map(item => ({
 							...item,
@@ -948,11 +971,29 @@
 							addDepotHeadAndDetail :
 							updateDepotHeadAndDetail;
 
+						// 新增销售预订单情况
+						//                   if (this.statusType === 2 && this.type === 1) {
+
+						// 	// const res = await genbuildNumber({
+						// 	// 	type: this.type === 1 ? 5 : 4,
+						// 	// });
+						// 	// let number = res?.data?.defaultNumber || null;
+						// 	params['type'] = '出库'
+						// 	params['subType'] = '销售预订'
+						// 	// params.number = number
+						// 	// params.defaultNumber = number
+						// }
+
+						const urlObj = {
+							1: '/depotHead/addDepotHeadAndDetail',
+							2: '/depotHead/addAdvanceOrder',
+							3: '/depotHead/addDepotHeadAndDetail'
+						}
+
 						result = await FN({
-								...params,
-								shopCartInfoList,
-							}, this.statusType > 1 ? '/depotHead/addAdvanceOrder' :
-							'/depotHead/addDepotHeadAndDetail');
+							...params,
+							shopCartInfoList,
+						}, urlObj[this.statusType]);
 					}
 
 
@@ -973,9 +1014,12 @@
 						uni.removeStorageSync('goodsUpdate');
 						uni.removeStorageSync('transferOrderList')
 
+						// isT 表示是否已经转换成功  1 没有 2 成功
+						let isT = this.transferOrderId && this.statusType === 2 ? 2 : 1
+
 						// 跳转到结果页面
 						uni.reLaunch({
-							url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}&status=${this.statusType}`,
+							url: `/pages/packageC/shop-result/shop-result?type=${this.type}&orderNum=${this.orderNumber}&total=${this.reqData.changeAmount}&status=${this.statusType}&isT=${isT}`,
 						});
 					} else {
 						// 服务器返回错误处理
@@ -987,7 +1031,7 @@
 				} catch (error) {
 					console.error('保存数据时出错:', error);
 					uni.showToast({
-						title: '保存失败，请稍后再试',
+						title: error.message || '操作失败，请重试',
 						icon: 'none',
 					});
 				} finally {

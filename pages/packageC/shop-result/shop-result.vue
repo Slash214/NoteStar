@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<AppletHeader :autoBack="false" @leftClick="rightClick" title="开单成功" right-icon="完成" @rightClick="rightClick"
+		<AppletHeader :autoBack="false" @leftClick="rightClick" :title="statusType === 3 ? '退单成功' : '开单成功'" right-icon="完成" @rightClick="rightClick"
 			:right-icon-size="16"></AppletHeader>
 		<view class="container">
 			<view class="box">
@@ -18,7 +18,8 @@
 				</view>
 
 				<view class="group-button">
-					<view :class="type === 1 ? 'xs-b btns' : 'jh-b btns'" v-if="statusType > 1" @click="handleClickDep">
+					<view :class="type === 1 ? 'xs-b btns' : 'jh-b btns'" v-if="statusType === 2 && !isT"
+						@click="handleClickDep">
 						{{ type === 1 ? '转销售' : '转进货'}}
 					</view>
 					<view :class="type === 1 ? 'xs btns' : 'jh btns'" @click="handleClick">再来一单</view>
@@ -30,6 +31,13 @@
 </template>
 
 <script>
+	import {
+		getDetailByNumbe
+	} from '@/apis/index.js'
+	import Big from 'big.js'
+	import {
+		formatImageArray
+	} from '@/utils/index.js'
 	export default {
 		data() {
 			return {
@@ -37,7 +45,9 @@
 				type: 1,
 				orderNumber: "",
 				total: 0,
-				statusType: 1
+				statusType: 1,
+				isT: false,
+				cacheData: {}
 			}
 		},
 		onLoad(options) {
@@ -46,6 +56,7 @@
 			this.orderNumber = options.orderNum
 			this.total = options.total || 0
 			this.statusType = +options.status || 1
+			this.isT = +options?.isT == 2
 		},
 		methods: {
 			handleClick() {
@@ -68,15 +79,80 @@
 					url
 				})
 			},
-			handleClickDep() {
-				console.log('转进货')
-				uni.showToast({
-					title: '接口对接中',
-					icon: 'none'
+
+			// 可以定义一个工具函数，用来将字符串/数值安全转换为 Big 类型
+			toBig(value) {
+				// 如果你不想要默认 0，可以去掉 || 0
+				return new Big(value || 0);
+			},
+
+			// 把原始商品信息转成带 Big 对象的结构
+			transformToBig(item) {
+				return {
+					id: item.materialId,
+					cover: item.cover,
+					imgList: item.imgList,
+					mbarCode: item.barCode,
+					name: item.name,
+					stock: item.stock,
+					purchaseDecimal: this.toBig(item.purchaseDecimal),
+					commodityDecimal: this.toBig(item.commodityDecimal),
+					nums: this.toBig(item.operNumber),
+					costPrice: item.costPrice,
+					meId: item.meId,
+					total: item.allPrice
+				};
+			},
+			// 把带 Big 对象的结构，转成字符串（便于存储）
+			bigToString(item) {
+				return {
+					...item,
+					purchaseDecimal: item.purchaseDecimal.toString(),
+					commodityDecimal: item.commodityDecimal.toString(),
+					nums: item.nums.toString()
+				};
+			},
+
+			async handleClickDep() {
+				uni.showLoading({
+					title: '正在查询数据'
 				})
-				// uni.navigateTo({
-				// 	url: ''
-				// })
+				const {
+					data
+				} = await getDetailByNumbe({
+					number: this.orderNumber
+				})
+				// 1. 先处理图片信息
+				const productList = formatImageArray(data.depotHeadMaterialVoList);
+
+				// 2. 拷贝并删除不需要的字段
+				const updateData = {
+					...data
+				};
+				delete updateData.depotHeadMaterialVoList;
+
+				// 3. 将每个 item 转换成带 Big 对象的结构
+				const selectList = productList.map(this.transformToBig);
+
+				// 4. 转成最终需要存储的字符串结构
+				const listToStore = selectList.map(this.bigToString);
+
+				// 5. 分别存储
+				uni.setStorageSync('goodsUpdate', updateData);
+				uni.setStorageSync('selectList', listToStore);
+				uni.setStorageSync('transferOrderList', listToStore);
+
+				// 测试输出
+				console.log('selectList(带 Big)：', selectList);
+				console.log('listToStore(转成 string)：', listToStore);
+
+
+				let id = data.id
+				uni.hideLoading()
+				uni.navigateTo({
+					url: `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&id=${id}&status=${this.statusType}`
+				})
+
 			},
 		}
 	}
@@ -129,13 +205,13 @@
 		.jh {
 			background: linear-gradient(to right, #fa6400, #f79151);
 		}
-		
+
 		.xs-b {
 			background-color: #fff;
 			color: #5fcadd;
 			border: 1rpx solid #5fcadd;
 		}
-		
+
 		.jh-b {
 			background-color: #fff;
 			color: #fa6400;

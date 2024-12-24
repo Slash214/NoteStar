@@ -212,7 +212,7 @@
 				const statusType = {
 					1: { type: '入库', subType: '采购' },
 					2: { type: '入库', subType: '进货预订' },
-					3: { type: '入库', subType: '退货' },
+					3: { type: '出库', subType: '进货退货' },
 				}
 
 				// let statusType = {}
@@ -284,13 +284,13 @@
 		}
 
 		.tab-text {
-			font-size: 32rpx;
+			font-size: 34rpx;
 			color: #111;
 			display: block;
 		}
 
 		.active {
-			font-size: 36rpx;
+			font-size: 40rpx;
 			position: relative;
 			font-weight: 600;
 
@@ -393,7 +393,7 @@
 			}
 			
 			.name {
-				text-align: center;
+				text-align: right;
 				margin-top: 16rpx;
 				color: #f3660c;
 			}

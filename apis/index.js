@@ -382,3 +382,23 @@ export const conversionData = (data) => {
 		method: 'POST'
 	})
 }
+
+
+// 开启订单
+export const openTransfer = (data) => {
+	return request({
+		url: '/depotHead/startTransfer',
+		data,
+		method: 'GET'
+	})
+}
+
+
+// 关闭订单
+export const closeTransfer = (data) => {
+	return request({
+		url: '/depotHead/closeTransfer',
+		data,
+		method: 'GET'
+	})
+}

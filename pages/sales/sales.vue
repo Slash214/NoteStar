@@ -40,6 +40,9 @@
 							<text>{{ item.organName }}</text>
 						</view>
 						<view class="number">{{ item.number }}</view>
+						<view class="deposit" v-if="status === 2 && item.deposit">
+							订金：￥{{ formatMoney(item.deposit) }}
+						</view>
 					</view>
 
 					<view class="info">
@@ -50,7 +53,7 @@
 							{{saleStatusName[item.saleStatus] || ""}}
 						</view>
 					</view>
-					
+
 				</view>
 			</view>
 
@@ -397,6 +400,14 @@
 					margin-right: 10rpx;
 					border-radius: 8rpx;
 				}
+
+			}
+
+
+			.deposit {
+				font-weight: 500;
+				color: #111;
+				margin-top: 16rpx;
 			}
 
 			.price {

@@ -67,12 +67,12 @@
 
 			<block v-if="!isH && curStatus < 2">
 				<view class="fixed-bottom" v-if="!isDelete || deleteFlag != 1">
-					<view class="fixed-bottom-button" @click="fixItems">
+					<view class="fixed-bottom-button" @click="fixItems(true)">
 						<u-icon size="24" name="edit-pen"></u-icon>
 						<text>修改</text>
 					</view>
 
-					<view :class="type === 1 ? 'btns xs' : 'btns jh'" v-if="statusType ===  2" @click="fixItems">
+					<view :class="type === 1 ? 'btns xs' : 'btns jh'" v-if="statusType ===  2" @click="fixItems(false)">
 						{{ type === 1 ? '转销售' : '转进货'}}
 					</view>
 				</view>
@@ -136,7 +136,7 @@
 				pageSize: 20,
 				totalPages: 1, // 总页数，根据数据量计算
 				transferOrderId: 0,
-				
+				isFix: false,
 				
 				// 0 1 2已完成 3已关闭
 				curStatus: 0,
@@ -293,8 +293,12 @@
 				this.isDelete = true
 			},
 
-			fixItems() {
+			fixItems(bol) {
 				// 去修改前需要记录数据
+				
+				this.isFix = bol
+				console.log('是否是修改', this.isFix)
+				
 				console.log('修改', this.productList)
 				let selectList = this.productList.map((item) => ({
 					id: item.materialId,
@@ -329,10 +333,16 @@
 				uni.setStorageSync('goodsUpdate', this.updateData)
 				this.saveSelectList(selectList)
 				
+				// 
+				const url = `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&status=${this.statusType}`
+				
+				if (!this.isFix) {
+					url = `${url}&id=${this.transferOrderId}`
+				}
 				
 				// return
 				uni.navigateTo({
-					url: `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&id=${this.transferOrderId}&status=${this.statusType}`
+					url
 				})
 			},
 

@@ -120,6 +120,7 @@ export default {
 		.number {
 			font-weight: 700;
 		}
+	
 	}
 
 	&-item {

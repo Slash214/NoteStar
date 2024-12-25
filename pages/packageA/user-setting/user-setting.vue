@@ -6,12 +6,10 @@
 				<view class="label">
 					{{item.title}}
 				</view>
-
 				<view class="content">
 					<view v-if="item.id !== 2">
 						{{item.value}}
 					</view>
-
 					<view class="" v-else>
 						<u-avatar :text="capitalizeFirstLetter(item.value)" fontSize="18" bg-color="#86B5DD"></u-avatar>
 					</view>
@@ -44,14 +42,29 @@
 					<u-icon name="arrow-right"></u-icon>
 				</view>
 			</view>
+
+
+			<u-modal :show="show" title="修改密码" showCancelButton @confirm="confirm" @cancel="cancel">
+				<view class="slot-content">
+					<u--input placeholder="请输入新密码" border="bottom" v-model="newPwd"></u--input>
+				</view>
+			</u-modal>
 		</view>
 	</view>
 </template>
 
 <script>
+	import w_md5 from "@/js_sdk/zww-md5/w_md5.js"
+	import {
+		updateUserPwd
+	} from '@/apis'
 	export default {
 		data() {
 			return {
+				show: false,
+				newPwd: '',
+				userId: 0,
+
 				list: [{
 						id: 1,
 						title: '姓名',
@@ -89,9 +102,36 @@
 		onLoad() {
 			const user = uni.getStorageSync('userInfo')
 			console.log(user)
+			this.userId = user.id
 			this.loadData(user)
 		},
 		methods: {
+			async confirm(e) {
+				if (!this.newPwd.trim()) {
+					uni.showToast({
+						title: '新密码不能为空',
+						icon: 'none'
+					})
+					return
+				}
+				
+				const params = {
+					userId: this.userId,
+					newPassword: w_md5.hex_md5_32(this.newPwd),
+				}
+				
+				const data = await updateUserPwd(params)
+				this.show = false
+				uni.showToast({
+					title: '密码修改成功',
+					icon: 'none'
+				})
+				
+				this.show = false
+			},
+			cancel() {
+				this.show = false
+			},
 			loadData(item) {
 				this.list[0].value = item.username
 				this.list[1].value = item.username
@@ -110,7 +150,7 @@
 				return firstLetter; // 拼接返回
 			},
 			setPassword() {
-				console.log('设置密码')
+				this.show = true
 			}
 		}
 	}

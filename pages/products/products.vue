@@ -15,7 +15,7 @@
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClickCard(item)">
 				<view class="card flex">
 					<view class="card-box">
-						<u--image mode="aspectFit" :showLoading="true" :src="item.imgName ? item.imgList[0] : ''"
+						<u--image mode="aspectFit" :showLoading="true" :src="item.imgName ? item.imgList[0] : DEFAULT_IMAGE"
 							width="60" height="60"></u--image>
 					</view>
 					<view class="card-content">
@@ -46,10 +46,10 @@
 
 
 		<template slot="empty">
-			<view class="">
+			<view class="empty">
 				<image style="height: 250rpx" mode="heightFix"
 					src="https://haoxianhui.com/hxh/2024/11/19/ac89cf2053c24b12873fde0e32c5ebe5.png"></image>
-				<view style="text-align: center;">暂无商品，点击右上角马上新增</view>
+				<view>暂无商品，点击右上角马上新增</view>
 			</view>
 		</template>
 
@@ -78,6 +78,7 @@
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 	import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 	import UserPopup from '@/components/UserPopup/UserPopup.vue'
+	import { DEFAULT_IMAGE } from '@/common/contanst'
 	export default {
 		components: {
 			NavSearchBar,
@@ -86,6 +87,7 @@
 		},
 		data() {
 			return {
+				DEFAULT_IMAGE,
 				modalVisible: false,
 				dataList: [],
 				keywords: '',
@@ -225,6 +227,13 @@
 </script>
 
 <style lang="scss" scoped>
+	.empty {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		justify-content: center;
+	
+	}
 	.search {
 		padding: 25rpx 25rpx 0 25rpx;
 		background-color: #f1f5f8;

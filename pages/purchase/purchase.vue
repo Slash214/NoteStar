@@ -38,6 +38,9 @@
 							<text>{{ item.organName }}</text>
 						</view>
 						<view class="number">{{ item.number }}</view>
+						<view class="deposit" v-if="status === 2 && item.deposit">
+							订金：￥{{ formatMoney(item.deposit) }}
+						</view>
 					</view>
 					
 					<view class="">
@@ -52,8 +55,6 @@
 
 
 		<template slot="right">
-			
-			<!-- /hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png -->
 			<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
 				<image :src="IMAGE_OSS_URL + '/hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png'" mode="widthFix"></image>
 				<text class="text">{{statusArray[status - 1].name}}</text>
@@ -95,6 +96,7 @@
 		},
 		data() {
 			return {
+				formatMoney,
 				modalVisible: false,
 				staticImageUrl,
 				IMAGE_OSS_URL,
@@ -186,11 +188,6 @@
 				console.log('扫码')
 			},
 			gotoSetForm() {
-				console.log('进货的')
-				// 获取现在的类型  
-				// const obj = this.statusArray.filter(item => item.id === this.status)[0]
-				// console.error(obj)
-				// return				
 				uni.navigateTo({
 					url: `/pages/packageB/set-form/set-form?type=2&status=${this.status}`
 				})
@@ -215,19 +212,6 @@
 					3: { type: '出库', subType: '进货退货' },
 				}
 
-				// let statusType = {}
-				// if (this.status !== 1) {
-				// 	statusType = {
-				// 		type: '入库',
-				// 		subType: '采购'
-				// 	}
-				// } else {
-				// 	statusType = {
-				// 		type: '进货',
-				// 		subType: '预定'
-				// 	}
-				// }
-				
 				let typeObj = statusType[this.status]
 
 				try {
@@ -384,6 +368,13 @@
 					margin-right: 10rpx;
 					border-radius: 8rpx;
 				}
+			}
+			
+			
+			.deposit {
+				font-weight: 500;
+				color: #111;
+				margin-top: 16rpx;
 			}
 
 			.price {

@@ -4,7 +4,7 @@
 			right-icon=" ">
 		</AppletHeader>
 		<view class="">
-			<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
+			<custom-dropdown :curr-index="1" @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 			<view class="nav">
 				<view class="set-title">
 					<view class="flex flex-items-center" @click="show = !show">
@@ -125,7 +125,9 @@
 		formatTimestamp,
 		timestampToDate
 	} from '@/utils/index.js'
-	import { DEFAULT_IMAGE } from '@/common/contanst.js'
+	import {
+		DEFAULT_IMAGE
+	} from '@/common/contanst.js'
 	export default {
 		components: {
 			CustomDropdown,
@@ -164,7 +166,7 @@
 				show: true,
 				lastTime: '',
 				time: '',
-				timeType: 3,
+				timeType: 1,
 				salesTrendsType1: 1,
 				// 店铺ID 默认是0 表示全部
 				depotId: 0,
@@ -250,8 +252,17 @@
 			}
 		},
 		onLoad() {
-			this.time = timestampToDate(Date.now(), 2)
-			// this.userInfo = uni.getStorageSync('userInfo')
+
+			const userInfo = uni.getStorageSync('userInfo')
+			if (!userInfo) {
+
+				uni.reLaunch({
+					url: '/pages/packageC/login/login'
+				})
+				return
+			}
+
+			this.time = timestampToDate(Date.now(), 3)
 			this.getData()
 		},
 		onShow() {
@@ -277,8 +288,6 @@
 			})
 
 			this.getData()
-
-			console.log('refresh')
 			this.t = setTimeout(function() {
 				uni.stopPullDownRefresh()
 				uni.hideLoading()
@@ -453,7 +462,7 @@
 					)
 					this.monthChartData = monthChartData
 				}
-				
+
 				this.isFix = false
 			},
 			leftClick() {

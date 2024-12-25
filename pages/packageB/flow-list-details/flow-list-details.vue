@@ -15,7 +15,7 @@
 					</view>
 					<view>
 						<text class="label">账户:</text>
-						<text>{{objItem.accountName}}</text>
+						<text>{{objItem.accountName || '默认账户'}}</text>
 					</view>
 				</view>
 
@@ -33,7 +33,7 @@
 					</view>
 					<view>
 						<text class="label">门店:</text>
-						<text>{{objItem.salesManStr}}</text>
+						<text>{{objItem.salesManStr || '全部门店'}}</text>
 					</view>
 					<view>
 						<text class="label">业务员:</text>
@@ -41,7 +41,7 @@
 					</view>
 					<view>
 						<text class="label">备注:</text>
-						<text>{{objItem.remark}}</text>
+						<text>{{objItem.remark || '无'}}</text>
 					</view>
 					<view>
 						<text class="label">介绍费:</text>

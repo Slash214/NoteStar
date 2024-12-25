@@ -224,9 +224,9 @@ export const genbuildNumber = (data) => {
 }
 
 // 更新开单
-export const updateDepotHeadAndDetail = (data) => {
+export const updateDepotHeadAndDetail = (data, url) => {
 	return request({
-		url: '/depotHead/updateDepotHeadAndDetail',
+		url,
 		data,
 		method: 'PUT'
 	})
@@ -400,5 +400,16 @@ export const closeTransfer = (data) => {
 		url: '/depotHead/closeTransfer',
 		data,
 		method: 'GET'
+	})
+}
+
+/**
+ * 修改密码
+ */
+export const updateUserPwd = (data) => {
+	return request({
+		url: '/user/updatePwd',
+		data,
+		method: 'PUT'
 	})
 }

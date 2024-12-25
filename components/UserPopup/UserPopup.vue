@@ -115,7 +115,7 @@ export default {
 				console.log('退出登录')
 				uni.clearStorageSync()
 				uni.reLaunch({
-					url: '/pages/login/login'
+					url: '/pages/packageC/login/login'
 				})
 			}
 		}

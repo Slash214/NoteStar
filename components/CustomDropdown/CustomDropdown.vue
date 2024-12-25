@@ -29,12 +29,23 @@
 </template>
 
 <script>
-	import {
+	import { props } from "../../uni_modules/uview-ui/libs/mixin/mixin";
+import {
 		getDepotByUserId
 	} from "@/apis";
 
 	export default {
 		name: "CustomDropdown",
+		props: {
+			/**
+			 * 控制是按“日”还是“月”来选择
+			 * 1 = 日；2 = 月；如果不传，则默认值是 2
+			 */
+			currIndex: {
+				type: Number,
+				default: 2, // 默认按“月”选择
+			},
+		},
 		data() {
 			return {
 				storeVisible: false,
@@ -76,9 +87,16 @@
 					location: item.location,
 				})),
 			];
+			
+			
+		
 		},
 		mounted() {
 			this.$refs.datetimePicker.setFormatter(this.formatter);
+			
+			if (this.currIndex) {
+				this.curIndex = this.currIndex
+			}
 		},
 		methods: {
 			formatter(type, value) {

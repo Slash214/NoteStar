@@ -11,7 +11,7 @@
 					<view>{{ item.type }}</view>
 				</view>
 				<view class="num">
-					{{ String(item.money).includes('-') ? item.money : `+${item.money}` }}
+					{{formatMoney(item.money)}}
 				</view>
 			</view>
 		</view>
@@ -22,15 +22,17 @@
 	import {
 		getCapitalFlowDetail
 	} from '@/apis'
+	import { formatMoney } from '@/utils'
 	export default {
 		data() {
 			return {
-				title: '2024-11-24流水',
+				title: '流水',
 				list: [],
 				depotId: 0,
 				time: '',
 				dataList: [],
-				total: 0
+				total: 0,
+				formatMoney
 			}
 		},
 		onLoad(options) {
@@ -75,6 +77,10 @@
 			padding: 25rpx;
 			border-radius: 20rpx;
 			background-color: #fff;
+			
+			.box {
+				margin-right: 28rpx;
+			}
 
 			.title {
 				font-weight: 500;
@@ -85,6 +91,8 @@
 			.num {
 				font-weight: 600;
 				font-size: 32rpx;
+				flex: 1;
+				text-align: right;
 			}
 		}
 	}

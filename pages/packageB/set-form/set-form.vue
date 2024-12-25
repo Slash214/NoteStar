@@ -983,7 +983,6 @@
 
 						// 新增销售预订单情况
 						//                   if (this.statusType === 2 && this.type === 1) {
-
 						// 	// const res = await genbuildNumber({
 						// 	// 	type: this.type === 1 ? 5 : 4,
 						// 	// });
@@ -994,10 +993,19 @@
 						// 	// params.defaultNumber = number
 						// }
 
-						const urlObj = {
-							1: '/depotHead/addDepotHeadAndDetail',
-							2: '/depotHead/addAdvanceOrder',
-							3: '/depotHead/addDepotHeadAndDetail'
+						let urlObj = {}
+						if (this.isUpdate) {
+							 urlObj = {
+								1: '/depotHead/updateDepotHeadAndDetail',
+								2: '/depotHead/updateAdvanceOrder',
+								3: '/depotHead/updateDepotHeadAndDetail'
+							}
+						} else {
+							urlObj = {
+								1: '/depotHead/addDepotHeadAndDetail',
+								2: '/depotHead/addAdvanceOrder',
+								3: '/depotHead/addDepotHeadAndDetail'
+							}
 						}
 
 						result = await FN({

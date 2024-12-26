@@ -1,7 +1,7 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" :default-page-size="20" @query="queryList" auto-show-back-to-top>
 		<view slot="top">
-			<AppletHeader title="日常收支" right-icon=" "></AppletHeader>
+			<AppletHeader :autoBack="false" @leftClick="leftClick" title="日常收支" right-icon=" "></AppletHeader>
 			<nav-search-bar @search="getSearchValue" desc="单号/备注"  @rightClick="rightClick"></nav-search-bar>
 		</view>
 
@@ -99,6 +99,11 @@ export default {
 		rightClick() {
 			uni.navigateTo({
 				url: `/pages/packageB/screening-page/screening-page?type=3`
+			})
+		},
+		leftClick() {
+			uni.switchTab({
+				url: '/pages/more/more'
 			})
 		},
 		handleClickItem(item) {

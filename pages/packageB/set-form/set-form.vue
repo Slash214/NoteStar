@@ -190,16 +190,18 @@
 			<view class="bottom">
 				<view class="">
 					<view style="padding-bottom: 10px">
-						<text>应收:</text>
+						<text>{{objItem[type].statusArray[statusType].text}}:</text>
 						<text style="color: #fa6400; font-size: 32rpx">￥{{ formatMoney(reqData.changeAmount) }}</text>
 					</view>
 					<view style="color: #9d9ea0">
-						<text>本次实收:</text>
-						<text>￥{{ formatMoney(reqData.changeAmount) }}</text>
+						<text>{{objItem[type].statusArray[statusType].stext}}:</text>
+						<text>￥{{
+							statusType === 2 && transferOrderId ? subtractWithTwoDecimals(reqData.changeAmount, goodsUpdate.depositPaid || 0) : formatMoney(reqData.changeAmount)
+						}}</text>
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 2">
+				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 2 && !transferOrderId">
 					{{ type === 1 ? '收订金' : '付订金'}}
 				</view>
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
@@ -233,6 +235,10 @@
 					</view>
 					<view class="subtitle">
 						订单总金额
+					</view>
+
+					<view class="depositPaid" v-if="goodsUpdate.depositPaid">
+						已付订金￥{{formatMoney(goodsUpdate.depositPaid)}}，还需支付￥{{subtractWithTwoDecimals(reqData.changeAmount,goodsUpdate.depositPaid)}}
 					</view>
 
 					<view class="inputs">
@@ -270,7 +276,8 @@
 		timestampToDate,
 		formatTimestamp,
 		formatMoney,
-		formatProductData
+		formatProductData,
+		subtractWithTwoDecimals
 	} from '@/utils'
 	import {
 		getDepotByUserId,
@@ -286,6 +293,7 @@
 	export default {
 		data() {
 			return {
+				subtractWithTwoDecimals,
 				IMAGE_OSS_URL,
 				curDepositValue: "",
 				depositShow: false,
@@ -307,18 +315,24 @@
 								type: '出库',
 								subType: '零售',
 								orderType: 1,
+								text: '应付',
+								stext: '本次实付'
 							},
 							2: {
 								name: '销售预订单',
 								type: '出库',
 								subType: '销售预订',
 								orderType: 5,
+								text: '应收',
+								stext: '本次应收'
 							},
 							3: {
 								name: '销售退货单',
 								type: '入库',
 								subType: '销售退货',
 								orderType: 1,
+								text: '应付',
+								stext: '本次实付'
 							},
 						},
 						showAmount: true,
@@ -337,18 +351,24 @@
 								type: '入库',
 								subType: '采购',
 								orderType: 0,
+								text: '应收',
+								stext: '本次实收'
 							},
 							2: {
 								name: '进货预订单',
 								type: '入库',
 								subType: '进货预订',
 								orderType: 4,
+								text: '应付',
+								stext: '本次实付'
 							},
 							3: {
 								name: '进货退货单',
 								type: '出库',
 								subType: '进货退货',
 								orderType: 0,
+								text: '应收',
+								stext: '本次实收'
 							},
 						},
 						showAmount: false,
@@ -434,7 +454,10 @@
 
 				transferOrderId: 0,
 				transferOrderShopCartList: [],
-				canFirst: true
+				canFirst: true,
+
+				// 预订金
+				depositDeducted: 0
 			}
 		},
 		onReady() {
@@ -451,6 +474,7 @@
 				this.transferOrderId = +options?.id
 				let obj = uni.getStorageSync('goodsUpdate')
 				console.log('更新状态', obj)
+				this.depositDeducted = obj.depositPaid
 				this.goodsUpdate = obj
 				this.orderNumber = obj.number
 				this.selectedTime.temp = new Date(obj.operTime).getTime()
@@ -609,9 +633,9 @@
 			handleClickAction(e) {
 				console.log('删除商品', e)
 				this.productList = this.productList.filter((item) => item.name !== e.name)
-				
+
 				const obj = this.productList.filter((item) => item.name === e.name)[0]
-				
+
 				// 同时删除缓存可能去转换的
 				if (this.statusType === 2 && this.transferOrderId) {
 					this.transferOrderShopCartList = this.transferOrderShopCartList.filter((item) => item.id !== obj.id)
@@ -623,7 +647,7 @@
 				this.onPriceChange(0)
 
 				uni.setStorageSync('selectList', this.productList)
-				
+
 			},
 			onPriceChange(fieldType) {
 				// fieldType: 0 - totalPrice 变化，1 - 整单折扣，2 - 优惠金额，3 - 折后金额，4 - 运费
@@ -799,15 +823,12 @@
 
 			// 选择时间
 			confirmTime(e) {
-				// console.log(e)
 				this.timeShow = false
 				this.selectedTime.temp = e.value
 				this.serviceList[1].value = timestampToDate(e.value)
 				this.selectedTime.time = this.serviceList[1].value
-
 				console.error('选择的时间', this.selectedTime)
 			},
-
 			serviceClick(item) {
 				console.log(item)
 				if (item.id === 3) {
@@ -824,7 +845,6 @@
 						title: '请选择时间',
 						icon: 'none'
 					})
-
 					return
 				}
 
@@ -854,7 +874,7 @@
 						if (this.statusType === 2) {
 							reqType = this.type === 1 ? 5 : 4
 						}
-						
+
 						if (this.statusType === 3) {
 							reqType = this.type === 1 ? 1 : 0
 						}
@@ -862,7 +882,6 @@
 						const resNumData = await genbuildNumber({
 							type: reqType,
 						});
-
 
 						this.orderNumber = resNumData?.data?.defaultNumber || null;
 					}
@@ -873,14 +892,11 @@
 						...this.reqData
 					};
 					let originalTotalPrice = this.totalPrice;
-
 					if (this.type === 2) {
 						delete newForm.moneyAroundDown;
 					} else {
 						newForm.grossProfit = this.grossProfit;
 					}
-
-
 
 					let type = this.objItem[this.type].statusArray[this.statusType].type
 					let subType = this.objItem[this.type].statusArray[this.statusType].subType
@@ -903,7 +919,7 @@
 
 					if (this.statusType === 2) {
 						params['depositPaid'] = this.curDepositValue || 0
-
+                        
 					}
 
 					if (this.isUpdate) {
@@ -944,15 +960,15 @@
 
 						let type = this.objItem[this.type].statusArray[1].type
 						let subType = this.objItem[this.type].statusArray[1].subType
-
-
+						let newPrice = subtractWithTwoDecimals(this.reqData.changeAmount, this.goodsUpdate.depositPaid)
 						let orderInfo = {
 							...params,
 							...newForm,
 							type,
 							subType,
 							shopCartInfoList: newShopCartInfoList,
-							depositDeducted: this.goodsUpdate.depositDeducted || 0,
+							changeAmount: newPrice,
+							depositDeducted: this.goodsUpdate.depositPaid || 0,
 							number: orderNumber,
 							defaultNumber: orderNumber,
 						}
@@ -962,7 +978,6 @@
 						} else {
 							orderInfo.grossProfit = this.grossProfit;
 						}
-
 
 
 						let newList = this.transferOrderShopCartList.map(item => ({
@@ -995,7 +1010,7 @@
 
 						let urlObj = {}
 						if (this.isUpdate) {
-							 urlObj = {
+							urlObj = {
 								1: '/depotHead/updateDepotHeadAndDetail',
 								2: '/depotHead/updateAdvanceOrder',
 								3: '/depotHead/updateDepotHeadAndDetail'
@@ -1241,6 +1256,11 @@
 		.subtitle {
 			margin-top: 30rpx;
 			color: #827D7A;
+			font-size: 30rpx;
+		}
+		
+		.depositPaid {
+			margin-top: 30rpx;
 			font-size: 30rpx;
 		}
 

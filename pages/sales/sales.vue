@@ -1,10 +1,7 @@
 <template>
-	<z-paging :use-cache="true" cache-key="SalesKey" ref="paging" v-model="dataList" @query="queryList"
+	<z-paging  ref="paging" v-model="dataList" @query="queryList"
 		auto-show-back-to-top>
 		<template slot="top">
-			<!-- <AppletHeader :autoBack="false" @leftClick="modalVisible = true" title="销售" left-icon="account"
-				right-icon=" " :left-icon-size="24"></AppletHeader> -->
-
 			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true"
 				autoBack="false" @leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
 				<!-- 中间内容 -->
@@ -130,7 +127,6 @@
 				status: 1,
 				width: 0,
 				statusArray: [{
-
 						id: 1,
 						name: '销售'
 					},
@@ -177,7 +173,9 @@
 				this.reqObj = obj
 				console.log('请求测试', this.reqObj)
 				this.$refs.paging.reload()
-			}
+			} else {
+				this.$refs.paging.refresh()
+			} 
 
 			uni.removeStorageSync('selectList')
 			uni.removeStorageSync('currPage')
@@ -189,7 +187,6 @@
 			handleClickTab(item) {
 				console.log(item)
 				this.status = item.id
-
 				this.$refs.paging.reload()
 			},
 			rightClick() {

@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { getDepotList, getUserByDepotId, deleteShopMang } from '@/apis'
+import { getDepotList, getUserByDepotId, deleteShopMang, deleteUserData } from '@/apis'
 import { SelectShop } from '@/components/SelectShop/SelectShop.vue'
 export default {
 	components: {
@@ -186,19 +186,15 @@ export default {
 					id: this.curObj.id
 				})
 			} else {
-				uni.showToast({
-					title: '暂不支持删除员工',
-					icon: 'none'
+				await deleteUserData({
+					id: this.curObj.id
 				})
-				
-				return
 			}
 			
 			uni.showToast({
 				title: '操作成功',
 				icon: 'none'
 			})
-			
 			this.$refs.paging.reload()
 		},
 		editorItem(item) {

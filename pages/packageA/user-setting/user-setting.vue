@@ -26,7 +26,7 @@
 
 				<view class="content">
 					<view class="">
-						手机号
+						{{userInfo.phonenum || '未填写手机号'}}
 					</view>
 				</view>
 			</view>
@@ -64,6 +64,7 @@
 				show: false,
 				newPwd: '',
 				userId: 0,
+				userInfo: {},
 
 				list: [{
 						id: 1,
@@ -103,6 +104,7 @@
 			const user = uni.getStorageSync('userInfo')
 			console.log(user)
 			this.userId = user.id
+			this.userInfo = user
 			this.loadData(user)
 		},
 		methods: {
@@ -136,8 +138,8 @@
 				this.list[0].value = item.username
 				this.list[1].value = item.username
 				this.list[2].value = item.loginName
-				this.list[3].value = ""
-				this.list[4].value = item.position
+				this.list[3].value = '默认'
+				this.list[4].value = item.position || '默认'
 
 				this.password = item.password
 			},

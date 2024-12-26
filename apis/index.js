@@ -340,6 +340,15 @@ export const addUserData = (data) => {
 	})
 }
 
+// 删除员工
+export const deleteUserData = (data) => {
+	return request({
+		url: '/user/delete',
+		data,
+		method: 'GET'
+	})
+}
+
 export const updateUserData = (data) => {
 	return request({
 		url: '/user/updateUser',

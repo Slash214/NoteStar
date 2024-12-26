@@ -224,38 +224,41 @@ export function formatDateTime(date) {
 
 
 export const getStartAndEndTimes = (endTime) => {
-    // 如果没有传入 endTime，则使用当前时间
-    const end_time = endTime ? new Date(endTime) : new Date();
-    // 根据结束时间计算所在月份的1号
-    const start_time = new Date(end_time.getFullYear(), end_time.getMonth(), 1, 0, 0, 0);
-	
+	// 如果没有传入 endTime，则使用当前时间
+	const end_time = endTime ? new Date(endTime) : new Date();
+	// 根据结束时间计算所在月份的1号
+	const start_time = new Date(end_time.getFullYear(), end_time.getMonth(), 1, 0, 0, 0);
+
 	// console.log('格式化', timestampToDate(start_time))
 	// console.log('格式化', timestampToDate(end_time))
-    return { start_time: timestampToDate(start_time), end_time: timestampToDate(end_time) };
+	return {
+		start_time: timestampToDate(start_time),
+		end_time: timestampToDate(end_time)
+	};
 }
 
 
 export const getMonthStartAndEnd = (startTime) => {
-    const start_date = new Date(startTime);
-    const year = start_date.getFullYear();
-    const month = start_date.getMonth();
-    // 该月1号 0点0分0秒
-    const firstDay = new Date(year, month, 1, 0, 0, 0);
-    // 下个月的0号(即上个月的最后一天) 23:59:59
-    const lastDay = new Date(year, month + 1, 0, 23, 59, 59);
-    return {
-        start_time: timestampToDate(firstDay),
-        end_time: timestampToDate(lastDay)
-    };
+	const start_date = new Date(startTime);
+	const year = start_date.getFullYear();
+	const month = start_date.getMonth();
+	// 该月1号 0点0分0秒
+	const firstDay = new Date(year, month, 1, 0, 0, 0);
+	// 下个月的0号(即上个月的最后一天) 23:59:59
+	const lastDay = new Date(year, month + 1, 0, 23, 59, 59);
+	return {
+		start_time: timestampToDate(firstDay),
+		end_time: timestampToDate(lastDay)
+	};
 };
 
 /**
  * 格式化商品数据
  */
-export const  formatProductData = (data) => {
+export const formatProductData = (data) => {
 	return data.map(item => {
-		const imgList = item?.imgName?.split(',') || [] 
-		const cover = imgList[0] || '' 
+		const imgList = item?.imgName?.split(',') || []
+		const cover = imgList[0] || ''
 		return {
 			nums: new Big(0),
 			id: item.id,
@@ -271,3 +274,25 @@ export const  formatProductData = (data) => {
 		}
 	})
 }
+
+
+/**
+ * 计算两个数的差值，结果为正数并且精确到两位小数。
+ *
+ * 假设输入值 `a` 和 `b` 本身不超过两位小数精度（如货币金额）。
+ *
+ * @param a - 第一个数值
+ * @param b - 第二个数值
+ * @returns 返回 `a` 与 `b` 的绝对差值，并确保为两位小数精度。
+ */
+export const subtractWithTwoDecimals = (a,b) => {
+	// 将 a 和 b 放大 100 倍并四舍五入为整数（以避免浮点误差）
+	const A = Math.round(a * 100);
+	const B = Math.round(b * 100);
+
+	// 计算绝对差值的整数部分
+	const diff = Math.abs(A - B);
+
+	// 将结果除以 100 还原为两位小数的数值，并通过 toFixed(2) 强制保留两位小数
+	return Number((diff / 100).toFixed(2));
+};

@@ -10,7 +10,7 @@
 						<view class="name">{{ name }}</view>
 						<view class="fix" v-if="isDelete || deleteFlag == 1">已作废</view>
 						<view class="status" v-if="statusType === 2">
-							{{statusObj[type].status[curStatus]}}
+							{{changeText || statusObj[type].status[curStatus]}}
 						</view>
 					</view>
 					<view>{{ time }}</view>
@@ -138,8 +138,11 @@
 				transferOrderId: 0,
 				isFix: false,
 				
+				changeText: "",
+				
 				// 0 1 2已完成 3已关闭
 				curStatus: 0,
+				localCacheStatus: 0,
 				
 				
 				statusObj: {
@@ -268,13 +271,18 @@
 						// 关闭成功就为历史状态
 						if (this.curStatus === 3) {
 							this.isH = false
-							// this.curStatus = 3
-							this.getData()
+							this.changeText = '已开启'
+							this.curStatus = this.localCacheStatus
+							// this.getData()
 						} else {
 							this.isH = true
+							this.changeText = '已关闭'
 							this.curStatus = 3
-							this.getData()
+							// this.getData()
 						}
+							
+						this.actionsList[0] = { id: 1, name: prefix === '开启' ? '关闭' : '开启'}
+						// console.error(this.actionsList)
 						return
 					}
 					
@@ -504,6 +512,7 @@
 					
 					if (this.statusType === 2) {
 						this.curStatus = this.type === 1 ? +saleStatus || 0 : +purchaseStatus || 0
+						this.localCacheStatus = this.curStatus
 						this.actionsList[0] = { id: 1, name: this.curStatus === 3 ? '开启' : '关闭'}
 					}
 

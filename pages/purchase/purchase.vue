@@ -1,6 +1,5 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
-
 		<template slot="top">
 			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true"
 				autoBack="false" @leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
@@ -159,6 +158,8 @@
 				this.reqObj = obj
 				console.log('请求测试', this.reqObj)
 				this.$refs.paging.reload()
+			} else {
+				this.$refs.paging.refresh()
 			}
 		},
 		methods: {

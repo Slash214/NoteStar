@@ -1,22 +1,23 @@
 <template>
-	<z-paging ref="paging" :use-cache="true"  cache-key="ProductsKey" v-model="dataList" :default-page-size="20"
+	<z-paging ref="paging" :use-cache="true" cache-key="ProductsKey" v-model="dataList" :default-page-size="20"
 		@query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="商品" @leftClick="leftClick" :left-icon-size="24" :right-icon-size="20" :autoBack="false" left-icon="account" right-icon="plus"
-				left-icon-bold="true" @rightClick="addProduct"></AppletHeader>
+			<AppletHeader title="商品" @leftClick="leftClick" :left-icon-size="24" :right-icon-size="20" :autoBack="false"
+				left-icon="account" right-icon="plus" left-icon-bold="true" @rightClick="addProduct"></AppletHeader>
 			<nav-search-bar right="50rpx" @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
+			<view style="padding: 20rpx 30rpx 0 30rpx;">
+				<horizontal-card title="商品数量" :titlePrice="total" subtitle="库存"
+					:subtitle-price="totalPrice"></horizontal-card>
+			</view>
+			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 		</template>
 
 		<view class="container">
-			<horizontal-card title="商品数量" :titlePrice="total" subtitle="库存"
-				:subtitle-price="totalPrice"></horizontal-card>
-
-			<u-loading-icon :show="loading" text="数据正在加载中..." vertical></u-loading-icon>
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClickCard(item)">
 				<view class="card flex">
 					<view class="card-box">
-						<u--image mode="aspectFit" :showLoading="true" :src="item.imgName ? item.imgList[0] : DEFAULT_IMAGE"
-							width="60" height="60"></u--image>
+						<u--image mode="aspectFit" :showLoading="true" :src="item.cover" width="60"
+							height="60"></u--image>
 					</view>
 					<view class="card-content">
 						<u--text block bold :text="item.name" size="16" margin="0 0 10px 0" color="#000"></u--text>
@@ -78,7 +79,9 @@
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 	import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
 	import UserPopup from '@/components/UserPopup/UserPopup.vue'
-	import { DEFAULT_IMAGE } from '@/common/contanst'
+	import {
+		DEFAULT_IMAGE
+	} from '@/common/contanst'
 	export default {
 		components: {
 			NavSearchBar,
@@ -113,8 +116,7 @@
 		},
 		onLoad() {},
 		onShow() {
-			this.$refs.paging.reload()
-
+			this.$refs.paging.refresh()
 			uni.removeStorageSync('screenData')
 			uni.removeStorageSync('goodsUpdate')
 			uni.removeStorageSync('selectList')
@@ -189,7 +191,7 @@
 				this.show = true
 			},
 			async queryList(page, pageNo) {
-				let obj = {}
+				this.loading = true
 				try {
 					const {
 						data
@@ -207,18 +209,27 @@
 						total,
 						totalStockCount
 					} = data
-					let array = rows.map((item) => ({
-						...item,
-						imgList: item?.imgName?.split(',') || []
-					}))
 
-					// console.error('array', array)
+
+					const array = rows.map(item => {
+						const cover = item.imgName ?
+							item.imgName.split(',').map(name => name.trim()).filter(name => name)[0] ||
+							DEFAULT_IMAGE :
+							DEFAULT_IMAGE;
+
+						return {
+							...item,
+							cover
+						};
+					});
+
 					this.totalPrice = totalStockCount
 					this.total = total
 					this.$refs.paging.complete(array)
 					this.loading = false
 				} catch (e) {
 					console.log('请求失败', e)
+					this.loading = false
 					this.$refs.paging.complete(false)
 				}
 			}
@@ -232,8 +243,9 @@
 		align-items: center;
 		flex-direction: column;
 		justify-content: center;
-	
+
 	}
+
 	.search {
 		padding: 25rpx 25rpx 0 25rpx;
 		background-color: #f1f5f8;

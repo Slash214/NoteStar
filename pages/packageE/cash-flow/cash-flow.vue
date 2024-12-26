@@ -124,7 +124,9 @@
 						start_time,
 						end_time
 					} = getStartAndEndTimes(this.time)
-					this.beginTime = start_time
+					
+					// 查询一个日期的 就 开始等于结束时间
+					this.beginTime = end_time
 					this.endTime = end_time
 					this.timeType = 1
 				} else {

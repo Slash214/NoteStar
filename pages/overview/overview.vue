@@ -135,7 +135,6 @@
 		},
 		data() {
 			return {
-
 				calendarTimeShow: true,
 				eyeOpenIcon: 'https://haoxianhui.com/hxh/2024/11/22/acb0e5cdaa8643f58d8ecc8c1f452036.png',
 				eyeCloseIcon: 'https://haoxianhui.com/hxh/2024/11/22/be34236133d44cb28f58a828d5659408.png',
@@ -214,9 +213,7 @@
 				],
 				hotList: [],
 				pelpop: [],
-				// userInfo: {
-				// 	username: '王'
-				// },
+
 				chartData: {},
 				monthChartData: {},
 				lineOptions: {
@@ -252,41 +249,43 @@
 			}
 		},
 		onLoad() {
-
-			const userInfo = uni.getStorageSync('userInfo')
+			const userInfo = uni.getStorageSync('userInfo') || null
 			if (!userInfo) {
-
-				uni.reLaunch({
-					url: '/pages/packageC/login/login'
+				uni.showLoading({
+					title: '正在加载数据'
 				})
-				return
+				setTimeout(() => {
+					uni.reLaunch({
+						url: '/pages/packageC/login/login'
+					})
+				}, 1000)
+				uni.hideLoading()
+			} else {
+				this.time = timestampToDate(Date.now(), 3)
+				this.getData()
 			}
-
-			this.time = timestampToDate(Date.now(), 3)
-			this.getData()
 		},
 		onShow() {
 			uni.removeStorageSync('screenData')
 			uni.removeStorageSync('goodsUpdate')
 			uni.removeStorageSync('selectList')
 			uni.removeStorageSync('goodsInfo')
+
 		},
 		onHide() {
 			clearTimeout(this.t)
 		},
-		onReady() {},
 		computed: {
 			salesName() {
 				let item = this.columns[0].filter((item) => item.value === this.salesTrendsType1)[0]
 				console.log('item', item)
-				return item ? item.label : '' // 如果找不到，返回空字符串或其他默认值
+				return item ? item.label : ''
 			}
 		},
 		onPullDownRefresh() {
 			uni.showLoading({
 				title: '刷新中...'
 			})
-
 			this.getData()
 			this.t = setTimeout(function() {
 				uni.stopPullDownRefresh()
@@ -331,7 +330,6 @@
 					this.time = timestampToDate(e.value, 2)
 					this.timeType = 3
 				}
-
 				this.getData()
 			},
 
@@ -351,7 +349,6 @@
 				})
 			},
 			gotoEmployeePer() {
-				console.log('员工业绩')
 				uni.navigateTo({
 					url: '/pages/packageA/employee-per/employee-per'
 				})
@@ -377,7 +374,6 @@
 					employeePerformance,
 					salesTrends
 				} = data || {}
-
 				this.reportData[0].num = keyData.nowSalesRevenue || 0
 				this.reportData[0].value = keyData.preSalesRevenue || 0
 				this.reportData[1].num = keyData.nowSalesCount || 0
@@ -386,10 +382,7 @@
 				this.reportData[2].value = keyData.preGrossProfit || 0
 				this.reportData[3].num = keyData.nowCapitalIncome || 0
 				this.reportData[3].value = keyData.preCapitalIncome || 0
-
 				this.lastTime = keyData.lastCreateTime || formatTimestamp(Date.now())
-				console.log('data', data)
-
 				this.pelpop = employeePerformance.map((item) => ({
 					...item,
 					progress: Math.floor(item.salesProportion * 100)
@@ -398,10 +391,6 @@
 					...item,
 					imgUrl: item.imgName.includes('null') ? DEFAULT_IMAGE : item.imgName
 				}))
-
-				// salesTrends
-				//  = []
-
 				if (this.timeType === 1) {
 					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1] || []
 
@@ -462,12 +451,8 @@
 					)
 					this.monthChartData = monthChartData
 				}
-
 				this.isFix = false
 			},
-			leftClick() {
-				console.log('点击我的')
-			}
 		}
 	}
 </script>

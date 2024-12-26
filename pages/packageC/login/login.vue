@@ -102,8 +102,8 @@
 			}
 		},
 		onLoad() {
-			const user = uni.getStorageSync('userInfo') || null
-			if (user) {
+			const token = uni.getStorageSync('token') || null
+			if (token) {
 				uni.switchTab({
 					url: '/pages/overview/overview'
 				})

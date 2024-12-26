@@ -29,8 +29,10 @@
 </template>
 
 <script>
-	import { props } from "../../uni_modules/uview-ui/libs/mixin/mixin";
-import {
+	import {
+		props
+	} from "../../uni_modules/uview-ui/libs/mixin/mixin";
+	import {
 		getDepotByUserId
 	} from "@/apis";
 
@@ -69,31 +71,31 @@ import {
 		},
 		async created() {
 			const user = uni.getStorageSync("userInfo");
-			const {
-				data
-			} = await getDepotByUserId({
-				userId: user.id
-			});
-			this.list = [{
-					name: "全部门店",
-					select: true,
-					id: 0,
-					location: "全部",
-				},
-				...data.map((item) => ({
-					name: item.name,
-					select: false,
-					id: item.id,
-					location: item.location,
-				})),
-			];
-			
-			
-		
+			if (user) {
+				const {
+					data
+				} = await getDepotByUserId({
+					userId: user.id
+				});
+				this.list = [{
+						name: "全部门店",
+						select: true,
+						id: 0,
+						location: "全部",
+					},
+					...data.map((item) => ({
+						name: item.name,
+						select: false,
+						id: item.id,
+						location: item.location,
+					})),
+				];
+
+			}
 		},
 		mounted() {
 			this.$refs.datetimePicker.setFormatter(this.formatter);
-			
+
 			if (this.currIndex) {
 				this.curIndex = this.currIndex
 			}

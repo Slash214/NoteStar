@@ -1,6 +1,5 @@
 {
-	"pages": [
-		{
+	"pages": [{
 			"path": "pages/overview/overview",
 			"style": {
 				"navigationBarTitleText": "",
@@ -38,6 +37,45 @@
 		}
 	],
 	"subPackages": [{
+			"root": "pages/packageC",
+			"pages": [{
+					"path": "login/login",
+					"style": {
+						"navigationBarTitleText": "登录",
+						"navigationStyle": "custom"
+					}
+				}, {
+					"path": "add-stock/add-stock",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "product-details/product-details",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "shop-result/shop-result",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "stock-filter/stock-filter",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "select-store/select-store",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				}
+			]
+		}, {
 			"root": "pages/packageA",
 			"pages": [{
 					"path": "employee-per/employee-per",
@@ -90,49 +128,6 @@
 			]
 		},
 		{
-			"root": "pages/packageC",
-			"pages": [{
-					"path": "login/login",
-					"style": {
-						"navigationBarTitleText": "登录",
-						"navigationStyle": "custom"
-					}
-				},{
-					"path": "add-stock/add-stock",
-					"style": {
-						"navigationBarTitleText": ""
-					}
-				},
-				{
-					"path": "product-details/product-details",
-					"style": {
-						"navigationBarTitleText": ""
-					}
-				},
-				{
-					"path" : "shop-result/shop-result",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
-					}
-				},
-				{
-					"path" : "stock-filter/stock-filter",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
-					}
-				},
-				{
-					"path" : "select-store/select-store",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
-					}
-				}
-			]
-		},
-		{
 			"root": "pages/packageD",
 			"pages": [{
 					"path": "shop-stock/shop-stock",
@@ -147,31 +142,27 @@
 					}
 				},
 				{
-					"path" : "history/history",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "history/history",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "fund-flow-screening/fund-flow-screening",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "fund-flow-screening/fund-flow-screening",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "product-screening/product-screening",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "product-screening/product-screening",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "product-details/product-details",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "product-details/product-details",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				}
 			]
@@ -197,24 +188,21 @@
 					}
 				},
 				{
-					"path" : "add-shop-data/add-shop-data",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "add-shop-data/add-shop-data",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "flow-list/flow-list",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "flow-list/flow-list",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				},
 				{
-					"path" : "flow-list-details/flow-list-details",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "flow-list-details/flow-list-details",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				}
 			]
@@ -274,10 +262,9 @@
 					}
 				},
 				{
-					"path" : "stock-details/stock-details",
-					"style" : 
-					{
-						"navigationBarTitleText" : ""
+					"path": "stock-details/stock-details",
+					"style": {
+						"navigationBarTitleText": ""
 					}
 				}
 			]

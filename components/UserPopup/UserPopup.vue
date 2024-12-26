@@ -46,7 +46,10 @@ export default {
 		}
 	},
 	created() {
-		this.userInfo = uni.getStorageSync('userInfo')
+		const user = uni.getStorageSync('userInfo')
+		if (user) {
+			this.userInfo = user
+		}
 	},
 	data() {
 		return {

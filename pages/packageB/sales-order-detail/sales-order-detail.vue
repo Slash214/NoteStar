@@ -334,7 +334,7 @@
 				this.saveSelectList(selectList)
 				
 				// 
-				const url = `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&status=${this.statusType}`
+				let url = `/pages/packageB/set-form/set-form?type=${this.type}&isUpdate=1&status=${this.statusType}`
 				
 				if (!this.isFix) {
 					url = `${url}&id=${this.transferOrderId}`

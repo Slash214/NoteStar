@@ -51,6 +51,14 @@ export default {
 			this.userInfo = user
 		}
 	},
+	mounted() {
+		if (this.userInfo) {
+			let id = this.userInfo.roleId
+			if (id !== 4) {
+				this.popupList.splice(0, 1);
+			}
+		}
+	},
 	data() {
 		return {
 			formatDateToChinese,

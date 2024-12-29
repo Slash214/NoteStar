@@ -41,7 +41,7 @@
 							订金：￥{{ formatMoney(item.deposit) }}
 						</view>
 					</view>
-					
+
 					<view class="">
 						<view class="price">￥{{ item.money }}</view>
 						<view class="name">
@@ -55,7 +55,8 @@
 
 		<template slot="right">
 			<view v-if="!loading" class="fix-icon flex flex-items-center flex-center" @click="gotoSetForm">
-				<image :src="IMAGE_OSS_URL + '/hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png'" mode="widthFix"></image>
+				<image :src="IMAGE_OSS_URL + '/hxh/2024/12/23/586763ff1d314b5c83da8e7c37b41bd5.png'" mode="widthFix">
+				</image>
 				<text class="text">{{statusArray[status - 1].name}}</text>
 			</view>
 		</template>
@@ -139,6 +140,8 @@
 			this.width = menuButtonInfo.width
 		},
 		onShow() {
+
+			this.modalVisible = false
 			uni.removeStorageSync('t1screenData')
 			const screenData = uni.getStorageSync('t2screenData')
 			if (screenData) {
@@ -166,7 +169,7 @@
 			handleClickTab(item) {
 				console.log(item)
 				this.status = item.id
-				
+
 				this.$refs.paging.reload()
 			},
 			rightClick() {
@@ -206,11 +209,20 @@
 			},
 			async queryList(pageNo, pageSize) {
 				let obj = {}
-				
+
 				const statusType = {
-					1: { type: '入库', subType: '采购' },
-					2: { type: '入库', subType: '进货预订' },
-					3: { type: '出库', subType: '进货退货' },
+					1: {
+						type: '入库',
+						subType: '采购'
+					},
+					2: {
+						type: '入库',
+						subType: '进货预订'
+					},
+					3: {
+						type: '出库',
+						subType: '进货退货'
+					},
 				}
 
 				let typeObj = statusType[this.status]
@@ -327,13 +339,14 @@
 		border-radius: 50rpx;
 		box-shadow: 5px 5px 20px rgba(250, 100, 0, 0.5);
 		overflow: hidden;
-		
+
 		.text {
 			font-size: 32rpx;
 			padding-left: 10rpx;
 			color: #fff;
 			font-weight: 500;
 		}
+
 		image {
 			width: 40rpx;
 		}
@@ -370,8 +383,8 @@
 					border-radius: 8rpx;
 				}
 			}
-			
-			
+
+
 			.deposit {
 				font-weight: 500;
 				color: #111;
@@ -383,7 +396,7 @@
 				font-weight: 600;
 				font-size: 34rpx;
 			}
-			
+
 			.name {
 				text-align: right;
 				margin-top: 16rpx;

@@ -32,24 +32,23 @@
 				</view>
 			</view>
 		</view>
-		
-		
+
+
 		<!-- 商品详情弹窗 -->
 		<u-popup bgColor="#F1F5F8" :show="shopShow" @close="shopShow = false" :round="10" closeable>
 			<view class="modals">
 				<view class="flex flex-items-center flex-between modal-header">
 					<view class="">
-						<u--image :showLoading="true" :src="curShopData.cover" width="60px"
-							height="60px"></u--image>
+						<u--image :showLoading="true" :src="curShopData.cover" width="60px" height="60px"></u--image>
 					</view>
 					<view class="modal-content-box">
 						<u--text margin="0 0 15px 0" :text="curShopData.name" bold></u--text>
 						<u--text color="#9D9EA0" :text="curShopData.mbarCode"></u--text>
 					</view>
-		
+
 					<view class="stock">库存：{{ curShopData.stock }}</view>
 				</view>
-		
+
 				<view class="modal-card">
 					<view class="flex flex-items-center">
 						<text class="w16">单价</text>
@@ -58,7 +57,7 @@
 					</view>
 					<view class="flex flex-items-center">
 						<text class="w16">数量</text>
-						<u-number-box v-model="curShopData.nums" @change="shopDataChange"></u-number-box>
+						<u-number-box :min="0" v-model="curShopData.nums" @change="shopDataChange"></u-number-box>
 					</view>
 					<view class="flex flex-items-center">
 						<text class="w16">总价</text>
@@ -66,12 +65,12 @@
 							placeholder="请输入内容"></u--input>
 					</view>
 				</view>
-		
+
 				<view class="modal-card">
 					<u--text text="备注" size="14"></u--text>
 					<u--textarea border="none" v-model="curShopData.remarks" placeholder="请输入内容"></u--textarea>
 				</view>
-		
+
 				<view class="abs-button">
 					<view class="">
 						<view class="money">￥{{ formatMoney(curShopData.total) }}</view>
@@ -81,8 +80,8 @@
 				</view>
 			</view>
 		</u-popup>
-		
-		
+
+
 		<template slot="bottom">
 			<view class="fixed-content flex flex-between flex-items-center">
 				<view class="flex flex-items-center">
@@ -193,11 +192,10 @@
 			productCount() {
 				return this.selectList.reduce((sum, item) => sum.plus(item.nums), new Big(0))
 			},
+			// sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
 			totalPrice() {
 				return this.selectList.reduce(
-					(sum, item) =>
-					sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
-					new Big(0)
+					(sum, item) => sum.plus(item.nums.times(item.price)), new Big(0)
 				)
 			},
 			productKindCount() {
@@ -205,18 +203,53 @@
 			}
 		},
 		methods: {
+			onAlonePrice(e, type) {
+				console.log(e, type)
+				if (type === 1) {
+					this.curShopData.price = new Big(e || '0')
+					// 重新计算总价
+					const total = this.curShopData.price.times(this.curShopData.nums)
+					this.curShopData.total = total.toFixed(2)
+				}
+
+				if (type === 2) {
+					const bTotal = new Big(e || '0')
+					// 计算新的单价
+					if (!this.curShopData.nums.eq(0)) {
+						this.curShopData.bPrice = bTotal.div(this.curShopData.nums)
+						this.curShopData.price = this.curShopData.bPrice.toFixed(2)
+					} else {
+						this.curShopData.price = '0.00'
+					}
+				}
+			},
 			fixOneShopData() {
 				console.log('确认修改')
+				
+				// console.log('this.cur商品', this.curShopData)
+				// console.error(this.selectList)
+				// const index = this.selectList.findIndex(item => item.id === this.curShopData.id)
+				// console.error(index)
+				// if (this.curShopData.nums) {
+				// 	if (index === -1) {
+				// 		this.selectList.push(this.curShopData)
+				// 	} else {
+				// 		this.selectList.splice(index, 1, this.curShopData)
+				// 	}
+				// } else if (index !== -1) {
+				// 	this.selectList.splice(index, 1)
+				// }
+				this.shopShow = false
 			},
-			
+
 			// 修改单个商品的数量
 			shopDataChange(e) {
 				const value = e.value
 				this.curShopData.nums = value.toString()
 				try {
-					this.curShopData.bNums = new Big(value || '0')
+					this.curShopData.nums = new Big(value || '0')
 					// 重新计算总价
-					const total = this.curShopData.bPrice.times(this.curShopData.bNums)
+					const total = this.curShopData.price.times(this.curShopData.nums)
 					this.curShopData.total = total.toFixed(2)
 				} catch (error) {
 					console.error('数量输入错误:', error)
@@ -245,10 +278,8 @@
 				return data.map(item => {
 					const imgList = item?.imgName?.split(',') || []
 					const cover = imgList[0] || DEFAULT_IMAGE
-					// const cover = item.imgName ?
-					// 	item.imgName.split(',').map(name => name.trim()).filter(name => name)[0] || DEFAULT_IMAGE :
-					// 	DEFAULT_IMAGE
 
+					const price = this.type === 1 ? item.commodityDecimal : item.purchaseDecimal
 					return {
 						nums: new Big(0),
 						id: item.id,
@@ -260,7 +291,9 @@
 						mbarCode: item.mbarCode,
 						meId: item.meId,
 						commodityDecimal: new Big(item.commodityDecimal),
-						costPrice: item.costPrice
+						costPrice: item.costPrice,
+						total: 0,
+						price: new Big(price),
 					}
 				})
 			},
@@ -368,6 +401,7 @@
 			}
 		}
 	}
+
 	.minus {
 		width: 22px;
 		height: 22px;
@@ -400,13 +434,13 @@
 	}
 
 	.main {}
-	
+
 	.modals {
 		padding: 30rpx 30rpx 0 30rpx;
 		height: 70vh;
 		width: 100%;
 		position: relative;
-	
+
 		.abs-button {
 			position: absolute;
 			z-index: 1000;
@@ -420,14 +454,14 @@
 			justify-content: space-between;
 			padding: 25rpx;
 			box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
-	
+
 			.money {
 				color: #fa6400;
 				font-weight: 700;
 				font-size: 36rpx;
 				margin-bottom: 15px;
 			}
-	
+
 			.btn {
 				width: 180rpx;
 				height: 90rpx;
@@ -437,32 +471,32 @@
 				font-weight: 700;
 			}
 		}
-	
+
 		.modal-card {
 			border-radius: 20rpx;
 			background: #fff;
 			padding: 40rpx 40rpx 20rpx 40rpx;
 			margin-bottom: 17rpx;
-	
+
 			view {
 				margin-bottom: 20px;
 			}
-	
+
 			.w16 {
 				width: 140rpx;
 			}
 		}
-	
+
 		.modal-header {
 			width: 100%;
 			margin-bottom: 17rpx;
 		}
-	
+
 		.modal-content-box {
 			flex: 1;
 			margin: 0 10px;
 		}
-	
+
 		.stock {
 			color: #9d9ea0;
 			display: flex;
@@ -470,7 +504,7 @@
 			height: 55px;
 		}
 	}
-	
+
 
 	.fixed-content {
 		padding: 32rpx;

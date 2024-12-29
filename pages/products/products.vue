@@ -16,8 +16,8 @@
 			<view class="list" v-for="(item, index) in dataList" :key="item.id" @click="handleClickCard(item)">
 				<view class="card flex">
 					<view class="card-box">
-						<u--image mode="aspectFit" :showLoading="true" :src="item.cover" width="60"
-							height="60"></u--image>
+
+						<image :src="item.cover" style="width: 120rpx; height: 120rpx;" mode="aspectFit"></image>
 					</view>
 					<view class="card-content">
 						<u--text block bold :text="item.name" size="16" margin="0 0 10px 0" color="#000"></u--text>
@@ -116,6 +116,7 @@
 		},
 		onLoad() {},
 		onShow() {
+			this.modalVisible = false
 			this.$refs.paging.refresh()
 			uni.removeStorageSync('screenData')
 			uni.removeStorageSync('goodsUpdate')
@@ -274,6 +275,11 @@
 			border-radius: 10rpx;
 			background-color: #cdd7dc;
 			overflow: hidden;
+
+			image {
+				display: block;
+				width: 100%;
+			}
 		}
 
 		&-content {

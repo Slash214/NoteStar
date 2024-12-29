@@ -271,6 +271,8 @@
 			uni.removeStorageSync('selectList')
 			uni.removeStorageSync('goodsInfo')
 
+			this.modalVisible = false
+
 		},
 		onHide() {
 			clearTimeout(this.t)
@@ -392,8 +394,10 @@
 					imgUrl: item.imgName.includes('null') ? DEFAULT_IMAGE : item.imgName
 				}))
 				if (this.timeType === 1) {
-					let eacherData = this.currSeven ? salesTrends[0] : salesTrends[1] || []
-
+					// let eacherData = this.currSeven ? salesTrends[0] : salesTrends[0] || []
+					// this.currSeven ? salesTrends[0] :
+					let eacherData =  salesTrends[0] || []
+					console.error('eacherData', eacherData)
 					let categories = eacherData?.map((item) => item.x.slice(-2))
 					let series = eacherData?.map((item) => Number(item.y))
 					let res = {

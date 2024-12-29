@@ -84,11 +84,14 @@ export default {
 			curStore: {
 				id: 0,
 				name: '全部门店'
-			}
+			},
+			userId: 0
 		}
 	},
 	onLoad() {
 		this.curSortItem = this.sortList[0]
+		const user = uni.getStorageSync('userInfo') || null
+		this.userId = user?.id || 0
 	},
 	onShow() {
 		const obj = uni.getStorageSync('stockData')
@@ -144,7 +147,8 @@ export default {
 					sortType: this.curSortItem.value,
 					materialParam: this.keywords,
 					sortRule: this.sortRule,
-					isStock: false
+					isStock: false,
+					userId: this.userId
 				})
 				let { rows, totalCostPrice, total } = data || {}
 				// this.total = total

@@ -329,12 +329,12 @@
                     // 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
 					// if (this.type === 2 && )
 
-					let ordertype = this.type === 1 ? '销售' : '进货'
+					let orderType = this.type === 1 ? '销售' : '进货'
 
 					let search = {
 						materialParam: this.keyword,
 						depotId: this.depotId,
-						ordertype
+						orderType
 					}
 
 					console.error('请求参数', search)

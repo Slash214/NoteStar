@@ -225,12 +225,12 @@
 			const time = timestampToDate(Date.now())
 			this.formList[3].value = time
 			this.formList[3].select = true
-			this.getData()
-
 			if (options?.isUpdate) {
 				console.log('更新状态')
 				this.isUpdate = true
 			}
+			
+			// this.getData()
 
 		},
 		computed: {
@@ -248,6 +248,7 @@
 			onCreated(item) {
 				console.log('获取的第一个', item)
 				this.curStore = item
+				this.getData()
 			},
 			// 删除图片
 			deletePic(event) {
@@ -350,7 +351,7 @@
 				const {
 					data
 				} = await getUserByDepotId({
-					depotId: 1
+					depotId: this.curStore.id
 				})
 				this.person = data
 				const user = uni.getStorageSync('userInfo')

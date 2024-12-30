@@ -152,13 +152,15 @@ export default {
 
 			if (e.name === '编辑') {
 				console.log('去编辑', this.curObj)
+				
+				
 				if (this.type === 2) {
 					uni.navigateTo({
-						url: `/pages/packageA/add-store-info/add-store-info?type=${this.type}&userId=${this.curObj.id}`
+						url: `/pages/packageA/add-store-info/add-store-info?isUpdate=1&type=${this.type}&userId=${this.curObj.id}`
 					})
 				} else {
 					uni.navigateTo({
-						url: `/pages/packageA/add-store-info/add-store-info?type=${this.type}&obj=${JSON.stringify(
+						url: `/pages/packageA/add-store-info/add-store-info?isUpdate=1&type=${this.type}&obj=${JSON.stringify(
 							this.curObj
 						)}`
 					})

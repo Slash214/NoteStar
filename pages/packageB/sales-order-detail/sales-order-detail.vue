@@ -63,6 +63,10 @@
 			<view class="white remark mt10">
 				<u--text margin="10px 0" size="14" text="备注:"></u--text>
 				<u--text size="14" :text="remark"></u--text>
+				
+				<view class="imglist">
+					<image v-for="(item, key) of imgList" :key="key" :src="item" mode="widthFix"></image>
+				</view>
 			</view>
 
 			<block v-if="!isH && curStatus < 2">
@@ -143,6 +147,8 @@
 				// 0 1 2已完成 3已关闭
 				curStatus: 0,
 				localCacheStatus: 0,
+				
+				imgList: [],
 				
 				
 				statusObj: {
@@ -395,7 +401,6 @@
 						createTime,
 						organName,
 						remark,
-						fileName,
 						depotHeadMaterialVoList,
 						depotId,
 						salesMan,
@@ -414,10 +419,12 @@
 						depositDeducted,
 						depositPaid,
 						depositRemaining,
+						fileName,
 					} = data || {}
 					this.total = totalPrice
 					this.updateData = {
 						depositDeducted,
+						fileName,
 						depositPaid,
 						depositRemaining,
 						depotId,
@@ -469,6 +476,11 @@
 						}
 					]
 
+
+                    if (fileName) {
+						this.imgList = fileName.split(',')
+						console.log('图片数组', this.imgList)
+					}
 					this.name = organName
 					this.time = formatDateToChinese(createTime)
 					this.remark = remark
@@ -661,9 +673,22 @@
 				font-size: 32rpx;
 			}
 		}
+		
+		
 
 		.remark {
 			height: 300rpx;
+			
+			.imglist {
+				margin-top: 30rpx;
+				display: flex;
+				flex-wrap: wrap;
+				image {
+					display: block;
+					width: 120rpx;
+					margin: 0 16rpx 16rpx 0;
+				}
+			}
 		}
 	}
 </style>

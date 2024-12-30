@@ -1,6 +1,6 @@
 <template>
 	<view :class="isFix ? 'fixed' : ''">
-		<AppletHeader :left-icon-size="24" :autoBack="false" @leftClick="handleClick" title="经营概况" left-icon="account"
+		<AppletHeader :left-icon-size="28" :autoBack="false" @leftClick="handleClick" title="经营概况" left-icon="account"
 			right-icon=" ">
 		</AppletHeader>
 		<view class="">

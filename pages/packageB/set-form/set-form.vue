@@ -137,6 +137,9 @@
 			<view class="white box mt10" style="padding: 40rpx">
 				<view class="mb10">备注</view>
 				<u--textarea border="none" v-model="reqData.remark" placeholder="在这里输入备注"></u--textarea>
+
+				<u-upload width="60" height="60" :fileList="fileList1" @afterRead="afterRead" @delete="deletePic"
+					name="1" multiple :maxCount="6"></u-upload>
 			</view>
 
 			<!-- 商品详情弹窗 -->
@@ -201,7 +204,8 @@
 					</view>
 				</view>
 
-				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit" v-if="statusType === 2 && !transferOrderId">
+				<view :class="type === 1 ? 'btns xs' : 'btns dj'" @click="onDeposit"
+					v-if="statusType === 2 && !transferOrderId">
 					{{ type === 1 ? '收订金' : '付订金'}}
 				</view>
 				<view class="btns" @click="saveData" :style="{ backgroundColor: objItem[type].color }">保存</view>
@@ -268,7 +272,8 @@
 	// 销售销售显示毛利润 进货不显示
 	import {
 		staticImageUrl,
-		IMAGE_OSS_URL
+		IMAGE_OSS_URL,
+		UPLOAD_FILE_URL
 	} from '@/common/contanst'
 	import Big from 'big.js'
 	import {
@@ -293,6 +298,9 @@
 	export default {
 		data() {
 			return {
+				fileList1: [],
+				UPLOAD_FILE_URL,
+
 				subtractWithTwoDecimals,
 				IMAGE_OSS_URL,
 				curDepositValue: "",
@@ -457,13 +465,17 @@
 				canFirst: true,
 
 				// 预订金
-				depositDeducted: 0
+				depositDeducted: 0,
+
+				token: '',
 			}
 		},
 		onReady() {
 			this.$refs.datetimePicker.setFormatter(this.formatter)
 		},
 		onLoad(options) {
+
+			this.token = uni.getStorageSync('token')
 			// 获取type 类型
 			this.type = +options?.type || 1
 			this.statusType = +options?.status || 1
@@ -486,6 +498,15 @@
 				this.reqData.moneyAroundDown = obj.moneyAroundDown || 0
 				this.reqData.otherMoney = obj.otherMoney
 				this.reqData.changeAmount = obj.changeAmount
+				
+				if (obj.fileName) {
+					let newArr = obj.fileName.split(',')
+					this.fileList1 = newArr.map(item => ({
+						status: 'success',
+						message: '',
+						url: item
+					}))
+				}
 			}
 		},
 		onShow() {
@@ -579,6 +600,88 @@
 			}
 		},
 		methods: {
+			// 压缩图片(需要真机/模拟器环境) - uni.compressImage
+			compressImage(srcPath, quality = 80) {
+				return new Promise((resolve, reject) => {
+					uni.compressImage({
+						src: srcPath,
+						quality, // 压缩质量(0-100)，数值越小，压缩率越高
+						success: (res) => {
+							// res.tempFilePath 为压缩后的路径
+							resolve(res.tempFilePath)
+						},
+						fail: (err) => {
+							reject(err)
+						}
+					})
+				})
+			},
+			// 删除图片
+			deletePic(event) {
+				this[`fileList${event.name}`].splice(event.index, 1)
+			},
+			// 新增图片
+			async afterRead(event) {
+				// 当设置 multiple 为 true 时, file 为数组格式，否则为对象格式
+				let lists = [].concat(event.file)
+				let fileListLen = this[`fileList${event.name}`].length
+				lists.map((item) => {
+					this[`fileList${event.name}`].push({
+						...item,
+						status: 'uploading',
+						message: '上传中'
+					})
+				})
+				for (let i = 0; i < lists.length; i++) {
+					// const result = await this.uploadFilePromise(lists[i].url)
+					let item = this[`fileList${event.name}`][fileListLen]
+
+					// 1. 压缩
+					let compressedUrl
+					try {
+						compressedUrl = await this.compressImage(lists[i].url)
+					} catch (err) {
+						console.error('图片压缩失败，直接使用原图上传:', err)
+						compressedUrl = lists[i].url
+					}
+
+					// 2. 上传
+					const result = await this.uploadFilePromise(compressedUrl)
+					this[`fileList${event.name}`].splice(
+						fileListLen,
+						1,
+						Object.assign(item, {
+							status: 'success',
+							message: '',
+							url: result
+						})
+					)
+					fileListLen++
+				}
+			},
+			uploadFilePromise(url) {
+				return new Promise((resolve, reject) => {
+					let a = uni.uploadFile({
+						url: UPLOAD_FILE_URL, // 仅为示例，非真实的接口地址
+						filePath: url,
+						header: {
+							'X-Access-Token': this.token,
+							'content-type': 'application/json'
+						},
+						name: 'file',
+						formData: {
+							user: 'test'
+						},
+						success: (res) => {
+							console.log(res)
+							const result = JSON.parse(res.data)
+							let url = result.data ? `${IMAGE_OSS_URL}/${result.data}` : ""
+							resolve(url)
+						}
+					})
+				})
+			},
+
 			onDeposit() {
 				console.log('商品没有选择')
 
@@ -774,31 +877,37 @@
 			// 获取请求接口数据
 			async getData() {
 				const user = uni.getStorageSync('userInfo')
-				const [r1, r2, r3] = await Promise.all([
-					getDepotByUserId({
-						userId: user.id
-					}),
+				
+				const {  data } = await getDepotByUserId({ userId: user.id})
+				
+				console.log(data)
+				const newId =data[0]?.id || 1
+			
+				
+				const [r1, r2] = await Promise.all([
 					getUserByDepotId({
-						depotId: 1
+						depotId: newId
 					}),
 					getAccountByDepotId({
-						depotId: 1
+						depotId: newId
 					})
 				])
-				console.log('请求的数据', r1, r2, r3)
+				console.log('请求的数据', r1, r2, data)
 
-				this.storeList = r1.data.map((item) => ({
+				this.storeList = data.map((item) => ({
 					id: item.id,
 					name: item.name,
 					location: item.location
 				}))
 
-				this.salesList = r2.data.map((item) => ({
+				this.salesList = r1.data.map((item) => ({
 					...item,
 					name: item.userName
 				}))
 
-				this.selectedSalesperson = this.salesList[0]
+                let objArr = this.salesList.filter(i => i.id === user.id)
+
+				this.selectedSalesperson = objArr?.length ? objArr[0] : this.salesList[0]
 				this.selectedStore = this.storeList[0]
 
 				this.serviceList[1].value = timestampToDate(this.selectedTime.temp)
@@ -840,6 +949,9 @@
 			},
 
 			async saveData() {
+
+				console.error('图片', this.fileList1)
+
 				if (!this.selectedTime.time) {
 					uni.showToast({
 						title: '请选择时间',
@@ -854,6 +966,13 @@
 						icon: 'none'
 					})
 					return
+				}
+				
+				
+				let fileNameArray = ""
+				if (this.fileList1.length) {
+					let array = this.fileList1.map(item => item.url)
+					fileNameArray = array.join(',')
 				}
 
 				// 防止重复点击：按钮禁用逻辑
@@ -910,7 +1029,7 @@
 						salesMan: this.selectedSalesperson.id,
 						number: this.orderNumber,
 						defaultNumber: this.orderNumber,
-						fileName: null,
+						fileName: fileNameArray,
 						...newForm,
 						totalPrice: this.reqData.changeAmount,
 						accountId: 1,
@@ -919,7 +1038,7 @@
 
 					if (this.statusType === 2) {
 						params['depositPaid'] = this.curDepositValue || 0
-                        
+
 					}
 
 					if (this.isUpdate) {
@@ -1133,8 +1252,19 @@
 
 			// 选择商品
 			selectProduct() {
+				
+				// 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
+				let id = this.selectedStore.id
+				if (this.type === 2 && this.statusType <= 2) {
+					id = 0
+				}
+				
+				if (this.type === 1 && this.statusType === 3) {
+					id = 0
+				}
+				
 				uni.navigateTo({
-					url: `/pages/packageC/add-stock/add-stock?type=${this.type}&storeId=${this.selectedStore.id}`
+					url: `/pages/packageC/add-stock/add-stock?type=${this.type}&storeId=${id}`
 				})
 			},
 			async selectDataAndPush() {
@@ -1258,7 +1388,7 @@
 			color: #827D7A;
 			font-size: 30rpx;
 		}
-		
+
 		.depositPaid {
 			margin-top: 30rpx;
 			font-size: 30rpx;

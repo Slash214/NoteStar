@@ -152,7 +152,7 @@
 		async onLoad(options) {
 			console.log(options)
 			this.type = +options?.type || 1
-			this.depotId = +options?.storeId || 1
+			this.depotId = +options?.storeId || ""
 			const storedList = uni.getStorageSync('selectList')
 			if (storedList) {
 				this.isCache = true
@@ -326,6 +326,8 @@
 				this.cachePage = pageNo
 				try {
 					// this.cachePage ? pageNo + this.cachePage - 1 : pageNo
+                    // 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
+					// if (this.type === 2 && )
 
 					let ordertype = this.type === 1 ? '销售' : '进货'
 

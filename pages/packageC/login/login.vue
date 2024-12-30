@@ -275,6 +275,7 @@
 				border-radius: 30rpx 30rpx 0 0;
 				width: 100%;
 				overflow: hidden;
+				font-size: 32rpx;
 
 				text {
 					width: 50%;

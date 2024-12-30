@@ -136,6 +136,12 @@ export default {
 			if (options?.userId) {
 				const { data } = await getUserByUserId({ userId: options.userId })
 				console.log('员工', data)
+				
+				if (options?.isUpdate) {
+					this.isUpdate = true
+					this.updateId = options.userId 
+				}
+				
 				this.curRole = this.roleList[0].filter((e) => e.id === data.roleId)[0]
 				let newObj = this.objItem[this.id].data
 				newObj[0].value = data.userName

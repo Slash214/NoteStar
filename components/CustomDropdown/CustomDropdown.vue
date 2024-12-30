@@ -90,7 +90,7 @@
 						location: item.location,
 					})),
 				];
-
+			this.$emit("onCreated", this.list[1]);
 			}
 		},
 		mounted() {

@@ -2,7 +2,7 @@
 	<z-paging ref="paging" :use-cache="true" cache-key="ProductsKey" v-model="dataList" :default-page-size="20"
 		@query="queryList" auto-show-back-to-top>
 		<template slot="top">
-			<AppletHeader title="商品" @leftClick="leftClick" :left-icon-size="24" :right-icon-size="20" :autoBack="false"
+			<AppletHeader title="商品" @leftClick="leftClick" :left-icon-size="28" :right-icon-size="28" :autoBack="false"
 				left-icon="account" right-icon="plus" left-icon-bold="true" @rightClick="addProduct"></AppletHeader>
 			<nav-search-bar right="50rpx" @search="getKeyWord" :showRight="false" desc="名称/条形码/简称"></nav-search-bar>
 			<view style="padding: 20rpx 30rpx 0 30rpx;">

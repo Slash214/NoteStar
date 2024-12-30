@@ -54,7 +54,7 @@
 import SelectShop from '@/components/SelectShop/SelectShop.vue'
 import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
 import HorizontalCard from '@/components/HorizontalCard/HorizontalCard.vue'
-import { getStockList } from '@/apis'
+import { getStockList, getDepotByUserId } from '@/apis'
 import Big from 'big.js';
 
 export default {
@@ -102,6 +102,13 @@ export default {
 		}
 	},
 	methods: {
+		// async getUserStore() {
+		// 	const { data } = await getDepotByUserId({
+		// 		userId: this.userId
+		// 	})
+			
+		// 	console.log('店铺', data)
+		// },
 		gotoStockDetails(item) {
 			console.log('去商品库存', item)
 			let depotId = this.curStore.id

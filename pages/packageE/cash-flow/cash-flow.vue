@@ -5,7 +5,7 @@
 			<AppletHeader @rightClick="navRightClick" title="资金流水"
 				right-icon="https://haoxianhui.com/hxh/2024/11/22/8ed8f9218a7943fea23281041aa4319b.png"></AppletHeader>
 		</template>
-		<custom-dropdown @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
+		<custom-dropdown @onCreated="onCreated" @selectStore="selectStore" @selectTime="selectTime"></custom-dropdown>
 		<view class="main" v-if="dataList.length">
 			<view class="nav">
 				<view class="nav-item">
@@ -100,6 +100,10 @@
 			}
 		},
 		methods: {
+			onCreated(e) {
+				console.log('获取的怕', e)
+				this.depotId = e.id
+			},
 			hadndaleClick(item) {
 				uni.navigateTo({
 					url: `/pages/packageB/flow-list/flow-list?time=${item.operTime}&id=${this.depotId}`
@@ -145,6 +149,8 @@
 
 			async queryList(page, pageNo) {
 				this.loading = true
+				
+				console.error('this', this.depotId)
 				let params = {
 					beginTime: this.beginTime,
 					endTime: this.endTime,

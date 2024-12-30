@@ -1,7 +1,7 @@
 <template>
 	<z-paging ref="paging" v-model="dataList" @query="queryList">
 		<template slot="top">
-			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="24" leftIcon="account" :placeholder="true"
+			<u-navbar bgColor="#F1F5F8" right-icon=" " :left-icon-size="28" leftIcon="account" :placeholder="true"
 				autoBack="false" @leftClick="modalVisible = true" :use-cache="true" cache-key="PurchaseKey">
 				<!-- 中间内容 -->
 				<view class="slot-content" slot="center" :style="{ marginRight: width + 'px' }">

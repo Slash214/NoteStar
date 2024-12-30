@@ -2,7 +2,6 @@ import App from './App'
 import uView from '@/uni_modules/uview-ui'
 import 'styles/reset.css'
 import AppletHeader from '@/components/AppletHeader/AppletHeader.vue'
-
 // #ifndef VUE3
 import Vue from 'vue'
 import './uni.promisify.adaptor'

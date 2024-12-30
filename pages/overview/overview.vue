@@ -256,7 +256,7 @@
 				})
 				setTimeout(() => {
 					uni.reLaunch({
-						url: '/pages/packageC/login/login'
+						url: '/pages/login/login'
 					})
 				}, 1000)
 				uni.hideLoading()

@@ -106,7 +106,6 @@
 
 <script>
 	import NavSearchBar from '@/components/NavSearchBar/NavSearchBar.vue'
-	import FixedBottom from '@/components/FixedBottom/FixedBottom.vue'
 	import {
 		getMaterialList
 	} from '@/apis/index.js'
@@ -122,7 +121,6 @@
 	export default {
 		components: {
 			NavSearchBar,
-			FixedBottom
 		},
 		data() {
 			return {

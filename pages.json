@@ -1,5 +1,11 @@
 {
 	"pages": [{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}, {
 			"path": "pages/overview/overview",
 			"style": {
 				"navigationBarTitleText": "",
@@ -20,7 +26,7 @@
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
-		},
+		}, 
 		{
 			"path": "pages/products/products",
 			"style": {
@@ -39,12 +45,6 @@
 	"subPackages": [{
 			"root": "pages/packageC",
 			"pages": [{
-					"path": "login/login",
-					"style": {
-						"navigationBarTitleText": "登录",
-						"navigationStyle": "custom"
-					}
-				}, {
 					"path": "add-stock/add-stock",
 					"style": {
 						"navigationBarTitleText": ""

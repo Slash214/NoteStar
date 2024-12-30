@@ -58,11 +58,7 @@
 	import {
 		formatDateToChinese
 	} from '@/utils'
-	import FixedBottom from '@/components/FixedBottom/FixedBottom.vue'
 	export default {
-		components: {
-			FixedBottom
-		},
 		data() {
 			return {
 				show: false,

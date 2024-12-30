@@ -42,7 +42,7 @@ const request = (options) => {
 						if (res.data?.message === 'token过期') {
 							uni.clearStorageSync()
 							uni.reLaunch({
-								url: '/pages/packageC/login/login'
+								url: '/pages/login/login'
 							})
 							return
 						}

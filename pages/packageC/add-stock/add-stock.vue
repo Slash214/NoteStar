@@ -182,6 +182,10 @@
 					}
 					return item
 				})
+
+				// this.selectList = this.dataList
+
+				console.error(this.selectList)
 			} else {
 				this.selectList = []
 			}
@@ -192,8 +196,13 @@
 			},
 			// sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
 			totalPrice() {
+				// return this.selectList?.reduce(
+				// 	(sum, item) => sum.plus(item.nums.times(item.price)), new Big(0)
+				// )
 				return this.selectList.reduce(
-					(sum, item) => sum.plus(item.nums.times(item.price)), new Big(0)
+					(sum, item) =>
+					sum.plus(item.nums.times(this.type === 1 ? item.commodityDecimal : item.purchaseDecimal)),
+					new Big(0)
 				)
 			},
 			productKindCount() {
@@ -223,7 +232,7 @@
 			},
 			fixOneShopData() {
 				console.log('确认修改')
-				
+
 				// console.log('this.cur商品', this.curShopData)
 				// console.error(this.selectList)
 				// const index = this.selectList.findIndex(item => item.id === this.curShopData.id)
@@ -324,7 +333,7 @@
 				this.cachePage = pageNo
 				try {
 					// this.cachePage ? pageNo + this.cachePage - 1 : pageNo
-                    // 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
+					// 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
 					// if (this.type === 2 && )
 
 					let orderType = this.type === 1 ? '销售' : '进货'

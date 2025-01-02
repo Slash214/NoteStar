@@ -354,6 +354,9 @@
 					url = `${url}&id=${this.transferOrderId}`
 				}
 				
+				
+				
+			
 				// return
 				uni.navigateTo({
 					url

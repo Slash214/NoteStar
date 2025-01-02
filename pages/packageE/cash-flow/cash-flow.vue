@@ -101,8 +101,8 @@
 		},
 		methods: {
 			onCreated(e) {
-				console.log('获取的怕', e)
-				this.depotId = e.id
+				// console.log('获取的怕', e)
+				// this.depotId = e.id
 			},
 			hadndaleClick(item) {
 				uni.navigateTo({

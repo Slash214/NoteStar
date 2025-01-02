@@ -29,7 +29,7 @@
 			<view class="box">
 				<u--form labelPosition="left" labelWidth="100">
 					<u-form-item required label="条形码">
-						<u-input v-model="marCode" placeholder="请输入" clearable border="none">
+						<u-input v-model="marCode" :readonly="isUpdate" placeholder="请输入" clearable border="none">
 							<template slot="suffix">
 								<view class="flex">
 									<text v-if="!marCode" @click="genCode">自动生成</text>
@@ -67,7 +67,8 @@
 			</view>
 		</view>
 
-		<select-shop @onCreated="getFirstStore" :all="false" :show="show" @cancel="show = false" @confirm="confirm"></select-shop>
+		<select-shop @onCreated="getFirstStore" :all="false" :show="show" @cancel="show = false"
+			@confirm="confirm"></select-shop>
 	</view>
 </template>
 
@@ -115,19 +116,22 @@
 			}
 		},
 		onLoad(options) {
-			let { isUpdate, code } = options || {}
-			
+			let {
+				isUpdate,
+				code
+			} = options || {}
+
 			if (isUpdate === 'true') {
 				this.isUpdate = true
 				this.genEditData()
 			}
-			
+
 			if (code) {
 				this.marCode = code
 				this.codeProduct = true
 			}
-			
-			
+
+
 			this.token = uni.getStorageSync('token')
 		},
 		onUnload() {
@@ -195,6 +199,16 @@
 
 
 			scanCode() {
+				
+				if (this.isUpdate) {
+					
+					uni.showToast({
+						title: '无法修改条形码',
+						icon: 'none'
+					})
+					return
+				}
+				
 				uni.scanCode({
 					scanType: ['barCode'],
 					enableFlash: true, // 设置为true以显示开启手电筒的按钮
@@ -327,10 +341,15 @@
 					title: '操作成功',
 					icon: 'none'
 				})
-				
-				const obj = data.product
-				delete obj.stockInfoList
-				console.error('添加成功的商品', obj)
+
+
+				if (this.codeProduct) {
+					const obj = data.product
+					delete obj.stockInfoList
+					console.error('添加成功的商品', obj)
+				}
+
+
 				// 缓存单独扫码添加的商品
 				// uni.setStorageSync('addScanData', obj)
 				// return
@@ -351,6 +370,8 @@
 
 <style lang="scss" scoped>
 	.container {
+		min-height: 100vh;
+
 		.box {
 			border-radius: 20rpx;
 			background: #fff;

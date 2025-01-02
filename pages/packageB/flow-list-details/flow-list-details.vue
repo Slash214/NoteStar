@@ -67,13 +67,20 @@
 			console.log(this.objItem)
 		},
 		methods: {
-            gotoDetails(number) {
-				// console.log(number)
-				uni.navigateTo({
-					url: `/pages/packageE/daily-details/daily-details?number=${number}`
-				})
+			gotoDetails(number) {
+				if (this.objItem.type.includes('销售') || this.objItem.type.includes('进货')) {
+					let type = this.objItem.type.includes('销售') ? 1 : 2
+					let status = this.objItem.type.includes('订金') ? 2 : 1
+					uni.navigateTo({
+						url: `/pages/packageB/sales-order-detail/sales-order-detail?type=${type}&number=${number}&status=${status}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/packageE/daily-details/daily-details?number=${number}`
+					})
+				}
 			}
-			
+
 		}
 	}
 </script>

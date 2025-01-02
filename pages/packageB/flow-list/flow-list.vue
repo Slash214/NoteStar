@@ -2,10 +2,8 @@
 	<z-paging ref="paging" v-model="dataList" @query="queryList" auto-show-back-to-top>
 		<AppletHeader :title="title" right-icon=" "></AppletHeader>
 		<view class="container">
-			<view class="list flex flex-between flex-items-center" 
-			v-for="item in dataList" :key="item.id"
-			@click="gotoDetails(item)"
-			>
+			<view class="list flex flex-between flex-items-center" v-for="item in dataList" :key="item.id"
+				@click="gotoDetails(item)">
 				<view class="box">
 					<view class="title">{{ item.flag === 0 ? item.supplierName : item.type }}</view>
 					<view>{{ item.type }}</view>
@@ -22,7 +20,9 @@
 	import {
 		getCapitalFlowDetail
 	} from '@/apis'
-	import { formatMoney } from '@/utils'
+	import {
+		formatMoney
+	} from '@/utils'
 	export default {
 		data() {
 			return {
@@ -44,11 +44,16 @@
 		methods: {
 			async queryList(pageNo, pageSize) {
 				try {
-					const { data } = await getCapitalFlowDetail({
+					const {
+						data
+					} = await getCapitalFlowDetail({
 						depotId: this.depotId || '',
-						time: this.time
+						time: this.time,
+						currentPage: pageNo,
+						pageSize
+
 					})
-					
+
 					console.log('data', data)
 					this.total = data.total
 					this.$refs.paging.complete(data.data)
@@ -77,7 +82,7 @@
 			padding: 25rpx;
 			border-radius: 20rpx;
 			background-color: #fff;
-			
+
 			.box {
 				margin-right: 28rpx;
 			}

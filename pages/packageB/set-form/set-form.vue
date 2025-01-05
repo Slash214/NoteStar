@@ -1246,7 +1246,10 @@
 				if (index !== -1) {
 					this.productList.splice(index, 1, this.curShopData)
 				}
+				uni.setStorageSync('selectList', this.productList)
 				this.shopShow = false
+				
+				// console.error('当前的商品列表', this.productList)
 				this.onPriceChange(0)
 			},
 

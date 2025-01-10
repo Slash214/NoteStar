@@ -94,7 +94,8 @@
 	import {
 		formatDateToChinese,
 		formatImageArray,
-		formatMoney
+		formatMoney,
+		formatDateTime
 	} from '@/utils'
 	import {
 		getDetailByNumbe,
@@ -475,7 +476,7 @@
 						{
 							id: 5,
 							text: '制单时间',
-							desc: formatDateToChinese(operTime)
+							desc: formatDateTime(operTime)
 						}
 					]
 

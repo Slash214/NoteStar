@@ -881,8 +881,7 @@
 				const {  data } = await getDepotByUserId({ userId: user.id})
 				
 				console.log(data)
-				const newId =data[0]?.id || 1
-			
+				const newId = this.isUpdate ? this.goodsUpdate.depotId : data[0]?.id || 1
 				
 				const [r1, r2] = await Promise.all([
 					getUserByDepotId({
@@ -913,6 +912,16 @@
 				this.serviceList[1].value = timestampToDate(this.selectedTime.temp)
 				this.selectedTime.time = this.serviceList[1].value
 				this.serviceList[2].value = this.selectedSalesperson.name
+				
+				if (this.isUpdate) {
+					console.log('更新状态')
+					const obj = this.storeList.filter(el => el.id === this.goodsUpdate.depotId)[0]
+					this.selectedStore = obj
+					
+					const obj2 = this.salesList.filter(el => el.id === this.goodsUpdate.salesMan)[0]
+					this.selectedSalesperson = obj2
+					this.serviceList[2].value = obj2.name
+				}
 			},
 
 			// 获取当前选择的店铺

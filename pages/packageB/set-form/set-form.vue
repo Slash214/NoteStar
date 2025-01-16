@@ -498,7 +498,16 @@
 				this.reqData.moneyAroundDown = obj.moneyAroundDown || 0
 				this.reqData.otherMoney = obj.otherMoney
 				this.reqData.changeAmount = obj.changeAmount
-				
+
+				if (this.transferOrderId) {
+					console.log('转进货获取当前时间')
+					
+					const { currentDate, currentTimestamp } = this.genCurTime()
+					this.selectedTime.temp = currentTimestamp
+					this.selectedTime.time = currentDate
+
+				}
+
 				if (obj.fileName) {
 					let newArr = obj.fileName.split(',')
 					this.fileList1 = newArr.map(item => ({
@@ -600,6 +609,25 @@
 			}
 		},
 		methods: {
+
+			genCurTime() {
+				// 获取当前时间
+				const now = new Date();
+
+				// 格式化为 yyyy-mm-dd
+				const year = now.getFullYear();
+				const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，需要 +1
+				const day = String(now.getDate()).padStart(2, '0');
+				const currentDate = `${year}-${month}-${day}`;
+
+				// 获取当前时间的时间戳
+				const currentTimestamp = now.getTime()
+
+				return {
+					currentDate,
+					currentTimestamp
+				}
+			},
 			// 压缩图片(需要真机/模拟器环境) - uni.compressImage
 			compressImage(srcPath, quality = 80) {
 				return new Promise((resolve, reject) => {
@@ -877,12 +905,16 @@
 			// 获取请求接口数据
 			async getData() {
 				const user = uni.getStorageSync('userInfo')
-				
-				const {  data } = await getDepotByUserId({ userId: user.id})
-				
+
+				const {
+					data
+				} = await getDepotByUserId({
+					userId: user.id
+				})
+
 				console.log(data)
 				const newId = this.isUpdate ? this.goodsUpdate.depotId : data[0]?.id || 1
-				
+
 				const [r1, r2] = await Promise.all([
 					getUserByDepotId({
 						depotId: newId
@@ -904,7 +936,7 @@
 					name: item.userName
 				}))
 
-                let objArr = this.salesList.filter(i => i.id === user.id)
+				let objArr = this.salesList.filter(i => i.id === user.id)
 
 				this.selectedSalesperson = objArr?.length ? objArr[0] : this.salesList[0]
 				this.selectedStore = this.storeList[0]
@@ -912,12 +944,12 @@
 				this.serviceList[1].value = timestampToDate(this.selectedTime.temp)
 				this.selectedTime.time = this.serviceList[1].value
 				this.serviceList[2].value = this.selectedSalesperson.name
-				
+
 				if (this.isUpdate) {
 					console.log('更新状态')
 					const obj = this.storeList.filter(el => el.id === this.goodsUpdate.depotId)[0]
 					this.selectedStore = obj
-					
+
 					const obj2 = this.salesList.filter(el => el.id === this.goodsUpdate.salesMan)[0]
 					this.selectedSalesperson = obj2
 					this.serviceList[2].value = obj2.name
@@ -976,8 +1008,8 @@
 					})
 					return
 				}
-				
-				
+
+
 				let fileNameArray = ""
 				if (this.fileList1.length) {
 					let array = this.fileList1.map(item => item.url)
@@ -1257,24 +1289,24 @@
 				}
 				uni.setStorageSync('selectList', this.productList)
 				this.shopShow = false
-				
+
 				// console.error('当前的商品列表', this.productList)
 				this.onPriceChange(0)
 			},
 
 			// 选择商品
 			selectProduct() {
-				
+
 				// 新增门店逻辑 进货、进货预订、销售退货看到所有商品。
 				let id = this.selectedStore.id
 				if (this.type === 2 && this.statusType <= 2) {
 					id = 0
 				}
-				
+
 				if (this.type === 1 && this.statusType === 3) {
 					id = 0
 				}
-				
+
 				uni.navigateTo({
 					url: `/pages/packageC/add-stock/add-stock?type=${this.type}&storeId=${id}`
 				})
